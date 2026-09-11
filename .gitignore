@@ -28,16 +28,5 @@ logs/
 __pycache__/
 *.py[cod]
 
-# local tooling and notes that are not part of the project
-.claude/
-CLAUDE.md
-AGENTS.md
-.codex/
-.mcp.json
-docs/superpowers/
-docs/evidence/**/*.mp4
-docs/evidence/**/focus-report.json
-docs/evidence/**/minecraft-background.png
-
 # os
 .DS_Store

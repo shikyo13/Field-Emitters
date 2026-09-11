@@ -1,0 +1,114 @@
+{
+  "prepared_on": "2026-09-11",
+  "capture_build_sha256": "029ba534a36c51c5cbe4d08769b4409fb156efba530ec3c46be149a6b9ff5fd9",
+  "images": [
+    {
+      "order": 0,
+      "featured": true,
+      "file": "docs/publishing/gallery/gallery-post-closeup.png",
+      "title": "Field Emitters",
+      "caption": "Two posts, an energy cube and the field between them.",
+      "kind": "unchanged_gameplay_screenshot",
+      "sha256": "79d8b5c1e7edb57e89b6712f3b9c05b2f16db0042cac1cdc49c858c17a3480e5",
+      "width": 1708,
+      "height": 960,
+      "bytes": 1169516
+    },
+    {
+      "order": 1,
+      "featured": false,
+      "file": "docs/publishing/gallery/gallery-perimeter-night-close.png",
+      "title": "Terrain-following perimeter",
+      "caption": "The field climbs the hillside between the posts and keeps the zombie out.",
+      "kind": "unchanged_gameplay_screenshot",
+      "sha256": "2ee197b914fdbc9759faba7d35ef18fbb04362bdd709cee08bdb266234522cb4",
+      "width": 1708,
+      "height": 960,
+      "bytes": 1069584
+    },
+    {
+      "order": 2,
+      "featured": false,
+      "file": "docs/publishing/gallery/gallery-perimeter-day.png",
+      "title": "Perimeter overview",
+      "caption": "Four posts enclose a hillside; one lever-side post switches the whole network.",
+      "kind": "unchanged_gameplay_screenshot",
+      "sha256": "3df1f54e98d782f4272ce62f804e188d8a0aea75f24536a3f2617be7f8452265",
+      "width": 1708,
+      "height": 960,
+      "bytes": 1570839
+    },
+    {
+      "order": 3,
+      "featured": false,
+      "file": "docs/publishing/gallery/gallery-rails-doorway.png",
+      "title": "Rails",
+      "caption": "Rails seal a doorway, a shaft and a walkway. The lamp shows a detection pulse.",
+      "kind": "unchanged_gameplay_screenshot",
+      "sha256": "20f1a7a6b1f817f0235018e46eaf0382e0b3a16596799b1c6c0df6a95269395a",
+      "width": 1708,
+      "height": 960,
+      "bytes": 1131461
+    },
+    {
+      "order": 4,
+      "featured": false,
+      "file": "docs/publishing/gallery/gallery-impact-night-1.png",
+      "title": "Blocking at night",
+      "caption": "Hostile mobs stay inside a lit field at midnight.",
+      "kind": "unchanged_gameplay_screenshot",
+      "sha256": "24a538b946321c5e18372afb0ade8ddc8f8d6835dd32c4e3a364681bcaec02bd",
+      "width": 1708,
+      "height": 960,
+      "bytes": 869708
+    },
+    {
+      "order": 5,
+      "featured": false,
+      "file": "docs/publishing/gallery/gui-blocking.png",
+      "title": "Blocking filters",
+      "caption": "Choose categories, details, directions and owner exemption for each field.",
+      "kind": "unchanged_gameplay_screenshot",
+      "sha256": "872313033748b286675f29129222ece1fc18b2819a22ae02d897f407c1972673",
+      "width": 1708,
+      "height": 960,
+      "bytes": 112075
+    },
+    {
+      "order": 6,
+      "featured": false,
+      "file": "docs/publishing/gallery/gui-detection.png",
+      "title": "Detection output",
+      "caption": "Pulse per crossing or presence signal, with per-item or per-stack counting.",
+      "kind": "unchanged_gameplay_screenshot",
+      "sha256": "0ad18012611e375e353a4c47af19e4efdcf5b8702e9a7e78d27d0388c22bc9ec",
+      "width": 1708,
+      "height": 960,
+      "bytes": 112658
+    },
+    {
+      "order": 7,
+      "featured": false,
+      "file": "docs/publishing/gallery/gui-manager.png",
+      "title": "Field Manager",
+      "caption": "Every loaded field in the dimension, reachable from the tuner.",
+      "kind": "unchanged_gameplay_screenshot",
+      "sha256": "ca496a36c2a4c32de301c2ad8341078425e4620963192c42bf9c461297050762",
+      "width": 1708,
+      "height": 960,
+      "bytes": 143704
+    },
+    {
+      "order": 8,
+      "featured": false,
+      "file": "docs/publishing/gallery/craft-emitter.png",
+      "title": "Recipes",
+      "caption": "The Field Emitter recipe: copper, amethyst, glass, a block of redstone and iron.",
+      "kind": "unchanged_gameplay_screenshot",
+      "sha256": "8733060864c236edbdc8c8da8f437958995249acf38edb3ddc68310bfe8f2d9a",
+      "width": 1708,
+      "height": 960,
+      "bytes": 139791
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "updated": "2026-09-11",
+  "project": "Field Emitters",
+  "links": {
+    "issues_url": "https://github.com/shikyo13/Field-Emitters/issues",
+    "source_url": "https://github.com/shikyo13/Field-Emitters",
+    "wiki_url": "https://github.com/shikyo13/Field-Emitters/tree/main/docs/wiki",
+    "discord_url": "https://discord.gg/NrdXnbWzGC",
+    "donation_urls": [
+      { "platform": "bmac", "url": "https://buymeacoffee.com/zerotheabsolute" },
+      { "platform": "patreon", "url": "https://www.patreon.com/cw/ZeroTheAbsolute/membership" }
+    ]
+  },
+  "link_source": "https://zeronexus.net/mods.php"
+}

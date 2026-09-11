@@ -19,6 +19,7 @@ public final class DemoVerification {
       for (int z = -8; z <= 8; z++)
         for (int y = -5; y <= 5; y++)
           if (l.getBlockEntity(at.offset(x, y, z)) instanceof EmitterEntity candidate
+              && !candidate.isRail()
               && candidate.powered
               && !candidate.links.isEmpty()) e = candidate;
     if (e == null) {

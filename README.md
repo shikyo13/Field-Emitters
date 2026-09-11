@@ -1,53 +1,59 @@
-# Field Emitters — 0.2.0 demo
+# Field Emitters
 
-Minecraft **1.21.1 / NeoForge 21.1.206 / Java 21**.
+Terrain-following forcefields for Minecraft. Place Field Emitter posts around an area and they link up into a five-block-high perimeter that follows the ground between them. Mount Field Rails on walls, floors and ceilings to seal doorways, pits and shafts. Every field decides what passes through it, reports what crossed it, and runs on Forge Energy.
 
-Run `Launch Automation Demo.command` for the perimeter, a three-strip doorway, a floor/ceiling span, and a horizontal field. The doorway recognizes the demo player and pulses its lamp. Right-click an emitter or rail with an empty hand or Field Tuner to open its controls.
+[Download](https://www.curseforge.com/minecraft/mc-mods/field-emitters) · [Wiki](https://github.com/shikyo13/Field-Emitters/tree/main/docs/wiki) · [Issues](https://github.com/shikyo13/Field-Emitters/issues) · [Discord](https://discord.gg/NrdXnbWzGC)
 
-## Controls
+![Two Field Emitters, an energy cube and the field between them](docs/images/emitters.png)
 
-Settings apply automatically. Buttons update immediately; valid text applies after a 350 ms typing pause or when leaving the page. Invalid IDs/UUIDs are retained in the editor for correction and are not sent. Close does not undo applied changes. The panel fits the available GUI size with matching mouse coordinates.
+## Features
 
-## Remote field manager
+- Emitter posts link to other posts up to 20 blocks away in the four cardinal directions and project a field that climbs and descends with the terrain.
+- Rails mount on any block face, span up to 20 blocks to an opposing rail, and join side by side into one wall, floor or ceiling.
+- Blocking filters by category: hostile, passive, players, dropped items and other entities. Narrow a filter with age, entity type or tag, item, UUID or scoreboard tag, choose the movement directions it applies to, invert it, and exempt the owner.
+- Detection output on a redstone face: one pulse per completed crossing, or a steady signal while a matching entity touches the field. Counts dropped items per stack or per item.
+- Separate rules for each link, redstone enable modes, six color presets or any hex color, an animated field pattern, and optional block light.
+- A handheld Field Tuner that opens controls, manages every loaded field from anywhere in the dimension, samples mobs and players for filters, and cycles colors.
+- Forge Energy input on every emitter and rail from any energy mod. Connected emitters pool their stored energy.
 
-Right-click air with a Field Tuner, or choose **Emitters** in the controls, while holding the tuner. Each connected, loaded chain appears as one managed field. Select it to rename it or open any of its emitters remotely. In Connections, **Change settings for** chooses one emitter or your connected emitters; **Editing** selects an individual span's filters.
+## Getting started
 
-Names persist on the emitters. New placements record their placement time; the oldest loaded member anchors the field's displayed location. Existing demo emitters use a deterministic coordinate fallback. Switched-off emitters remain grouped. Unloaded chunks are never forced to load: a split or partially unloaded chain can appear as separate groups, retaining names; reconnecting groups uses the oldest member's name. Only emitters you may edit are listed, in the current dimension, up to 256 groups. Remote requests require a held tuner and server-side ownership permission.
+1. Craft a Field Emitter with copper, an amethyst shard, glass, a block of redstone and iron. Craft a Field Tuner with an amethyst shard, copper, a glass pane, iron and redstone.
+2. Place emitters on level ground in a rectangle or a line, up to 20 blocks apart. A post needs five free blocks of height.
+3. Feed energy into any post from a cable or generator. Connected posts share power, so one input runs the whole perimeter.
+4. Right-click a post with an empty hand or the tuner to choose what the field blocks and what it reports.
+5. Right-click the air with the tuner to open the Field Manager and reach any loaded field remotely.
 
-## Settings tabs
+Rails are crafted four at a time from iron, copper, amethyst and redstone. Place one on a wall, floor or ceiling and another one facing it up to 20 blocks away. Place more rails side by side to widen the field.
 
-- **Power:** enable, FE status, passage counter, recent detection, redstone input face and high/low/always mode.
-- **Blocking:** choose hostile, passive, player, item, and other entities independently. Optional age, entity ID/tag, item ID/tag, UUID and scoreboard-tag constraints combine with AND. Categories combine with OR. “Allow selected only” allows matches and blocks everything else; “Detect unselected” inverts the detection predicate: selecting babies and choosing Allow selected only allows only babies through. Owner exemption is explicit.
-- **Detection:** independent filters, crossing pulses or presence output, and entity-stack versus individual-item counting. A crossing completes after the whole entity clears the field. Contact and impact animation do not count. Pulses are separated by two ticks; duration is adjustable. The queue holds up to 100,000 pulses; excess pulses are dropped while the lifetime counter still advances. Disabling/powering off clears pending output.
-- **Appearance:** hex color or presets, visual visibility, ambient field animation, and world lighting. Turning lighting off preserves emissive visuals and collision without adding block light.
-- **Connections:** apply to this emitter or connected emitters you own; select an outgoing link for independent barrier/detection rules; configure sensor output face, pulse duration, and rail plane normal. Link overrides apply to both endpoints and persist independently of defaults. Input and output use different faces. Field orientation uses wall/floor descriptions and pulse duration uses seconds. Hold the tuner to see movement arrows: amber marks an enabled blocking direction, green a disabled direction. Selecting a link briefly highlights it. Appearance → Direction guides → Hidden disables the guides for your client. All filter inputs have hover help with examples; empty inputs impose no extra condition.
+The [wiki](https://github.com/shikyo13/Field-Emitters/tree/main/docs/wiki) covers filters, detection output, rails, energy and troubleshooting.
 
-Direction buttons indicate movement **toward** that world side (South means North → South). Presence mode uses the approach direction; an entity initially spawned on the plane has no directional approach history.
+## Energy
 
-Sneak-use the tuner on a living mob to sample it, or in the air to sample yourself. The GUI can apply the sample as an individual UUID or an entity type. Sneak-use an emitter cycles its color. IDs accept `namespace:name`; registry tags use `#namespace:tag`. Entity scoreboard tags have a separate field. Invalid IDs/UUIDs are rejected. Lists, tag autocomplete and a dedicated dropped-item sampling interaction are not included in this demo.
+With default settings a running field consumes 2 FE per projected block each tick. A twenty-block perimeter side costs about 190 FE/t; a whole 20 by 16 perimeter costs about 680 FE/t. Each emitter and rail stores 100,000 FE and accepts up to 10,000 FE/t. Redstone controls operation and carries detection output but does not supply energy. The server config sets the cost, capacity and transfer rate.
 
-## Power and rails
+## Compatibility
 
-Normal operation consumes **2 FE per projected cell per tick**, with a 100,000 FE buffer and 10,000 FE/t transfer per emitter. Connected emitters share available power. Redstone controls operation and carries sensor output; it supplies no energy by default.
+| Minecraft | Loader | Java |
+| --- | --- | --- |
+| 1.21.1 | NeoForge 21.1.206 or later in the 21.1 series | 21 |
 
-The included demo world has `serverconfig/fieldemitters-server.toml` with `demoRedstonePower = true`. Its GUI identifies this test mode. Other worlds retain the default `false` setting.
+Install the mod on both the server and clients. An energy source from another mod is needed; Field Emitters does not generate power or keep chunks loaded. See the [roadmap](ROADMAP.md) for planned ports.
 
-Perimeter posts link in four cardinal directions up to 20 blocks apart and follow terrain with a five-block field height. Rails mount on all six faces and link to an opposing rail up to 20 blocks away. Each rail contributes a full one-block-wide strip; adjacent rails share power and join without internal bright borders. Floor/ceiling pairs span vertically. Choose Field shape: Horizontal floor / ceiling for a horizontal plane when the span is horizontal. The menu offers only orientations compatible with the span.
+## Build
 
-A chained rail network consolidates its sensor counter and output at the source shown in Connections. Configure the chain together (the default rail GUI scope) for uniform filtering. Do not connect a perimeter post directly to a rail; they use separate projection geometry.
-
-## Build and verification
+Use JDK 21 and the included Gradle wrapper:
 
 ```sh
-./gradlew build --console=plain --max-workers=2
+./gradlew build
 ```
 
-`/fielddemo verify` near a powered perimeter exercises actual server entity movement, all original category combinations, owner exemption, power-off release, projection timing, terrain coverage, age/inversion/identity/item predicates, completed crossings, queued pulses and presence. `/fielddemo verifyrails` near powered rails exercises baby-mob collision and one-way release across each nearby span. These development commands require operator permission.
+The JAR is written to `build/libs/`. Recipes, loot tables and tags are generated by `./gradlew runData` into `src/generated/resources` and committed.
 
-Runtime evidence is in `docs/evidence/automation-v1/`. The optional Minecraft-Control addon is used only by development runs; it is not bundled in the mod JAR. Visuals include the existing detailed emitter/tuner models, animated channels, opening iris, hex field, and perimeter impact waves. Rails currently use a simpler projection animation and do not yet have the perimeter's impact-wave effect.
+## Contributing and license
 
-This remains a creative prototype: no survival recipes/balance, multi-client acceptance, or large-farm performance qualification yet. GUI layout is verified at the demo's default 427×240 GUI resolution; unusually narrow windows may require a smaller GUI scale.
+Bug reports, translations and contributions are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) and the [Field Emitters license](LICENSE).
 
-## Connected field visuals
+You may play, research, contribute, redistribute unmodified official releases and include them in modpacks without asking. Retain the license and credit. Separately released modified builds, ports and feature variants require permission.
 
-Posts and surface rails share a world-aligned hex pattern and expanding impact rings. Adjacent rail strips share impact position and timing across their plane, so the pattern and wave continue across strip boundaries. Impacts respect blocking filters and travel directions, including dropped/nonliving entities selected by the filter. Ambient-animation Off leaves impact reactions active.
+Support me through [Buy Me a Coffee](https://buymeacoffee.com/zerotheabsolute) or [Patreon](https://www.patreon.com/cw/ZeroTheAbsolute/membership).

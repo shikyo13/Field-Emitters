@@ -1,0 +1,14 @@
+# Changelog
+
+## 1.0.0
+
+First release for Minecraft 1.21.1 on NeoForge.
+
+- Field Emitters: five-block posts that link to other posts up to 20 blocks away in the four cardinal directions and project a five-block-high field that follows the terrain between them.
+- Field Rails: surface-mounted strips for any block face. Opposing rails up to 20 blocks apart span a one-block-wide field, and adjacent rails join into a single wall, floor or ceiling.
+- Field Tuner: opens emitter controls, manages every loaded field remotely, samples mobs and players for filters, and cycles field colors.
+- Blocking filters by category (hostile, passive, players, drops, nonliving) with optional age, entity type or tag, item, UUID and scoreboard tag details, movement direction rules, inversion and owner exemption.
+- Detection with crossing pulses or presence output on a chosen redstone face, per-item or per-stack counting and a lifetime crossing counter.
+- Per-link rule overrides, redstone enable modes, colors, ambient animation and optional block light.
+- Forge Energy input on every emitter and rail. Defaults: 2 FE per field block each tick, 100,000 FE storage and 10,000 FE/t transfer, adjustable in the server config.
+- Survival recipes for the emitter, rail and tuner, a Field Emitters creative tab, and drops for every emitter section.
