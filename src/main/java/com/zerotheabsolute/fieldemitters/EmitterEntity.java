@@ -37,6 +37,8 @@ public final class EmitterEntity extends BlockEntity {
   public long impactTime = -1000;
   public final Map<UUID, Long> contacts = new HashMap<>();
   public List<Link> links = new ArrayList<>();
+  /** Connected emitters as of the last topology rebuild; refreshed by FieldNetwork. */
+  public List<EmitterEntity> network;
   public Set<BlockPos> cells = new HashSet<>();
   public final EnergyStorage energy =
       new EnergyStorage(FieldConfig.capacity(), FieldConfig.transfer(), FieldConfig.transfer()) {

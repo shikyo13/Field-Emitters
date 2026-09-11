@@ -11,7 +11,8 @@ public final class FieldSensor {
     boolean monitoring = !e.isRail() || e.root.equals(e.getBlockPos());
     var detected = new java.util.HashSet<String>();
     if (e.powered && monitoring && e.controls.sensorMode != 0) {
-      for (var origin : e.isRail() ? FieldNetwork.connected(e) : java.util.List.of(e)) {
+      for (var origin : e.isRail() ? FieldNetwork.members(e) : java.util.List.of(e)) {
+        if (origin.isRemoved()) continue;
         var p = origin.getBlockPos();
         for (var link : origin.links) {
           var settings = origin.settings(link);

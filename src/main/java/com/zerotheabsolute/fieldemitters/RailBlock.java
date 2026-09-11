@@ -63,8 +63,9 @@ public final class RailBlock extends BaseEntityBlock {
         && l.getBlockEntity(p) instanceof EmitterEntity e) {
       var field = FieldBlock.collision(e, ec.getEntity(), p);
       // The far endpoint can own no links; find its loaded source through its network.
-      for (var part : FieldNetwork.connected(e))
-        field = Shapes.or(field, FieldBlock.collision(part, ec.getEntity(), p));
+      for (var part : FieldNetwork.members(e))
+        if (part != e && !part.isRemoved())
+          field = Shapes.or(field, FieldBlock.collision(part, ec.getEntity(), p));
       return Shapes.or(hardware, field);
     }
     return hardware;

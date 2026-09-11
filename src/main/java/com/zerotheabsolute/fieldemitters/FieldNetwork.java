@@ -23,6 +23,16 @@ public final class FieldNetwork {
     return connected(seed, true);
   }
 
+  /**
+   * Connected emitters from the last rebuild, at most half a second old. Collision and sensor
+   * queries run many times per tick, so they read this cache instead of searching again.
+   */
+  public static List<EmitterEntity> members(EmitterEntity seed) {
+    var cached = seed.network;
+    if (cached != null && cached.contains(seed)) return cached;
+    return connected(seed);
+  }
+
   private static List<EmitterEntity> connected(EmitterEntity seed, boolean includeDisabled) {
     if (seed.getLevel() == null) return List.of(seed);
     List<EmitterEntity> all = loaded(seed.getLevel());
@@ -198,6 +208,7 @@ public final class FieldNetwork {
     for (var seed : all) {
       if (rank.containsKey(seed.getBlockPos())) continue;
       var network = connected(seed);
+      for (var member : network) member.network = network;
       var source =
           network.stream()
               .filter(
@@ -354,8 +365,8 @@ public final class FieldNetwork {
               case Z -> new net.minecraft.world.phys.Vec3(impact.x, impact.y, origin.z);
             };
         // One timestamp and hit location for the connected surface, not one hit per rail.
-        for (var part : connected(emitter)) {
-          if (!part.powered || !part.isRail()) continue;
+        for (var part : members(emitter)) {
+          if (part.isRemoved() || !part.powered || !part.isRail()) continue;
           if (Math.abs(
                   link.normalCoordinate(
                           net.minecraft.world.phys.Vec3.atCenterOf(part.getBlockPos()))
