@@ -39,7 +39,7 @@ public final class EmitterEntity extends BlockEntity {
   public List<Link> links = new ArrayList<>();
   public Set<BlockPos> cells = new HashSet<>();
   public final EnergyStorage energy =
-      new EnergyStorage(100000, 10000, 10000) {
+      new EnergyStorage(FieldConfig.capacity(), FieldConfig.transfer(), FieldConfig.transfer()) {
         @Override
         public int receiveEnergy(int amount, boolean simulate) {
           int n = super.receiveEnergy(amount, simulate);
@@ -212,7 +212,8 @@ public final class EmitterEntity extends BlockEntity {
     powered = t.getBoolean("Powered");
     transition = t.getLong("Transition");
     demand = t.getInt("Demand");
-    energy.deserializeNBT(r, IntTag.valueOf(Math.max(0, Math.min(100000, t.getInt("Energy")))));
+    energy.deserializeNBT(
+        r, IntTag.valueOf(Math.max(0, Math.min(energy.getMaxEnergyStored(), t.getInt("Energy")))));
     placedAt = t.contains("PlacedAt") ? t.getLong("PlacedAt") : Long.MAX_VALUE;
     fieldName = t.getString("FieldName");
     owner = t.hasUUID("Owner") ? t.getUUID("Owner") : null;

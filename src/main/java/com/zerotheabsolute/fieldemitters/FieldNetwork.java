@@ -242,7 +242,11 @@ public final class FieldNetwork {
       e.links = links;
       e.demand =
           links.stream()
-              .mapToInt(link -> (link.length() + (link.rail() ? 1 : -1)) * link.height() * 2)
+              .mapToInt(
+                  link ->
+                      (link.length() + (link.rail() ? 1 : -1))
+                          * link.height()
+                          * FieldConfig.energyPerCell())
               .sum();
       Set<BlockPos> next = new HashSet<>();
       for (var link : links)
