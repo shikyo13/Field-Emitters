@@ -28,12 +28,10 @@ public final class FieldConfig {
         b.comment("Maximum FE per tick an emitter or rail accepts from cables and generators.")
             .defineInRange("emitterTransferRate", DEFAULT_TRANSFER, 1, 1000000000);
     b.pop();
-    b.push("testing");
     DEMO_POWER =
         b.comment(
                 "Testing only: redstone input supplies unlimited energy. Normal worlds require FE.")
             .define("demoRedstonePower", false);
-    b.pop();
     SPEC = b.build();
     var client = new ModConfigSpec.Builder();
     SHOW_GUIDES =
