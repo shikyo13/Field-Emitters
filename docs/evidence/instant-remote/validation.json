@@ -1,0 +1,20 @@
+{
+  "build": "passed",
+  "installedProfile": "/Users/zero/Documents/CurseForge/minecraft/Instances/Field Emitters Demo",
+  "sha256": "d901fc5c2996a25e1a4548ac90241947ad9f5bd581aa2aa5973676ab5bbac75d",
+  "runtime": [
+    "Automatic toggle updates persisted in server NBT",
+    "Valid minecraft:creeper text applied without Save",
+    "Remote updates at x60 to rail x35 with tuner",
+    "Four connected groups including six-rail doorway",
+    "Sky Gate name persisted on paired rails",
+    "Switched-off pair remained listed as one field",
+    "GUI scale 1 and Auto/4 buttons exercised"
+  ],
+  "limits": [
+    "Smaller-than-404 logical canvas fit calculated but not runtime exercised",
+    "Power sharing unchanged pending design decision",
+    "Existing placements use coordinate fallback; oldest loaded new placement anchors names"
+  ],
+  "finalCleanup": "Removed obsolete draft-reader plumbing and isolated client guide preference from server settings updates after runtime run."
+}

@@ -1,0 +1,20 @@
+plugins {
+ id 'java-library'
+ id 'net.neoforged.moddev' version '2.0.141'
+}
+version = '0.2.0-demo'
+group = 'com.zerotheabsolute.fieldemitters'
+base { archivesName = 'field-emitters' }
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+neoForge {
+ version = '21.1.206'
+ runs {
+  client { client(); if (providers.gradleProperty('visualQa').isPresent()) { gameDirectory = project.file('run-visual') }; if (providers.gradleProperty('automationQa').isPresent()) { gameDirectory = project.file('run-automation') }; if (providers.gradleProperty('menuQa').isPresent()) { gameDirectory = project.file('run-menu') }; if (providers.gradleProperty('demoWorld').isPresent()) { programArguments.addAll '--quickPlaySingleplayer', 'Field Emitters Demo' } }
+  server { server(); programArgument '--nogui' }
+ }
+ mods { fieldemitters { sourceSet(sourceSets.main) } }
+}
+if (providers.gradleProperty('demoControl').isPresent()) {
+ dependencies { runtimeOnly files('../Minecraft-Control/build/libs/minecraft-background-control-neoforge-1.21.1-0.1.0-background.1.jar') }
+}
+tasks.withType(AbstractArchiveTask).configureEach { preserveFileTimestamps=false; reproducibleFileOrder=true }

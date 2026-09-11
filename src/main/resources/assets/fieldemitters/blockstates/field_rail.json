@@ -1,0 +1,50 @@
+{
+  "variants": {
+    "facing=north,active=false": {
+      "model": "fieldemitters:block/field_rail"
+    },
+    "facing=north,active=true": {
+      "model": "fieldemitters:block/field_rail_active"
+    },
+    "facing=east,active=false": {
+      "model": "fieldemitters:block/field_rail",
+      "y": 90
+    },
+    "facing=east,active=true": {
+      "model": "fieldemitters:block/field_rail_active",
+      "y": 90
+    },
+    "facing=south,active=false": {
+      "model": "fieldemitters:block/field_rail",
+      "y": 180
+    },
+    "facing=south,active=true": {
+      "model": "fieldemitters:block/field_rail_active",
+      "y": 180
+    },
+    "facing=west,active=false": {
+      "model": "fieldemitters:block/field_rail",
+      "y": 270
+    },
+    "facing=west,active=true": {
+      "model": "fieldemitters:block/field_rail_active",
+      "y": 270
+    },
+    "facing=up,active=false": {
+      "model": "fieldemitters:block/field_rail",
+      "x": 270
+    },
+    "facing=up,active=true": {
+      "model": "fieldemitters:block/field_rail_active",
+      "x": 270
+    },
+    "facing=down,active=false": {
+      "model": "fieldemitters:block/field_rail",
+      "x": 90
+    },
+    "facing=down,active=true": {
+      "model": "fieldemitters:block/field_rail_active",
+      "x": 90
+    }
+  }
+}

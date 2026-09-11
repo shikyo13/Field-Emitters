@@ -1,0 +1,6435 @@
+{
+  "parent": "minecraft:block/block",
+  "gui_light": "front",
+  "textures": {
+    "graphite": "fieldemitters:block/graphite",
+    "ceramic": "fieldemitters:block/ceramic_plate",
+    "titanium": "fieldemitters:block/titanium",
+    "vent": "fieldemitters:block/heat_sink",
+    "grip": "fieldemitters:item/grip",
+    "energy": "fieldemitters:block/energy_channel",
+    "display": "fieldemitters:block/service_display",
+    "particle": "fieldemitters:block/graphite"
+  },
+  "elements": [
+    {
+      "name": "foundation shoe",
+      "from": [
+        2.96,
+        0.0,
+        2.96
+      ],
+      "to": [
+        13.04,
+        0.30000000000000004,
+        13.04
+      ],
+      "faces": {
+        "up": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            16,
+            3.0
+          ]
+        },
+        "south": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            16,
+            3.0
+          ]
+        },
+        "east": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            16,
+            3.0
+          ]
+        },
+        "west": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            16,
+            3.0
+          ]
+        }
+      }
+    },
+    {
+      "name": "machined footing rim",
+      "from": [
+        3.3200000000000003,
+        0.30000000000000004,
+        3.3200000000000003
+      ],
+      "to": [
+        12.68,
+        0.44000000000000006,
+        12.68
+      ],
+      "faces": {
+        "up": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            1.4000000000000004
+          ]
+        },
+        "south": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            1.4000000000000004
+          ]
+        },
+        "east": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            1.4000000000000004
+          ]
+        },
+        "west": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            1.4000000000000004
+          ]
+        }
+      }
+    },
+    {
+      "name": "service pedestal",
+      "from": [
+        4.4,
+        0.44000000000000006,
+        4.4
+      ],
+      "to": [
+        11.6,
+        2.6,
+        11.6
+      ],
+      "faces": {
+        "up": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "ceramic shoulder",
+      "from": [
+        4.76,
+        2.6,
+        4.76
+      ],
+      "to": [
+        11.24,
+        3.0,
+        11.24
+      ],
+      "faces": {
+        "up": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            4
+          ]
+        },
+        "south": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            4
+          ]
+        },
+        "east": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            4
+          ]
+        },
+        "west": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            4
+          ]
+        }
+      }
+    },
+    {
+      "name": "neck socket",
+      "from": [
+        5.84,
+        3.0,
+        5.84
+      ],
+      "to": [
+        10.16,
+        3.2,
+        10.16
+      ],
+      "faces": {
+        "up": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            12,
+            12
+          ]
+        },
+        "down": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            12,
+            12
+          ]
+        },
+        "north": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            12,
+            2
+          ]
+        },
+        "south": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            12,
+            2
+          ]
+        },
+        "east": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            12,
+            2
+          ]
+        },
+        "west": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            12,
+            2
+          ]
+        }
+      }
+    },
+    {
+      "name": "foundation anchor",
+      "from": [
+        3.5360000000000005,
+        0.30000000000000004,
+        3.5360000000000005
+      ],
+      "to": [
+        4.976,
+        0.6400000000000001,
+        4.976
+      ],
+      "faces": {
+        "up": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            3.9999999999999996,
+            3.9999999999999996
+          ]
+        },
+        "down": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            3.9999999999999996,
+            3.9999999999999996
+          ]
+        },
+        "north": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            3.9999999999999996,
+            3.4000000000000004
+          ]
+        },
+        "south": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            3.9999999999999996,
+            3.4000000000000004
+          ]
+        },
+        "east": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            3.9999999999999996,
+            3.4000000000000004
+          ]
+        },
+        "west": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            3.9999999999999996,
+            3.4000000000000004
+          ]
+        }
+      }
+    },
+    {
+      "name": "foundation anchor",
+      "from": [
+        11.024,
+        0.30000000000000004,
+        3.5360000000000005
+      ],
+      "to": [
+        12.463999999999999,
+        0.6400000000000001,
+        4.976
+      ],
+      "faces": {
+        "up": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            4.0,
+            3.9999999999999996
+          ]
+        },
+        "down": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            4.0,
+            3.9999999999999996
+          ]
+        },
+        "north": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            4.0,
+            3.4000000000000004
+          ]
+        },
+        "south": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            4.0,
+            3.4000000000000004
+          ]
+        },
+        "east": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            3.9999999999999996,
+            3.4000000000000004
+          ]
+        },
+        "west": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            3.9999999999999996,
+            3.4000000000000004
+          ]
+        }
+      }
+    },
+    {
+      "name": "foundation anchor",
+      "from": [
+        3.5360000000000005,
+        0.30000000000000004,
+        11.024
+      ],
+      "to": [
+        4.976,
+        0.6400000000000001,
+        12.463999999999999
+      ],
+      "faces": {
+        "up": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            3.9999999999999996,
+            4.0
+          ]
+        },
+        "down": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            3.9999999999999996,
+            4.0
+          ]
+        },
+        "north": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            3.9999999999999996,
+            3.4000000000000004
+          ]
+        },
+        "south": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            3.9999999999999996,
+            3.4000000000000004
+          ]
+        },
+        "east": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            4.0,
+            3.4000000000000004
+          ]
+        },
+        "west": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            4.0,
+            3.4000000000000004
+          ]
+        }
+      }
+    },
+    {
+      "name": "foundation anchor",
+      "from": [
+        11.024,
+        0.30000000000000004,
+        11.024
+      ],
+      "to": [
+        12.463999999999999,
+        0.6400000000000001,
+        12.463999999999999
+      ],
+      "faces": {
+        "up": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            4.0,
+            4.0
+          ]
+        },
+        "down": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            4.0,
+            4.0
+          ]
+        },
+        "north": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            4.0,
+            3.4000000000000004
+          ]
+        },
+        "south": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            4.0,
+            3.4000000000000004
+          ]
+        },
+        "east": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            4.0,
+            3.4000000000000004
+          ]
+        },
+        "west": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            4.0,
+            3.4000000000000004
+          ]
+        }
+      }
+    },
+    {
+      "name": "recessed display bezel",
+      "from": [
+        5.12,
+        1.0,
+        4.112
+      ],
+      "to": [
+        10.879999999999999,
+        2.3000000000000003,
+        4.4
+      ],
+      "faces": {
+        "up": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "recessed display bezel",
+      "from": [
+        11.6,
+        1.0,
+        5.12
+      ],
+      "to": [
+        11.888,
+        2.3000000000000003,
+        10.879999999999999
+      ],
+      "faces": {
+        "up": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "recessed display bezel",
+      "from": [
+        5.12,
+        1.0,
+        11.6
+      ],
+      "to": [
+        10.879999999999999,
+        2.3000000000000003,
+        11.888
+      ],
+      "faces": {
+        "up": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "recessed display bezel",
+      "from": [
+        4.112,
+        1.0,
+        5.12
+      ],
+      "to": [
+        4.4,
+        2.3000000000000003,
+        10.879999999999999
+      ],
+      "faces": {
+        "up": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "perimeter service display",
+      "from": [
+        5.408,
+        1.1,
+        4.0976
+      ],
+      "to": [
+        10.591999999999999,
+        2.2,
+        4.112
+      ],
+      "faces": {
+        "north": {
+          "texture": "#display",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "tintindex": 0,
+          "neoforge_data": {
+            "block_light": 15,
+            "sky_light": 15
+          }
+        }
+      },
+      "shade": false
+    },
+    {
+      "name": "perimeter service display",
+      "from": [
+        11.888,
+        1.1,
+        5.408
+      ],
+      "to": [
+        11.9024,
+        2.2,
+        10.591999999999999
+      ],
+      "faces": {
+        "east": {
+          "texture": "#display",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "tintindex": 0,
+          "neoforge_data": {
+            "block_light": 15,
+            "sky_light": 15
+          }
+        }
+      },
+      "shade": false
+    },
+    {
+      "name": "perimeter service display",
+      "from": [
+        5.408,
+        1.1,
+        11.888
+      ],
+      "to": [
+        10.591999999999999,
+        2.2,
+        11.9024
+      ],
+      "faces": {
+        "south": {
+          "texture": "#display",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "tintindex": 0,
+          "neoforge_data": {
+            "block_light": 15,
+            "sky_light": 15
+          }
+        }
+      },
+      "shade": false
+    },
+    {
+      "name": "perimeter service display",
+      "from": [
+        4.0976,
+        1.1,
+        5.408
+      ],
+      "to": [
+        4.112,
+        2.2,
+        10.591999999999999
+      ],
+      "faces": {
+        "west": {
+          "texture": "#display",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "tintindex": 0,
+          "neoforge_data": {
+            "block_light": 15,
+            "sky_light": 15
+          }
+        }
+      },
+      "shade": false
+    },
+    {
+      "name": "pedestal heat exchanger",
+      "from": [
+        5.84,
+        0.5599999999999999,
+        4.256
+      ],
+      "to": [
+        10.16,
+        0.9,
+        4.4
+      ],
+      "faces": {
+        "north": {
+          "texture": "#vent",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "pedestal heat exchanger",
+      "from": [
+        11.6,
+        0.5599999999999999,
+        5.84
+      ],
+      "to": [
+        11.744,
+        0.9,
+        10.16
+      ],
+      "faces": {
+        "east": {
+          "texture": "#vent",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "pedestal heat exchanger",
+      "from": [
+        5.84,
+        0.5599999999999999,
+        11.6
+      ],
+      "to": [
+        10.16,
+        0.9,
+        11.744
+      ],
+      "faces": {
+        "south": {
+          "texture": "#vent",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "pedestal heat exchanger",
+      "from": [
+        4.256,
+        0.5599999999999999,
+        5.84
+      ],
+      "to": [
+        4.4,
+        0.9,
+        10.16
+      ],
+      "faces": {
+        "west": {
+          "texture": "#vent",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "central shielded spine",
+      "from": [
+        6.5600000000000005,
+        3.2,
+        6.5600000000000005
+      ],
+      "to": [
+        9.44,
+        6.4,
+        9.44
+      ],
+      "faces": {
+        "up": {
+          "texture": "#vent",
+          "uv": [
+            0,
+            0,
+            8,
+            8
+          ]
+        },
+        "down": {
+          "texture": "#vent",
+          "uv": [
+            0,
+            0,
+            8,
+            8
+          ]
+        },
+        "north": {
+          "texture": "#vent",
+          "uv": [
+            0,
+            0,
+            8,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#vent",
+          "uv": [
+            0,
+            0,
+            8,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#vent",
+          "uv": [
+            0,
+            0,
+            8,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#vent",
+          "uv": [
+            0,
+            0,
+            8,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "lower structural collar",
+      "from": [
+        5.12,
+        3.2,
+        5.12
+      ],
+      "to": [
+        10.879999999999999,
+        3.44,
+        10.879999999999999
+      ],
+      "faces": {
+        "up": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            2.4
+          ]
+        },
+        "south": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            2.4
+          ]
+        },
+        "east": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            2.4
+          ]
+        },
+        "west": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            2.4
+          ]
+        }
+      }
+    },
+    {
+      "name": "upper structural collar",
+      "from": [
+        5.12,
+        6.16,
+        5.12
+      ],
+      "to": [
+        10.879999999999999,
+        6.4,
+        10.879999999999999
+      ],
+      "faces": {
+        "up": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            2.3999999999999986
+          ]
+        },
+        "south": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            2.3999999999999986
+          ]
+        },
+        "east": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            2.3999999999999986
+          ]
+        },
+        "west": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            2.3999999999999986
+          ]
+        }
+      }
+    },
+    {
+      "name": "corner load rail",
+      "from": [
+        5.12,
+        3.44,
+        5.12
+      ],
+      "to": [
+        6.5600000000000005,
+        6.16,
+        6.5600000000000005
+      ],
+      "faces": {
+        "up": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ]
+        },
+        "down": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ]
+        },
+        "north": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "corner load rail",
+      "from": [
+        9.44,
+        3.44,
+        5.12
+      ],
+      "to": [
+        10.879999999999999,
+        6.16,
+        6.5600000000000005
+      ],
+      "faces": {
+        "up": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ]
+        },
+        "down": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ]
+        },
+        "north": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "corner load rail",
+      "from": [
+        5.12,
+        3.44,
+        9.44
+      ],
+      "to": [
+        6.5600000000000005,
+        6.16,
+        10.879999999999999
+      ],
+      "faces": {
+        "up": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ]
+        },
+        "down": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ]
+        },
+        "north": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "corner load rail",
+      "from": [
+        9.44,
+        3.44,
+        9.44
+      ],
+      "to": [
+        10.879999999999999,
+        6.16,
+        10.879999999999999
+      ],
+      "faces": {
+        "up": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ]
+        },
+        "down": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ]
+        },
+        "north": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "split ceramic armor left",
+      "from": [
+        5.192,
+        3.6,
+        4.904
+      ],
+      "to": [
+        6.848000000000001,
+        5.760000000000001,
+        5.48
+      ],
+      "faces": {
+        "up": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "split ceramic armor right",
+      "from": [
+        9.152,
+        3.6,
+        4.904
+      ],
+      "to": [
+        10.808,
+        5.760000000000001,
+        5.48
+      ],
+      "faces": {
+        "up": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "recessed projection channel",
+      "from": [
+        7.0280000000000005,
+        3.5,
+        5.2064
+      ],
+      "to": [
+        8.972,
+        6.08,
+        5.264
+      ],
+      "faces": {
+        "north": {
+          "texture": "#energy",
+          "uv": [
+            4,
+            0,
+            12,
+            16
+          ],
+          "tintindex": 0,
+          "neoforge_data": {
+            "block_light": 15,
+            "sky_light": 15
+          }
+        }
+      },
+      "shade": false
+    },
+    {
+      "name": "channel end cap",
+      "from": [
+        6.74,
+        5.9,
+        5.048
+      ],
+      "to": [
+        9.26,
+        6.1000000000000005,
+        5.408
+      ],
+      "faces": {
+        "up": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            7.0,
+            1.0000000000000009
+          ]
+        },
+        "down": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            7.0,
+            1.0000000000000009
+          ]
+        },
+        "north": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            7.0,
+            2.0
+          ]
+        },
+        "south": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            7.0,
+            2.0
+          ]
+        },
+        "east": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            1.0000000000000009,
+            2.0
+          ]
+        },
+        "west": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            1.0000000000000009,
+            2.0
+          ]
+        }
+      }
+    },
+    {
+      "name": "split ceramic armor left",
+      "from": [
+        10.52,
+        3.6,
+        5.192
+      ],
+      "to": [
+        11.096,
+        5.760000000000001,
+        6.848000000000001
+      ],
+      "faces": {
+        "up": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "split ceramic armor right",
+      "from": [
+        10.52,
+        3.6,
+        9.152
+      ],
+      "to": [
+        11.096,
+        5.760000000000001,
+        10.808
+      ],
+      "faces": {
+        "up": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "recessed projection channel",
+      "from": [
+        10.736,
+        3.5,
+        7.0280000000000005
+      ],
+      "to": [
+        10.7936,
+        6.08,
+        8.972
+      ],
+      "faces": {
+        "east": {
+          "texture": "#energy",
+          "uv": [
+            4,
+            0,
+            12,
+            16
+          ],
+          "tintindex": 0,
+          "neoforge_data": {
+            "block_light": 15,
+            "sky_light": 15
+          }
+        }
+      },
+      "shade": false
+    },
+    {
+      "name": "channel end cap",
+      "from": [
+        10.591999999999999,
+        5.9,
+        6.74
+      ],
+      "to": [
+        10.952,
+        6.1000000000000005,
+        9.26
+      ],
+      "faces": {
+        "up": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            7.0,
+            1.0000000000000009
+          ]
+        },
+        "down": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            7.0,
+            1.0000000000000009
+          ]
+        },
+        "east": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            7.0,
+            2.0
+          ]
+        },
+        "west": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            7.0,
+            2.0
+          ]
+        },
+        "south": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            1.0000000000000009,
+            2.0
+          ]
+        },
+        "north": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            1.0000000000000009,
+            2.0
+          ]
+        }
+      }
+    },
+    {
+      "name": "split ceramic armor left",
+      "from": [
+        9.152,
+        3.6,
+        10.52
+      ],
+      "to": [
+        10.808,
+        5.760000000000001,
+        11.096
+      ],
+      "faces": {
+        "up": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "split ceramic armor right",
+      "from": [
+        5.192,
+        3.6,
+        10.52
+      ],
+      "to": [
+        6.848000000000001,
+        5.760000000000001,
+        11.096
+      ],
+      "faces": {
+        "up": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "recessed projection channel",
+      "from": [
+        7.0280000000000005,
+        3.5,
+        10.736
+      ],
+      "to": [
+        8.972,
+        6.08,
+        10.7936
+      ],
+      "faces": {
+        "south": {
+          "texture": "#energy",
+          "uv": [
+            4,
+            0,
+            12,
+            16
+          ],
+          "tintindex": 0,
+          "neoforge_data": {
+            "block_light": 15,
+            "sky_light": 15
+          }
+        }
+      },
+      "shade": false
+    },
+    {
+      "name": "channel end cap",
+      "from": [
+        6.74,
+        5.9,
+        10.591999999999999
+      ],
+      "to": [
+        9.26,
+        6.1000000000000005,
+        10.952
+      ],
+      "faces": {
+        "up": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            7.0,
+            1.0000000000000009
+          ]
+        },
+        "down": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            7.0,
+            1.0000000000000009
+          ]
+        },
+        "south": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            7.0,
+            2.0
+          ]
+        },
+        "north": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            7.0,
+            2.0
+          ]
+        },
+        "west": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            1.0000000000000009,
+            2.0
+          ]
+        },
+        "east": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            1.0000000000000009,
+            2.0
+          ]
+        }
+      }
+    },
+    {
+      "name": "split ceramic armor left",
+      "from": [
+        4.904,
+        3.6,
+        9.152
+      ],
+      "to": [
+        5.48,
+        5.760000000000001,
+        10.808
+      ],
+      "faces": {
+        "up": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "split ceramic armor right",
+      "from": [
+        4.904,
+        3.6,
+        5.192
+      ],
+      "to": [
+        5.48,
+        5.760000000000001,
+        6.848000000000001
+      ],
+      "faces": {
+        "up": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "recessed projection channel",
+      "from": [
+        5.2064,
+        3.5,
+        7.0280000000000005
+      ],
+      "to": [
+        5.263999999999999,
+        6.08,
+        8.972
+      ],
+      "faces": {
+        "west": {
+          "texture": "#energy",
+          "uv": [
+            4,
+            0,
+            12,
+            16
+          ],
+          "tintindex": 0,
+          "neoforge_data": {
+            "block_light": 15,
+            "sky_light": 15
+          }
+        }
+      },
+      "shade": false
+    },
+    {
+      "name": "channel end cap",
+      "from": [
+        5.048,
+        5.9,
+        6.74
+      ],
+      "to": [
+        5.408,
+        6.1000000000000005,
+        9.26
+      ],
+      "faces": {
+        "up": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            7.0,
+            1.0000000000000009
+          ]
+        },
+        "down": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            7.0,
+            1.0000000000000009
+          ]
+        },
+        "west": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            7.0,
+            2.0
+          ]
+        },
+        "east": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            7.0,
+            2.0
+          ]
+        },
+        "north": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            1.0000000000000009,
+            2.0
+          ]
+        },
+        "south": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            1.0000000000000009,
+            2.0
+          ]
+        }
+      }
+    },
+    {
+      "name": "central shielded spine",
+      "from": [
+        6.5600000000000005,
+        6.4,
+        6.5600000000000005
+      ],
+      "to": [
+        9.44,
+        9.600000000000001,
+        9.44
+      ],
+      "faces": {
+        "up": {
+          "texture": "#vent",
+          "uv": [
+            0,
+            0,
+            8,
+            8
+          ]
+        },
+        "down": {
+          "texture": "#vent",
+          "uv": [
+            0,
+            0,
+            8,
+            8
+          ]
+        },
+        "north": {
+          "texture": "#vent",
+          "uv": [
+            0,
+            0,
+            8,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#vent",
+          "uv": [
+            0,
+            0,
+            8,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#vent",
+          "uv": [
+            0,
+            0,
+            8,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#vent",
+          "uv": [
+            0,
+            0,
+            8,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "lower structural collar",
+      "from": [
+        5.12,
+        6.4,
+        5.12
+      ],
+      "to": [
+        10.879999999999999,
+        6.640000000000001,
+        10.879999999999999
+      ],
+      "faces": {
+        "up": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            2.4
+          ]
+        },
+        "south": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            2.4
+          ]
+        },
+        "east": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            2.4
+          ]
+        },
+        "west": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            2.4
+          ]
+        }
+      }
+    },
+    {
+      "name": "upper structural collar",
+      "from": [
+        5.12,
+        9.36,
+        5.12
+      ],
+      "to": [
+        10.879999999999999,
+        9.600000000000001,
+        10.879999999999999
+      ],
+      "faces": {
+        "up": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            2.3999999999999986
+          ]
+        },
+        "south": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            2.3999999999999986
+          ]
+        },
+        "east": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            2.3999999999999986
+          ]
+        },
+        "west": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            2.3999999999999986
+          ]
+        }
+      }
+    },
+    {
+      "name": "corner load rail",
+      "from": [
+        5.12,
+        6.640000000000001,
+        5.12
+      ],
+      "to": [
+        6.5600000000000005,
+        9.36,
+        6.5600000000000005
+      ],
+      "faces": {
+        "up": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ]
+        },
+        "down": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ]
+        },
+        "north": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "corner load rail",
+      "from": [
+        9.44,
+        6.640000000000001,
+        5.12
+      ],
+      "to": [
+        10.879999999999999,
+        9.36,
+        6.5600000000000005
+      ],
+      "faces": {
+        "up": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ]
+        },
+        "down": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ]
+        },
+        "north": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "corner load rail",
+      "from": [
+        5.12,
+        6.640000000000001,
+        9.44
+      ],
+      "to": [
+        6.5600000000000005,
+        9.36,
+        10.879999999999999
+      ],
+      "faces": {
+        "up": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ]
+        },
+        "down": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ]
+        },
+        "north": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "corner load rail",
+      "from": [
+        9.44,
+        6.640000000000001,
+        9.44
+      ],
+      "to": [
+        10.879999999999999,
+        9.36,
+        10.879999999999999
+      ],
+      "faces": {
+        "up": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ]
+        },
+        "down": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ]
+        },
+        "north": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "split ceramic armor left",
+      "from": [
+        5.192,
+        6.800000000000001,
+        4.904
+      ],
+      "to": [
+        6.848000000000001,
+        8.959999999999999,
+        5.48
+      ],
+      "faces": {
+        "up": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "split ceramic armor right",
+      "from": [
+        9.152,
+        6.800000000000001,
+        4.904
+      ],
+      "to": [
+        10.808,
+        8.959999999999999,
+        5.48
+      ],
+      "faces": {
+        "up": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "recessed projection channel",
+      "from": [
+        7.0280000000000005,
+        6.7,
+        5.2064
+      ],
+      "to": [
+        8.972,
+        9.28,
+        5.264
+      ],
+      "faces": {
+        "north": {
+          "texture": "#energy",
+          "uv": [
+            4,
+            0,
+            12,
+            16
+          ],
+          "tintindex": 0,
+          "neoforge_data": {
+            "block_light": 15,
+            "sky_light": 15
+          }
+        }
+      },
+      "shade": false
+    },
+    {
+      "name": "channel end cap",
+      "from": [
+        6.74,
+        9.1,
+        5.048
+      ],
+      "to": [
+        9.26,
+        9.3,
+        5.408
+      ],
+      "faces": {
+        "up": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            7.0,
+            1.0000000000000009
+          ]
+        },
+        "down": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            7.0,
+            1.0000000000000009
+          ]
+        },
+        "north": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            7.0,
+            2.0
+          ]
+        },
+        "south": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            7.0,
+            2.0
+          ]
+        },
+        "east": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            1.0000000000000009,
+            2.0
+          ]
+        },
+        "west": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            1.0000000000000009,
+            2.0
+          ]
+        }
+      }
+    },
+    {
+      "name": "split ceramic armor left",
+      "from": [
+        10.52,
+        6.800000000000001,
+        5.192
+      ],
+      "to": [
+        11.096,
+        8.959999999999999,
+        6.848000000000001
+      ],
+      "faces": {
+        "up": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "split ceramic armor right",
+      "from": [
+        10.52,
+        6.800000000000001,
+        9.152
+      ],
+      "to": [
+        11.096,
+        8.959999999999999,
+        10.808
+      ],
+      "faces": {
+        "up": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "recessed projection channel",
+      "from": [
+        10.736,
+        6.7,
+        7.0280000000000005
+      ],
+      "to": [
+        10.7936,
+        9.28,
+        8.972
+      ],
+      "faces": {
+        "east": {
+          "texture": "#energy",
+          "uv": [
+            4,
+            0,
+            12,
+            16
+          ],
+          "tintindex": 0,
+          "neoforge_data": {
+            "block_light": 15,
+            "sky_light": 15
+          }
+        }
+      },
+      "shade": false
+    },
+    {
+      "name": "channel end cap",
+      "from": [
+        10.591999999999999,
+        9.1,
+        6.74
+      ],
+      "to": [
+        10.952,
+        9.3,
+        9.26
+      ],
+      "faces": {
+        "up": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            7.0,
+            1.0000000000000009
+          ]
+        },
+        "down": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            7.0,
+            1.0000000000000009
+          ]
+        },
+        "east": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            7.0,
+            2.0
+          ]
+        },
+        "west": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            7.0,
+            2.0
+          ]
+        },
+        "south": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            1.0000000000000009,
+            2.0
+          ]
+        },
+        "north": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            1.0000000000000009,
+            2.0
+          ]
+        }
+      }
+    },
+    {
+      "name": "split ceramic armor left",
+      "from": [
+        9.152,
+        6.800000000000001,
+        10.52
+      ],
+      "to": [
+        10.808,
+        8.959999999999999,
+        11.096
+      ],
+      "faces": {
+        "up": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "split ceramic armor right",
+      "from": [
+        5.192,
+        6.800000000000001,
+        10.52
+      ],
+      "to": [
+        6.848000000000001,
+        8.959999999999999,
+        11.096
+      ],
+      "faces": {
+        "up": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "recessed projection channel",
+      "from": [
+        7.0280000000000005,
+        6.7,
+        10.736
+      ],
+      "to": [
+        8.972,
+        9.28,
+        10.7936
+      ],
+      "faces": {
+        "south": {
+          "texture": "#energy",
+          "uv": [
+            4,
+            0,
+            12,
+            16
+          ],
+          "tintindex": 0,
+          "neoforge_data": {
+            "block_light": 15,
+            "sky_light": 15
+          }
+        }
+      },
+      "shade": false
+    },
+    {
+      "name": "channel end cap",
+      "from": [
+        6.74,
+        9.1,
+        10.591999999999999
+      ],
+      "to": [
+        9.26,
+        9.3,
+        10.952
+      ],
+      "faces": {
+        "up": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            7.0,
+            1.0000000000000009
+          ]
+        },
+        "down": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            7.0,
+            1.0000000000000009
+          ]
+        },
+        "south": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            7.0,
+            2.0
+          ]
+        },
+        "north": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            7.0,
+            2.0
+          ]
+        },
+        "west": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            1.0000000000000009,
+            2.0
+          ]
+        },
+        "east": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            1.0000000000000009,
+            2.0
+          ]
+        }
+      }
+    },
+    {
+      "name": "split ceramic armor left",
+      "from": [
+        4.904,
+        6.800000000000001,
+        9.152
+      ],
+      "to": [
+        5.48,
+        8.959999999999999,
+        10.808
+      ],
+      "faces": {
+        "up": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "split ceramic armor right",
+      "from": [
+        4.904,
+        6.800000000000001,
+        5.192
+      ],
+      "to": [
+        5.48,
+        8.959999999999999,
+        6.848000000000001
+      ],
+      "faces": {
+        "up": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "recessed projection channel",
+      "from": [
+        5.2064,
+        6.7,
+        7.0280000000000005
+      ],
+      "to": [
+        5.263999999999999,
+        9.28,
+        8.972
+      ],
+      "faces": {
+        "west": {
+          "texture": "#energy",
+          "uv": [
+            4,
+            0,
+            12,
+            16
+          ],
+          "tintindex": 0,
+          "neoforge_data": {
+            "block_light": 15,
+            "sky_light": 15
+          }
+        }
+      },
+      "shade": false
+    },
+    {
+      "name": "channel end cap",
+      "from": [
+        5.048,
+        9.1,
+        6.74
+      ],
+      "to": [
+        5.408,
+        9.3,
+        9.26
+      ],
+      "faces": {
+        "up": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            7.0,
+            1.0000000000000009
+          ]
+        },
+        "down": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            7.0,
+            1.0000000000000009
+          ]
+        },
+        "west": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            7.0,
+            2.0
+          ]
+        },
+        "east": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            7.0,
+            2.0
+          ]
+        },
+        "north": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            1.0000000000000009,
+            2.0
+          ]
+        },
+        "south": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            1.0000000000000009,
+            2.0
+          ]
+        }
+      }
+    },
+    {
+      "name": "central shielded spine",
+      "from": [
+        6.5600000000000005,
+        9.600000000000001,
+        6.5600000000000005
+      ],
+      "to": [
+        9.44,
+        12.8,
+        9.44
+      ],
+      "faces": {
+        "up": {
+          "texture": "#vent",
+          "uv": [
+            0,
+            0,
+            8,
+            8
+          ]
+        },
+        "down": {
+          "texture": "#vent",
+          "uv": [
+            0,
+            0,
+            8,
+            8
+          ]
+        },
+        "north": {
+          "texture": "#vent",
+          "uv": [
+            0,
+            0,
+            8,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#vent",
+          "uv": [
+            0,
+            0,
+            8,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#vent",
+          "uv": [
+            0,
+            0,
+            8,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#vent",
+          "uv": [
+            0,
+            0,
+            8,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "lower structural collar",
+      "from": [
+        5.12,
+        9.600000000000001,
+        5.12
+      ],
+      "to": [
+        10.879999999999999,
+        9.840000000000002,
+        10.879999999999999
+      ],
+      "faces": {
+        "up": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            2.4
+          ]
+        },
+        "south": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            2.4
+          ]
+        },
+        "east": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            2.4
+          ]
+        },
+        "west": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            2.4
+          ]
+        }
+      }
+    },
+    {
+      "name": "upper structural collar",
+      "from": [
+        5.12,
+        12.56,
+        5.12
+      ],
+      "to": [
+        10.879999999999999,
+        12.8,
+        10.879999999999999
+      ],
+      "faces": {
+        "up": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            2.3999999999999986
+          ]
+        },
+        "south": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            2.3999999999999986
+          ]
+        },
+        "east": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            2.3999999999999986
+          ]
+        },
+        "west": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            2.3999999999999986
+          ]
+        }
+      }
+    },
+    {
+      "name": "corner load rail",
+      "from": [
+        5.12,
+        9.840000000000002,
+        5.12
+      ],
+      "to": [
+        6.5600000000000005,
+        12.56,
+        6.5600000000000005
+      ],
+      "faces": {
+        "up": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ]
+        },
+        "down": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ]
+        },
+        "north": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "corner load rail",
+      "from": [
+        9.44,
+        9.840000000000002,
+        5.12
+      ],
+      "to": [
+        10.879999999999999,
+        12.56,
+        6.5600000000000005
+      ],
+      "faces": {
+        "up": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ]
+        },
+        "down": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ]
+        },
+        "north": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "corner load rail",
+      "from": [
+        5.12,
+        9.840000000000002,
+        9.44
+      ],
+      "to": [
+        6.5600000000000005,
+        12.56,
+        10.879999999999999
+      ],
+      "faces": {
+        "up": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ]
+        },
+        "down": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ]
+        },
+        "north": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "corner load rail",
+      "from": [
+        9.44,
+        9.840000000000002,
+        9.44
+      ],
+      "to": [
+        10.879999999999999,
+        12.56,
+        10.879999999999999
+      ],
+      "faces": {
+        "up": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ]
+        },
+        "down": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ]
+        },
+        "north": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            4,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "split ceramic armor left",
+      "from": [
+        5.192,
+        10.0,
+        4.904
+      ],
+      "to": [
+        6.848000000000001,
+        12.16,
+        5.48
+      ],
+      "faces": {
+        "up": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "split ceramic armor right",
+      "from": [
+        9.152,
+        10.0,
+        4.904
+      ],
+      "to": [
+        10.808,
+        12.16,
+        5.48
+      ],
+      "faces": {
+        "up": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "recessed projection channel",
+      "from": [
+        7.0280000000000005,
+        9.9,
+        5.2064
+      ],
+      "to": [
+        8.972,
+        12.48,
+        5.264
+      ],
+      "faces": {
+        "north": {
+          "texture": "#energy",
+          "uv": [
+            4,
+            0,
+            12,
+            16
+          ],
+          "tintindex": 0,
+          "neoforge_data": {
+            "block_light": 15,
+            "sky_light": 15
+          }
+        }
+      },
+      "shade": false
+    },
+    {
+      "name": "channel end cap",
+      "from": [
+        6.74,
+        12.3,
+        5.048
+      ],
+      "to": [
+        9.26,
+        12.5,
+        5.408
+      ],
+      "faces": {
+        "up": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            7.0,
+            1.0000000000000009
+          ]
+        },
+        "down": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            7.0,
+            1.0000000000000009
+          ]
+        },
+        "north": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            7.0,
+            2.0
+          ]
+        },
+        "south": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            7.0,
+            2.0
+          ]
+        },
+        "east": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            1.0000000000000009,
+            2.0
+          ]
+        },
+        "west": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            1.0000000000000009,
+            2.0
+          ]
+        }
+      }
+    },
+    {
+      "name": "split ceramic armor left",
+      "from": [
+        10.52,
+        10.0,
+        5.192
+      ],
+      "to": [
+        11.096,
+        12.16,
+        6.848000000000001
+      ],
+      "faces": {
+        "up": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "split ceramic armor right",
+      "from": [
+        10.52,
+        10.0,
+        9.152
+      ],
+      "to": [
+        11.096,
+        12.16,
+        10.808
+      ],
+      "faces": {
+        "up": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "recessed projection channel",
+      "from": [
+        10.736,
+        9.9,
+        7.0280000000000005
+      ],
+      "to": [
+        10.7936,
+        12.48,
+        8.972
+      ],
+      "faces": {
+        "east": {
+          "texture": "#energy",
+          "uv": [
+            4,
+            0,
+            12,
+            16
+          ],
+          "tintindex": 0,
+          "neoforge_data": {
+            "block_light": 15,
+            "sky_light": 15
+          }
+        }
+      },
+      "shade": false
+    },
+    {
+      "name": "channel end cap",
+      "from": [
+        10.591999999999999,
+        12.3,
+        6.74
+      ],
+      "to": [
+        10.952,
+        12.5,
+        9.26
+      ],
+      "faces": {
+        "up": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            7.0,
+            1.0000000000000009
+          ]
+        },
+        "down": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            7.0,
+            1.0000000000000009
+          ]
+        },
+        "east": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            7.0,
+            2.0
+          ]
+        },
+        "west": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            7.0,
+            2.0
+          ]
+        },
+        "south": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            1.0000000000000009,
+            2.0
+          ]
+        },
+        "north": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            1.0000000000000009,
+            2.0
+          ]
+        }
+      }
+    },
+    {
+      "name": "split ceramic armor left",
+      "from": [
+        9.152,
+        10.0,
+        10.52
+      ],
+      "to": [
+        10.808,
+        12.16,
+        11.096
+      ],
+      "faces": {
+        "up": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "split ceramic armor right",
+      "from": [
+        5.192,
+        10.0,
+        10.52
+      ],
+      "to": [
+        6.848000000000001,
+        12.16,
+        11.096
+      ],
+      "faces": {
+        "up": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "recessed projection channel",
+      "from": [
+        7.0280000000000005,
+        9.9,
+        10.736
+      ],
+      "to": [
+        8.972,
+        12.48,
+        10.7936
+      ],
+      "faces": {
+        "south": {
+          "texture": "#energy",
+          "uv": [
+            4,
+            0,
+            12,
+            16
+          ],
+          "tintindex": 0,
+          "neoforge_data": {
+            "block_light": 15,
+            "sky_light": 15
+          }
+        }
+      },
+      "shade": false
+    },
+    {
+      "name": "channel end cap",
+      "from": [
+        6.74,
+        12.3,
+        10.591999999999999
+      ],
+      "to": [
+        9.26,
+        12.5,
+        10.952
+      ],
+      "faces": {
+        "up": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            7.0,
+            1.0000000000000009
+          ]
+        },
+        "down": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            7.0,
+            1.0000000000000009
+          ]
+        },
+        "south": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            7.0,
+            2.0
+          ]
+        },
+        "north": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            7.0,
+            2.0
+          ]
+        },
+        "west": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            1.0000000000000009,
+            2.0
+          ]
+        },
+        "east": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            1.0000000000000009,
+            2.0
+          ]
+        }
+      }
+    },
+    {
+      "name": "split ceramic armor left",
+      "from": [
+        4.904,
+        10.0,
+        9.152
+      ],
+      "to": [
+        5.48,
+        12.16,
+        10.808
+      ],
+      "faces": {
+        "up": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "split ceramic armor right",
+      "from": [
+        4.904,
+        10.0,
+        5.192
+      ],
+      "to": [
+        5.48,
+        12.16,
+        6.848000000000001
+      ],
+      "faces": {
+        "up": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "recessed projection channel",
+      "from": [
+        5.2064,
+        9.9,
+        7.0280000000000005
+      ],
+      "to": [
+        5.263999999999999,
+        12.48,
+        8.972
+      ],
+      "faces": {
+        "west": {
+          "texture": "#energy",
+          "uv": [
+            4,
+            0,
+            12,
+            16
+          ],
+          "tintindex": 0,
+          "neoforge_data": {
+            "block_light": 15,
+            "sky_light": 15
+          }
+        }
+      },
+      "shade": false
+    },
+    {
+      "name": "channel end cap",
+      "from": [
+        5.048,
+        12.3,
+        6.74
+      ],
+      "to": [
+        5.408,
+        12.5,
+        9.26
+      ],
+      "faces": {
+        "up": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            7.0,
+            1.0000000000000009
+          ]
+        },
+        "down": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            7.0,
+            1.0000000000000009
+          ]
+        },
+        "west": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            7.0,
+            2.0
+          ]
+        },
+        "east": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            7.0,
+            2.0
+          ]
+        },
+        "north": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            1.0000000000000009,
+            2.0
+          ]
+        },
+        "south": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            1.0000000000000009,
+            2.0
+          ]
+        }
+      }
+    },
+    {
+      "name": "projector root",
+      "from": [
+        5.84,
+        12.8,
+        5.84
+      ],
+      "to": [
+        10.16,
+        13.4,
+        10.16
+      ],
+      "faces": {
+        "up": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            12,
+            12
+          ]
+        },
+        "down": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            12,
+            12
+          ]
+        },
+        "north": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            12,
+            6
+          ]
+        },
+        "south": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            12,
+            6
+          ]
+        },
+        "east": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            12,
+            6
+          ]
+        },
+        "west": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            12,
+            6
+          ]
+        }
+      }
+    },
+    {
+      "name": "capacitor collar",
+      "from": [
+        4.76,
+        13.4,
+        4.76
+      ],
+      "to": [
+        11.24,
+        13.9,
+        11.24
+      ],
+      "faces": {
+        "up": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            16,
+            5.0
+          ]
+        },
+        "south": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            16,
+            5.0
+          ]
+        },
+        "east": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            16,
+            5.0
+          ]
+        },
+        "west": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            16,
+            5.0
+          ]
+        }
+      }
+    },
+    {
+      "name": "ceramic projector band",
+      "from": [
+        4.4,
+        13.9,
+        4.4
+      ],
+      "to": [
+        11.6,
+        14.3,
+        11.6
+      ],
+      "faces": {
+        "up": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            4.0
+          ]
+        },
+        "south": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            4.0
+          ]
+        },
+        "east": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            4.0
+          ]
+        },
+        "west": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            4.0
+          ]
+        }
+      }
+    },
+    {
+      "name": "recessed lens cradle",
+      "from": [
+        5.84,
+        14.3,
+        5.84
+      ],
+      "to": [
+        10.16,
+        14.8,
+        10.16
+      ],
+      "faces": {
+        "up": {
+          "texture": "#vent",
+          "uv": [
+            0,
+            0,
+            12,
+            12
+          ]
+        },
+        "down": {
+          "texture": "#vent",
+          "uv": [
+            0,
+            0,
+            12,
+            12
+          ]
+        },
+        "north": {
+          "texture": "#vent",
+          "uv": [
+            0,
+            0,
+            12,
+            5.0
+          ]
+        },
+        "south": {
+          "texture": "#vent",
+          "uv": [
+            0,
+            0,
+            12,
+            5.0
+          ]
+        },
+        "east": {
+          "texture": "#vent",
+          "uv": [
+            0,
+            0,
+            12,
+            5.0
+          ]
+        },
+        "west": {
+          "texture": "#vent",
+          "uv": [
+            0,
+            0,
+            12,
+            5.0
+          ]
+        }
+      }
+    },
+    {
+      "name": "raised crown blade",
+      "from": [
+        5.12,
+        14.4,
+        4.688000000000001
+      ],
+      "to": [
+        6.5600000000000005,
+        15.86,
+        6.128
+      ],
+      "faces": {
+        "up": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "blade tip conductor",
+      "from": [
+        5.12,
+        15.66,
+        4.616
+      ],
+      "to": [
+        6.5600000000000005,
+        15.92,
+        6.2
+      ],
+      "faces": {
+        "up": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            4,
+            4.4
+          ]
+        },
+        "down": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            4,
+            4.4
+          ]
+        },
+        "north": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            4,
+            2.599999999999998
+          ]
+        },
+        "south": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            4,
+            2.599999999999998
+          ]
+        },
+        "east": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            4.4,
+            2.599999999999998
+          ]
+        },
+        "west": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            4.4,
+            2.599999999999998
+          ]
+        }
+      }
+    },
+    {
+      "name": "crown power slot",
+      "from": [
+        7.136,
+        13.540000000000001,
+        4.7384
+      ],
+      "to": [
+        8.863999999999999,
+        13.82,
+        4.752800000000001
+      ],
+      "faces": {
+        "north": {
+          "texture": "#energy",
+          "uv": [
+            4,
+            0,
+            12,
+            16
+          ],
+          "tintindex": 0,
+          "neoforge_data": {
+            "block_light": 15,
+            "sky_light": 15
+          }
+        }
+      },
+      "shade": false
+    },
+    {
+      "name": "raised crown blade",
+      "from": [
+        9.872,
+        14.4,
+        5.12
+      ],
+      "to": [
+        11.312,
+        15.86,
+        6.5600000000000005
+      ],
+      "faces": {
+        "up": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "blade tip conductor",
+      "from": [
+        9.8,
+        15.66,
+        5.12
+      ],
+      "to": [
+        11.384,
+        15.92,
+        6.5600000000000005
+      ],
+      "faces": {
+        "up": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            4,
+            4.4
+          ]
+        },
+        "down": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            4,
+            4.4
+          ]
+        },
+        "east": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            4,
+            2.599999999999998
+          ]
+        },
+        "west": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            4,
+            2.599999999999998
+          ]
+        },
+        "south": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            4.4,
+            2.599999999999998
+          ]
+        },
+        "north": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            4.4,
+            2.599999999999998
+          ]
+        }
+      }
+    },
+    {
+      "name": "crown power slot",
+      "from": [
+        11.2472,
+        13.540000000000001,
+        7.136
+      ],
+      "to": [
+        11.2616,
+        13.82,
+        8.863999999999999
+      ],
+      "faces": {
+        "east": {
+          "texture": "#energy",
+          "uv": [
+            4,
+            0,
+            12,
+            16
+          ],
+          "tintindex": 0,
+          "neoforge_data": {
+            "block_light": 15,
+            "sky_light": 15
+          }
+        }
+      },
+      "shade": false
+    },
+    {
+      "name": "raised crown blade",
+      "from": [
+        9.44,
+        14.4,
+        9.872
+      ],
+      "to": [
+        10.879999999999999,
+        15.86,
+        11.312
+      ],
+      "faces": {
+        "up": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "blade tip conductor",
+      "from": [
+        9.44,
+        15.66,
+        9.8
+      ],
+      "to": [
+        10.879999999999999,
+        15.92,
+        11.384
+      ],
+      "faces": {
+        "up": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            4,
+            4.4
+          ]
+        },
+        "down": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            4,
+            4.4
+          ]
+        },
+        "south": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            4,
+            2.599999999999998
+          ]
+        },
+        "north": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            4,
+            2.599999999999998
+          ]
+        },
+        "west": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            4.4,
+            2.599999999999998
+          ]
+        },
+        "east": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            4.4,
+            2.599999999999998
+          ]
+        }
+      }
+    },
+    {
+      "name": "crown power slot",
+      "from": [
+        7.136000000000001,
+        13.540000000000001,
+        11.2472
+      ],
+      "to": [
+        8.863999999999999,
+        13.82,
+        11.2616
+      ],
+      "faces": {
+        "south": {
+          "texture": "#energy",
+          "uv": [
+            4,
+            0,
+            12,
+            16
+          ],
+          "tintindex": 0,
+          "neoforge_data": {
+            "block_light": 15,
+            "sky_light": 15
+          }
+        }
+      },
+      "shade": false
+    },
+    {
+      "name": "raised crown blade",
+      "from": [
+        4.688000000000001,
+        14.4,
+        9.44
+      ],
+      "to": [
+        6.128,
+        15.86,
+        10.879999999999999
+      ],
+      "faces": {
+        "up": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "blade tip conductor",
+      "from": [
+        4.6160000000000005,
+        15.66,
+        9.44
+      ],
+      "to": [
+        6.2,
+        15.92,
+        10.879999999999999
+      ],
+      "faces": {
+        "up": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            4,
+            4.4
+          ]
+        },
+        "down": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            4,
+            4.4
+          ]
+        },
+        "west": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            4,
+            2.599999999999998
+          ]
+        },
+        "east": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            4,
+            2.599999999999998
+          ]
+        },
+        "north": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            4.4,
+            2.599999999999998
+          ]
+        },
+        "south": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            4.4,
+            2.599999999999998
+          ]
+        }
+      }
+    },
+    {
+      "name": "crown power slot",
+      "from": [
+        4.7384,
+        13.540000000000001,
+        7.136000000000001
+      ],
+      "to": [
+        4.752800000000001,
+        13.82,
+        8.863999999999999
+      ],
+      "faces": {
+        "west": {
+          "texture": "#energy",
+          "uv": [
+            4,
+            0,
+            12,
+            16
+          ],
+          "tintindex": 0,
+          "neoforge_data": {
+            "block_light": 15,
+            "sky_light": 15
+          }
+        }
+      },
+      "shade": false
+    }
+  ],
+  "display": {
+    "gui": {
+      "rotation": [
+        12,
+        225,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    "ground": {
+      "translation": [
+        0,
+        2,
+        0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        0,
+        145,
+        0
+      ],
+      "translation": [
+        -1,
+        2,
+        0
+      ],
+      "scale": [
+        0.55,
+        0.55,
+        0.55
+      ]
+    },
+    "thirdperson_righthand": {
+      "rotation": [
+        75,
+        35,
+        0
+      ],
+      "translation": [
+        0,
+        2,
+        0
+      ],
+      "scale": [
+        0.65,
+        0.65,
+        0.65
+      ]
+    }
+  }
+}

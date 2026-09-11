@@ -1,0 +1,7 @@
+{
+  "parent": "fieldemitters:block/emitter_1",
+  "textures": {
+    "energy": "fieldemitters:block/energy_channel",
+    "display": "fieldemitters:block/service_display"
+  }
+}

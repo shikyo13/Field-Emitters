@@ -1,0 +1,1129 @@
+{
+  "parent": "minecraft:block/block",
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "graphite": "fieldemitters:block/graphite",
+    "ceramic": "fieldemitters:block/ceramic_plate",
+    "titanium": "fieldemitters:block/titanium",
+    "vent": "fieldemitters:block/heat_sink",
+    "grip": "fieldemitters:item/grip",
+    "energy": "fieldemitters:block/energy_off",
+    "display": "fieldemitters:block/display_off",
+    "particle": "fieldemitters:block/graphite"
+  },
+  "elements": [
+    {
+      "name": "foundation shoe",
+      "from": [
+        1,
+        0,
+        1
+      ],
+      "to": [
+        15,
+        1.5,
+        15
+      ],
+      "faces": {
+        "up": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            16,
+            3.0
+          ]
+        },
+        "south": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            16,
+            3.0
+          ]
+        },
+        "east": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            16,
+            3.0
+          ]
+        },
+        "west": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            16,
+            3.0
+          ]
+        }
+      }
+    },
+    {
+      "name": "machined footing rim",
+      "from": [
+        1.5,
+        1.5,
+        1.5
+      ],
+      "to": [
+        14.5,
+        2.2,
+        14.5
+      ],
+      "faces": {
+        "up": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            1.4000000000000004
+          ]
+        },
+        "south": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            1.4000000000000004
+          ]
+        },
+        "east": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            1.4000000000000004
+          ]
+        },
+        "west": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            1.4000000000000004
+          ]
+        }
+      }
+    },
+    {
+      "name": "service pedestal",
+      "from": [
+        3,
+        2.2,
+        3
+      ],
+      "to": [
+        13,
+        13,
+        13
+      ],
+      "faces": {
+        "up": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#graphite",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "ceramic shoulder",
+      "from": [
+        3.5,
+        13,
+        3.5
+      ],
+      "to": [
+        12.5,
+        15,
+        12.5
+      ],
+      "faces": {
+        "up": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            4
+          ]
+        },
+        "south": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            4
+          ]
+        },
+        "east": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            4
+          ]
+        },
+        "west": {
+          "texture": "#ceramic",
+          "uv": [
+            0,
+            0,
+            16,
+            4
+          ]
+        }
+      }
+    },
+    {
+      "name": "neck socket",
+      "from": [
+        5,
+        15,
+        5
+      ],
+      "to": [
+        11,
+        16,
+        11
+      ],
+      "faces": {
+        "up": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            12,
+            12
+          ]
+        },
+        "down": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            12,
+            12
+          ]
+        },
+        "north": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            12,
+            2
+          ]
+        },
+        "south": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            12,
+            2
+          ]
+        },
+        "east": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            12,
+            2
+          ]
+        },
+        "west": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            12,
+            2
+          ]
+        }
+      }
+    },
+    {
+      "name": "foundation anchor",
+      "from": [
+        1.8,
+        1.5,
+        1.8
+      ],
+      "to": [
+        3.8,
+        3.2,
+        3.8
+      ],
+      "faces": {
+        "up": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            3.9999999999999996,
+            3.9999999999999996
+          ]
+        },
+        "down": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            3.9999999999999996,
+            3.9999999999999996
+          ]
+        },
+        "north": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            3.9999999999999996,
+            3.4000000000000004
+          ]
+        },
+        "south": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            3.9999999999999996,
+            3.4000000000000004
+          ]
+        },
+        "east": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            3.9999999999999996,
+            3.4000000000000004
+          ]
+        },
+        "west": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            3.9999999999999996,
+            3.4000000000000004
+          ]
+        }
+      }
+    },
+    {
+      "name": "foundation anchor",
+      "from": [
+        12.2,
+        1.5,
+        1.8
+      ],
+      "to": [
+        14.2,
+        3.2,
+        3.8
+      ],
+      "faces": {
+        "up": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            4.0,
+            3.9999999999999996
+          ]
+        },
+        "down": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            4.0,
+            3.9999999999999996
+          ]
+        },
+        "north": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            4.0,
+            3.4000000000000004
+          ]
+        },
+        "south": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            4.0,
+            3.4000000000000004
+          ]
+        },
+        "east": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            3.9999999999999996,
+            3.4000000000000004
+          ]
+        },
+        "west": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            3.9999999999999996,
+            3.4000000000000004
+          ]
+        }
+      }
+    },
+    {
+      "name": "foundation anchor",
+      "from": [
+        1.8,
+        1.5,
+        12.2
+      ],
+      "to": [
+        3.8,
+        3.2,
+        14.2
+      ],
+      "faces": {
+        "up": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            3.9999999999999996,
+            4.0
+          ]
+        },
+        "down": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            3.9999999999999996,
+            4.0
+          ]
+        },
+        "north": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            3.9999999999999996,
+            3.4000000000000004
+          ]
+        },
+        "south": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            3.9999999999999996,
+            3.4000000000000004
+          ]
+        },
+        "east": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            4.0,
+            3.4000000000000004
+          ]
+        },
+        "west": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            4.0,
+            3.4000000000000004
+          ]
+        }
+      }
+    },
+    {
+      "name": "foundation anchor",
+      "from": [
+        12.2,
+        1.5,
+        12.2
+      ],
+      "to": [
+        14.2,
+        3.2,
+        14.2
+      ],
+      "faces": {
+        "up": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            4.0,
+            4.0
+          ]
+        },
+        "down": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            4.0,
+            4.0
+          ]
+        },
+        "north": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            4.0,
+            3.4000000000000004
+          ]
+        },
+        "south": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            4.0,
+            3.4000000000000004
+          ]
+        },
+        "east": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            4.0,
+            3.4000000000000004
+          ]
+        },
+        "west": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            4.0,
+            3.4000000000000004
+          ]
+        }
+      }
+    },
+    {
+      "name": "recessed display bezel",
+      "from": [
+        4,
+        5,
+        2.6
+      ],
+      "to": [
+        12,
+        11.5,
+        3
+      ],
+      "faces": {
+        "up": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "recessed display bezel",
+      "from": [
+        13,
+        5,
+        4
+      ],
+      "to": [
+        13.4,
+        11.5,
+        12
+      ],
+      "faces": {
+        "up": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "recessed display bezel",
+      "from": [
+        4,
+        5,
+        13
+      ],
+      "to": [
+        12,
+        11.5,
+        13.4
+      ],
+      "faces": {
+        "up": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "recessed display bezel",
+      "from": [
+        2.5999999999999996,
+        5,
+        4
+      ],
+      "to": [
+        3,
+        11.5,
+        12
+      ],
+      "faces": {
+        "up": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#titanium",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "perimeter service display",
+      "from": [
+        4.4,
+        5.5,
+        2.58
+      ],
+      "to": [
+        11.6,
+        11,
+        2.6
+      ],
+      "faces": {
+        "north": {
+          "texture": "#display",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "tintindex": 0,
+          "neoforge_data": {
+            "block_light": 15,
+            "sky_light": 15
+          }
+        }
+      },
+      "shade": false
+    },
+    {
+      "name": "perimeter service display",
+      "from": [
+        13.4,
+        5.5,
+        4.4
+      ],
+      "to": [
+        13.42,
+        11,
+        11.6
+      ],
+      "faces": {
+        "east": {
+          "texture": "#display",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "tintindex": 0,
+          "neoforge_data": {
+            "block_light": 15,
+            "sky_light": 15
+          }
+        }
+      },
+      "shade": false
+    },
+    {
+      "name": "perimeter service display",
+      "from": [
+        4.4,
+        5.5,
+        13.4
+      ],
+      "to": [
+        11.6,
+        11,
+        13.42
+      ],
+      "faces": {
+        "south": {
+          "texture": "#display",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "tintindex": 0,
+          "neoforge_data": {
+            "block_light": 15,
+            "sky_light": 15
+          }
+        }
+      },
+      "shade": false
+    },
+    {
+      "name": "perimeter service display",
+      "from": [
+        2.58,
+        5.5,
+        4.4
+      ],
+      "to": [
+        2.5999999999999996,
+        11,
+        11.6
+      ],
+      "faces": {
+        "west": {
+          "texture": "#display",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "tintindex": 0,
+          "neoforge_data": {
+            "block_light": 15,
+            "sky_light": 15
+          }
+        }
+      },
+      "shade": false
+    },
+    {
+      "name": "pedestal heat exchanger",
+      "from": [
+        5,
+        2.8,
+        2.8
+      ],
+      "to": [
+        11,
+        4.5,
+        3
+      ],
+      "faces": {
+        "north": {
+          "texture": "#vent",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "pedestal heat exchanger",
+      "from": [
+        13,
+        2.8,
+        5
+      ],
+      "to": [
+        13.2,
+        4.5,
+        11
+      ],
+      "faces": {
+        "east": {
+          "texture": "#vent",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "pedestal heat exchanger",
+      "from": [
+        5,
+        2.8,
+        13
+      ],
+      "to": [
+        11,
+        4.5,
+        13.2
+      ],
+      "faces": {
+        "south": {
+          "texture": "#vent",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "pedestal heat exchanger",
+      "from": [
+        2.8000000000000007,
+        2.8,
+        5
+      ],
+      "to": [
+        3,
+        4.5,
+        11
+      ],
+      "faces": {
+        "west": {
+          "texture": "#vent",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}
