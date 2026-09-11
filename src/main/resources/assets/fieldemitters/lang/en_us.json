@@ -1,6 +1,7 @@
 {
+  "itemGroup.fieldemitters": "Field Emitters",
   "block.fieldemitters.field_emitter": "Field Emitter",
+  "block.fieldemitters.field_rail": "Field Rail",
   "block.fieldemitters.forcefield": "Forcefield",
-  "item.fieldemitters.field_tuner": "Field Tuner",
-  "block.fieldemitters.field_rail": "Field Rail"
+  "item.fieldemitters.field_tuner": "Field Tuner"
 }

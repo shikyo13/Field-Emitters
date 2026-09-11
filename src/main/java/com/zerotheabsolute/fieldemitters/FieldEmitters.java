@@ -65,6 +65,22 @@ public final class FieldEmitters {
   public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<FieldCell>> CELL_BE =
       TYPES.register(
           "field_cell", () -> BlockEntityType.Builder.of(FieldCell::new, FIELD.get()).build(null));
+  public static final DeferredRegister<CreativeModeTab> TABS =
+      DeferredRegister.create(Registries.CREATIVE_MODE_TAB, ID);
+  public static final DeferredHolder<CreativeModeTab, CreativeModeTab> TAB =
+      TABS.register(
+          "field_emitters",
+          () ->
+              CreativeModeTab.builder()
+                  .title(net.minecraft.network.chat.Component.translatable("itemGroup." + ID))
+                  .icon(() -> new ItemStack(EMITTER_ITEM.get()))
+                  .displayItems(
+                      (parameters, output) -> {
+                        output.accept(EMITTER_ITEM.get());
+                        output.accept(RAIL_ITEM.get());
+                        output.accept(TUNER.get());
+                      })
+                  .build());
 
   public FieldEmitters(IEventBus bus, net.neoforged.fml.ModContainer container) {
     container.registerConfig(net.neoforged.fml.config.ModConfig.Type.SERVER, FieldConfig.SPEC);
@@ -74,6 +90,7 @@ public final class FieldEmitters {
     BLOCKS.register(bus);
     ITEMS.register(bus);
     TYPES.register(bus);
+    TABS.register(bus);
     bus.addListener(
         (RegisterCapabilitiesEvent e) ->
             e.registerBlockEntity(
