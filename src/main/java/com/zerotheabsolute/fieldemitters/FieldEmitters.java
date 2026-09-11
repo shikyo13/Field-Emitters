@@ -25,6 +25,7 @@ public final class FieldEmitters {
               new EmitterBlock(
                   BlockBehaviour.Properties.of()
                       .strength(3.5f)
+                      .requiresCorrectToolForDrops()
                       .sound(SoundType.NETHERITE_BLOCK)
                       .noOcclusion()
                       .lightLevel(s -> s.getValue(EmitterBlock.LIGHT) ? 12 : 0)));
@@ -46,6 +47,7 @@ public final class FieldEmitters {
               new RailBlock(
                   BlockBehaviour.Properties.of()
                       .strength(3.5f)
+                      .requiresCorrectToolForDrops()
                       .sound(SoundType.NETHERITE_BLOCK)
                       .noOcclusion()
                       .lightLevel(s -> s.getValue(RailBlock.LIGHT) ? 8 : 0)));
