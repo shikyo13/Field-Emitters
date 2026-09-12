@@ -23,6 +23,10 @@ neoForge {
     runs {
         client {
             client()
+            if (providers.gradleProperty('coreUiQa').isPresent()) {
+                gameDirectory = project.file('run-core-ui')
+                programArguments.addAll '--quickPlaySingleplayer', 'ZeroMods Core QA'
+            }
             if (providers.gradleProperty('visualQa').isPresent()) {
                 gameDirectory = project.file('run-visual')
             }
@@ -39,6 +43,11 @@ neoForge {
         server {
             server()
             programArgument '--nogui'
+        }
+        coreGameTestServer {
+            type = 'gameTestServer'
+            gameDirectory = project.file('run-core-tests')
+            systemProperty 'neoforge.enabledGameTestNamespaces', 'fieldemitters'
         }
         data {
             data()
@@ -109,3 +118,16 @@ tasks.named('jar', Jar).configure {
         into 'META-INF'
     }
 }
+
+// Shared mod; composite substitution builds the sibling checkout automatically.
+dependencies { implementation 'com.zeromods:zeromods-core-neoforge-1.21.1:0.1.0' }
+
+// Optional recipe-browser drag and drop; the mod runs without JEI installed.
+repositories { maven { url = 'https://maven.blamejared.com/' } }
+dependencies { compileOnly 'mezz.jei:jei-1.21.1-common-api:19.21.0.247' }
+
+repositories { maven { url = 'https://maven.terraformersmc.com/releases/' } }
+dependencies { compileOnly 'dev.emi:emi-neoforge:1.1.24+1.21.1' }
+
+repositories { maven { url = 'https://maven.theillusivec4.top/' } }
+dependencies { compileOnly 'top.theillusivec4.curios:curios-neoforge:9.5.1+1.21.1:api' }

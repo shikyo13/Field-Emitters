@@ -24,11 +24,13 @@ public final class FieldEmitters {
           () ->
               new EmitterBlock(
                   BlockBehaviour.Properties.of()
-                      .strength(3.5f)
+                      .strength(3.5f, HardwareProtection.BLAST_RESISTANCE)
                       .requiresCorrectToolForDrops()
                       .sound(SoundType.NETHERITE_BLOCK)
                       .noOcclusion()
                       .lightLevel(s -> s.getValue(EmitterBlock.LIGHT) ? 12 : 0)));
+  public static final DeferredBlock<TowerBlock> TOWER = BLOCKS.register("projection_tower", () -> new TowerBlock(BlockBehaviour.Properties.of().strength(3.5f,HardwareProtection.BLAST_RESISTANCE).requiresCorrectToolForDrops().sound(SoundType.NETHERITE_BLOCK).noOcclusion().lightLevel(s -> s.getValue(TowerBlock.LIGHT) ? 12 : 0)));
+  public static final DeferredItem<BlockItem> TOWER_ITEM = ITEMS.registerSimpleBlockItem(TOWER);
   public static final DeferredBlock<FieldBlock> FIELD =
       BLOCKS.register(
           "forcefield",
@@ -46,13 +48,15 @@ public final class FieldEmitters {
           () ->
               new RailBlock(
                   BlockBehaviour.Properties.of()
-                      .strength(3.5f)
+                      .strength(3.5f, HardwareProtection.BLAST_RESISTANCE)
                       .requiresCorrectToolForDrops()
                       .sound(SoundType.NETHERITE_BLOCK)
                       .noOcclusion()
                       .lightLevel(s -> s.getValue(RailBlock.LIGHT) ? 8 : 0)));
   public static final DeferredItem<BlockItem> RAIL_ITEM = ITEMS.registerSimpleBlockItem(RAIL);
   public static final DeferredItem<BlockItem> EMITTER_ITEM = ITEMS.registerSimpleBlockItem(EMITTER);
+  public static final DeferredItem<Item> BADGE = ITEMS.register("access_badge", () -> new Item(new Item.Properties().stacksTo(1)));
+  public static final DeferredItem<BadgeHolderItem> BADGE_HOLDER = ITEMS.register("badge_holder", () -> new BadgeHolderItem(new Item.Properties().stacksTo(1)));
   public static final DeferredItem<TunerItem> TUNER =
       ITEMS.register("field_tuner", () -> new TunerItem(new Item.Properties().stacksTo(1)));
   public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<EmitterEntity>>
@@ -60,7 +64,7 @@ public final class FieldEmitters {
           TYPES.register(
               "emitter",
               () ->
-                  BlockEntityType.Builder.of(EmitterEntity::new, EMITTER.get(), RAIL.get())
+                  BlockEntityType.Builder.of(EmitterEntity::new, EMITTER.get(), RAIL.get(), TOWER.get())
                       .build(null));
   public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<FieldCell>> CELL_BE =
       TYPES.register(
@@ -79,6 +83,8 @@ public final class FieldEmitters {
                         output.accept(EMITTER_ITEM.get());
                         output.accept(RAIL_ITEM.get());
                         output.accept(TUNER.get());
+                        output.accept(TOWER_ITEM.get());
+                        output.accept(BADGE.get()); output.accept(BADGE_HOLDER.get());
                       })
                   .build());
 
@@ -87,6 +93,13 @@ public final class FieldEmitters {
     container.registerConfig(
         net.neoforged.fml.config.ModConfig.Type.CLIENT, FieldConfig.CLIENT_SPEC);
     bus.addListener(FieldControls::register);
+    bus.addListener(FizzleNotice::register);
+    bus.addListener(PlayerLookup::register);
+    bus.addListener(AccessPackets::register);
+    bus.addListener(ManagementPackets::register);
+    bus.addListener((net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent event) -> event.enqueueWork(() -> {
+      if(net.neoforged.fml.ModList.get().isLoaded("curios")) CuriosBridge.register();
+    }));
     BLOCKS.register(bus);
     ITEMS.register(bus);
     TYPES.register(bus);
@@ -104,6 +117,9 @@ public final class FieldEmitters {
           }
         });
     NeoForge.EVENT_BUS.addListener(FieldNetwork::tick);
+    NeoForge.EVENT_BUS.addListener(HardwareProtection::explosion);
+    NeoForge.EVENT_BUS.addListener(AccessPackets::tick);
+    NeoForge.EVENT_BUS.addListener(HardwareProtection::mobBreak);
     NeoForge.EVENT_BUS.addListener(DemoCommands::register);
   }
 }

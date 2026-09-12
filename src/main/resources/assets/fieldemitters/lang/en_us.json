@@ -3,5 +3,10 @@
   "block.fieldemitters.field_emitter": "Field Emitter",
   "block.fieldemitters.field_rail": "Field Rail",
   "block.fieldemitters.forcefield": "Forcefield",
-  "item.fieldemitters.field_tuner": "Field Tuner"
+  "item.fieldemitters.field_tuner": "Field Tuner",
+  "block.fieldemitters.projection_tower": "Projection Tower",
+  "item.fieldemitters.access_badge": "Access Badge",
+  "item.fieldemitters.badge_holder": "Badge Holder",
+  "key.fieldemitters.tuner": "Open Field Tuner",
+  "key.categories.fieldemitters": "Field Emitters"
 }

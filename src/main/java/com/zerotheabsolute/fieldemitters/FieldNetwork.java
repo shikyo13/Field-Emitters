@@ -36,17 +36,8 @@ public final class FieldNetwork {
   private static List<EmitterEntity> connected(EmitterEntity seed, boolean includeDisabled) {
     if (seed.getLevel() == null) return List.of(seed);
     List<EmitterEntity> all = loaded(seed.getLevel());
-    List<EmitterEntity> found = new ArrayList<>();
-    Set<BlockPos> seen = new HashSet<>();
-    ArrayDeque<EmitterEntity> q = new ArrayDeque<>();
-    q.add(seed);
-    while (!q.isEmpty()) {
-      var e = q.remove();
-      if (!seen.add(e.getBlockPos())) continue;
-      found.add(e);
-      q.addAll(neighbors(e, all, includeDisabled));
-    }
-    return found;
+    return com.zeromods.core.network.NetworkTraversal.connected(seed,
+        e -> e.getBlockPos(), e -> neighbors(e, all, includeDisabled));
   }
 
   public static List<EmitterEntity> loaded(Level l) {
@@ -64,13 +55,14 @@ public final class FieldNetwork {
 
   private static List<EmitterEntity> neighbors(
       EmitterEntity a, List<EmitterEntity> all, boolean includeDisabled) {
+    if (a.isTower()) return java.util.List.of();
     if (a.isRail()) return railNeighbors(a, all, includeDisabled);
     List<EmitterEntity> found = new ArrayList<>();
     for (Direction d : Direction.Plane.HORIZONTAL) {
       EmitterEntity best = null;
       int distance = 21;
       for (var b : all) {
-        if (b.isRail()) continue;
+        if (b.isTower() || b.isRail() || !Objects.equals(a.owner,b.owner)) continue;
         int x = b.getBlockPos().getX() - a.getBlockPos().getX(),
             z = b.getBlockPos().getZ() - a.getBlockPos().getZ();
         int n = x * d.getStepX() + z * d.getStepZ();
@@ -143,14 +135,21 @@ public final class FieldNetwork {
   public static void tick(LevelTickEvent.Post event) {
     if (!(event.getLevel() instanceof ServerLevel l)) return;
     List<EmitterEntity> all = loaded(l);
-    if (all.isEmpty()) return;
+    if (all.isEmpty()) {
+      if (l.getGameTime() % 10 == 0) ManagedFields.refresh(l, all);
+      return;
+    }
     long now = l.getGameTime();
     for (var e : all) {
-      if (e.powered) {
+      e.spherePresent=false;
+      if(e.isTower())SphereField.tick(l,e,now);
+      if (e.powered && !e.isTower()) {
         if (e.isRail()) railImpacts(l, e, now);
         else impacts(l, e, now);
       }
       FieldSensor.tick(l, e, now);
+      FieldDamage.tick(l, e, now);
+      FieldCheckpoint.tick(l,e,now);
       if (now % 20 == 0) e.sync();
       if (e.powered && now - e.transition <= 42 && now % 2 == 0) updateLights(l, e, true);
     }
@@ -168,7 +167,7 @@ public final class FieldNetwork {
       long stored =
           network.stream()
               .filter(e -> e.enabled)
-              .mapToLong(e -> e.energy.extractEnergy(Integer.MAX_VALUE, true))
+              .mapToLong(e -> e.energy.getEnergyStored())
               .sum();
       boolean demo = FieldConfig.DEMO_POWER.get() && redstone;
       boolean allowed =
@@ -181,14 +180,14 @@ public final class FieldNetwork {
               .anyMatch(
                   e ->
                       e.enabled
-                          && e.links.stream().anyMatch(link -> link.rail() || link.length() > 1));
+                          && (e.isTower() ? SphereField.loaded(e) : e.links.stream().anyMatch(link -> link.rail() || link.length() > 1)));
       boolean on = hasField && allowed && (demo || stored >= demand);
       if (on && !demo) {
         long remaining = demand;
         for (var e : network)
           if (e.enabled) {
             remaining -=
-                e.energy.extractEnergy((int) Math.min(remaining, Integer.MAX_VALUE), false);
+                e.energy.consume((int) Math.min(remaining, Integer.MAX_VALUE));
             if (remaining == 0) break;
           }
       }
@@ -199,19 +198,14 @@ public final class FieldNetwork {
           e.transition = now;
           e.sync();
           updateLights(l, e, active);
-          l.playSound(
-              null,
-              e.getBlockPos(),
-              active ? SoundEvents.BEACON_ACTIVATE : SoundEvents.BEACON_DEACTIVATE,
-              SoundSource.BLOCKS,
-              .35f,
-              active ? 1.6f : .8f);
+          FieldSounds.play(l, e, net.minecraft.world.phys.Vec3.atCenterOf(e.getBlockPos()), active ? 0 : 1);
         }
       }
     }
   }
 
   private static void rebuild(ServerLevel l, List<EmitterEntity> all, long now) {
+    ManagedFields.refresh(l, all);
     Map<BlockPos, Integer> rank = new HashMap<>();
     for (var seed : all) {
       if (rank.containsKey(seed.getBlockPos())) continue;
@@ -245,6 +239,7 @@ public final class FieldNetwork {
       for (var e : network) e.root = source.getBlockPos();
     }
     for (var e : all) {
+      if(e.isTower()){SphereField.rebuild(l,e);updateLights(l,e,e.powered);continue;}
       List<EmitterEntity.Link> links = new ArrayList<>();
       if (e.enabled)
         for (var other : neighbors(e, all)) {
@@ -309,6 +304,7 @@ public final class FieldNetwork {
   }
 
   private static void updateLights(ServerLevel l, EmitterEntity e, boolean active) {
+    if(e.isTower()){for(int i=0;i<TowerBlock.HEIGHT;i++){var p=e.getBlockPos().above(i);var state=l.getBlockState(p);if(state.is(FieldEmitters.TOWER.get()))l.setBlock(p,state.setValue(TowerBlock.ACTIVE,active).setValue(TowerBlock.LIGHT,active&&e.controls.light),3);}}
     if (e.isRail()) {
       var state = e.getBlockState();
       l.setBlock(
@@ -335,7 +331,7 @@ public final class FieldNetwork {
         int distance =
             Math.abs(p.getX() - e.getBlockPos().getX())
                 + Math.abs(p.getZ() - e.getBlockPos().getZ());
-        boolean lit = active && e.controls.light && l.getGameTime() - e.transition >= distance * 2;
+        boolean lit = active && e.controls.light && l.getGameTime() - e.transition >= (e.isTower()?SphereField.FORMATION_TICKS:distance * 2);
         l.setBlock(p, state.setValue(FieldBlock.LIT, lit), 3);
       }
     }
@@ -387,15 +383,7 @@ public final class FieldNetwork {
           part.contacts.put(entity.getUUID(), now);
           part.sync();
         }
-        level.playSound(
-            null,
-            impact.x,
-            impact.y,
-            impact.z,
-            net.minecraft.sounds.SoundEvents.AMETHYST_BLOCK_RESONATE,
-            net.minecraft.sounds.SoundSource.BLOCKS,
-            .20f,
-            1.7f);
+        FieldSounds.play(level, emitter, impact, 2);
         return;
       }
     }
@@ -419,7 +407,7 @@ public final class FieldNetwork {
           l.getEntitiesOfClass(
               net.minecraft.world.entity.LivingEntity.class,
               area,
-              entity -> FieldBlock.blocks(e, entity))) {
+              entity -> true)) {
         double u =
             (entity.getX() - p.getX() - .5) * link.dx()
                 + (entity.getZ() - p.getZ() - .5) * link.dz();
@@ -429,6 +417,7 @@ public final class FieldNetwork {
             link.dx() != 0
                 ? Math.abs(entity.getZ() - p.getZ() - .5)
                 : Math.abs(entity.getX() - p.getX() - .5);
+        if (FieldBlock.collision(e, entity, link.cell(p, i, 0)).isEmpty()) continue;
         if (normal > entity.getBbWidth() / 2 + .15
             || entity.getY() + entity.getBbHeight() < link.ground()[i]
             || entity.getY() > link.ground()[i] + 5
@@ -443,15 +432,7 @@ public final class FieldNetwork {
         e.impactTime = now;
         e.contacts.put(entity.getUUID(), now);
         e.sync();
-        l.playSound(
-            null,
-            e.impact.x,
-            e.impact.y,
-            e.impact.z,
-            net.minecraft.sounds.SoundEvents.AMETHYST_BLOCK_RESONATE,
-            net.minecraft.sounds.SoundSource.BLOCKS,
-            .20f,
-            1.7f);
+        FieldSounds.play(l, e, e.impact, 2);
         return;
       }
     }
@@ -465,7 +446,7 @@ public final class FieldNetwork {
     EmitterEntity best = null;
     int distance = 21;
     for (var b : all) {
-      if (!b.isRail() || !includeDisabled && !b.enabled || a == b) continue;
+      if (!Objects.equals(a.owner,b.owner) || !b.isRail() || !includeDisabled && !b.enabled || a == b) continue;
       var delta = b.getBlockPos().subtract(a.getBlockPos());
       int n =
           delta.getX() * face.getStepX()

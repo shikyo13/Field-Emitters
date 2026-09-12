@@ -56,9 +56,9 @@ public final class FieldBlock extends BaseEntityBlock {
 
   public static VoxelShape collision(EmitterEntity e, Entity entity, BlockPos p) {
     if (!e.powered || entity == null) return Shapes.empty();
+    if(e.isTower())return SphereField.collision(e,entity,p);
     for (var link : e.links) {
       var settings = e.settings(link);
-      if (!settings.barrier.matches(entity, e.owner)) continue;
       int index =
           (p.getX() - e.getBlockPos().getX()) * link.dx()
               + (p.getZ() - e.getBlockPos().getZ()) * link.dz()
@@ -82,10 +82,11 @@ public final class FieldBlock extends BaseEntityBlock {
                               : 0,
                           0))
               - link.normalCoordinate(net.minecraft.world.phys.Vec3.atCenterOf(p));
-      if (!settings.barrier.direction(link.movement(side < 0))) continue;
+      if (!settings.blocks(entity, e.owner, link.movement(side < 0))
+          && !FieldCheckpoint.blocks(e,settings,entity,link.movement(side < 0))) continue;
       return switch (link.normal()) {
         case X -> Block.box(6.5, 0, 0, 9.5, 16, 16);
-        case Y -> Block.box(0, 6.5, 0, 16, 9.5, 16);
+        case Y -> Block.box(0, 7, 0, 16, 8, 16);
         case Z -> Block.box(0, 0, 6.5, 16, 16, 9.5);
       };
     }

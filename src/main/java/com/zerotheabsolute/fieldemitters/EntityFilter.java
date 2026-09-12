@@ -1,55 +1,47 @@
 package com.zerotheabsolute.fieldemitters;
 
 import java.util.UUID;
-import net.minecraft.core.registries.*;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.*;
-import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.monster.Enemy;
-import net.minecraft.world.entity.player.Player;
 
 /** Categories are ORed; optional constraints are ANDed. Inversion applies last. */
 public final class EntityFilter {
   public int groups = 1, age = 0, directions = 63;
+  /** 0 uses general filters; 1 matches listed players; 2 matches unlisted players. */
+  public int playerMode = 0;
+  public final java.util.LinkedHashSet<String> accessGroups = new java.util.LinkedHashSet<>();
+  public final java.util.LinkedHashMap<UUID, String> playerList = new java.util.LinkedHashMap<>();
+  public static final int MAX_PLAYERS = 64;
+  /** 0 follows the general filter; 1 matches listed types; 2 matches unlisted types. */
+  public int mobMode = 0, itemMode = 0;
+  public static final int MAX_TYPES = 64;
+  public final java.util.LinkedHashSet<String> mobList = new java.util.LinkedHashSet<>(), itemList = new java.util.LinkedHashSet<>();
   public boolean inverted = false, exemptOwner = false;
   public String entityType = "", itemType = "", identity = "", entityTag = "";
 
   public boolean matches(Entity entity, UUID owner) {
-    if (entity == null || entity.isSpectator()) return false;
-    if (exemptOwner && entity.getUUID().equals(owner)) return false;
-    int category =
-        entity instanceof Player
-            ? 4
-            : entity instanceof Enemy
-                ? 1
-                : entity instanceof LivingEntity ? 2 : entity instanceof ItemEntity ? 8 : 16;
-    boolean match = (groups & category) != 0;
-    if (age != 0) match &= entity instanceof LivingEntity living && (living.isBaby() == (age == 1));
-    if (!identity.isEmpty()) match &= entity.getUUID().toString().equalsIgnoreCase(identity);
-    if (!entityTag.isEmpty()) match &= entity.getTags().contains(entityTag);
-    if (!entityType.isEmpty()) {
-      var id =
-          ResourceLocation.tryParse(
-              entityType.startsWith("#") ? entityType.substring(1) : entityType);
-      match &=
-          id != null
-              && (entityType.startsWith("#")
-                  ? entity.getType().is(TagKey.create(Registries.ENTITY_TYPE, id))
-                  : BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()).equals(id));
+    if (entity == null) return false;
+    if (entity instanceof net.minecraft.world.entity.player.Player && playerMode != 0) {
+      if (entity.isSpectator() || exemptOwner && entity.getUUID().equals(owner)) return false;
+      return com.zeromods.core.filter.PlayerListMode.values()[Math.max(0, Math.min(2, playerMode))]
+          .matches(playerList.containsKey(entity.getUUID()) || BadgeAccess.matches((net.minecraft.world.entity.player.Player)entity,owner,accessGroups));
     }
-    if (!itemType.isEmpty()) {
-      var id =
-          ResourceLocation.tryParse(itemType.startsWith("#") ? itemType.substring(1) : itemType);
-      match &=
-          entity instanceof ItemEntity item
-              && id != null
-              && (itemType.startsWith("#")
-                  ? item.getItem().is(TagKey.create(Registries.ITEM, id))
-                  : BuiltInRegistries.ITEM.getKey(item.getItem().getItem()).equals(id));
+    var subject = new com.zeromods.core.neoforge.MinecraftEntitySubject(entity);
+    boolean mob = entity instanceof LivingEntity && !(entity instanceof net.minecraft.world.entity.player.Player);
+    boolean item = entity instanceof net.minecraft.world.entity.item.ItemEntity;
+    int mode = mob ? mobMode : item ? itemMode : 0;
+    if (mode != 0) {
+      if (entity.isSpectator() || exemptOwner && entity.getUUID().equals(owner)) return false;
+      boolean details = !mob || (age == 0 || subject.baby() == (age == 1))
+          && (identity.isEmpty() || entity.getUUID().toString().equalsIgnoreCase(identity))
+          && (entityTag.isEmpty() || subject.scoreboardTag(entityTag));
+      return com.zeromods.core.filter.TypeList.matches(mode, mob ? mobList : itemList,
+          mob ? subject::entityType : subject::itemType, details);
     }
-    return inverted != match;
+    var selection = new com.zeromods.core.filter.EntitySelection(groups,
+        com.zeromods.core.filter.EntitySelection.Age.values()[Math.max(0, Math.min(2, age))],
+        inverted, exemptOwner, identity, entityTag, entityType, itemType);
+    return selection.matches(new com.zeromods.core.neoforge.MinecraftEntitySubject(entity), owner);
   }
 
   public boolean direction(net.minecraft.core.Direction movement) {
@@ -59,6 +51,13 @@ public final class EntityFilter {
   public CompoundTag save() {
     var t = new CompoundTag();
     t.putInt("Groups", groups);
+    t.putInt("PlayerMode", playerMode);
+    saveTypes(t,"AccessGroups",accessGroups);
+    var players = new net.minecraft.nbt.ListTag();
+    playerList.forEach((id, name) -> { var entry = new CompoundTag(); entry.putUUID("Id", id); entry.putString("Name", name); players.add(entry); });
+    t.put("PlayerList", players);
+    t.putInt("MobMode", mobMode); t.putInt("ItemMode", itemMode);
+    saveTypes(t, "MobList", mobList); saveTypes(t, "ItemList", itemList);
     t.putInt("Age", age);
     t.putInt("Directions", directions);
     t.putBoolean("Invert", inverted);
@@ -73,6 +72,18 @@ public final class EntityFilter {
   public static EntityFilter load(CompoundTag t) {
     var f = new EntityFilter();
     f.groups = t.getInt("Groups") & 31;
+    f.playerMode = Math.max(0, Math.min(2, t.getInt("PlayerMode")));
+    loadTypes(t,"AccessGroups",f.accessGroups);
+    var players = t.getList("PlayerList", 10);
+    for (int i = 0; i < Math.min(MAX_PLAYERS, players.size()); i++) {
+      var entry = players.getCompound(i);
+      if (!entry.hasUUID("Id")) continue;
+      String name = entry.getString("Name");
+      f.playerList.put(entry.getUUID("Id"), name.matches("[A-Za-z0-9_]{1,16}") ? name : "");
+    }
+    f.mobMode = Math.max(0, Math.min(2, t.getInt("MobMode")));
+    f.itemMode = Math.max(0, Math.min(2, t.getInt("ItemMode")));
+    loadTypes(t, "MobList", f.mobList); loadTypes(t, "ItemList", f.itemList);
     f.age = Math.max(0, Math.min(2, t.getInt("Age")));
     f.directions = t.contains("Directions") ? t.getInt("Directions") & 63 : 63;
     f.inverted = t.getBoolean("Invert");
@@ -82,6 +93,17 @@ public final class EntityFilter {
     f.identity = bounded(t.getString("Identity"));
     f.entityTag = bounded(t.getString("Tag"));
     return f;
+  }
+
+  private static void saveTypes(CompoundTag tag, String key, java.util.Set<String> values) {
+    var list = new net.minecraft.nbt.ListTag();
+    values.forEach(value -> list.add(net.minecraft.nbt.StringTag.valueOf(value)));
+    tag.put(key, list);
+  }
+
+  private static void loadTypes(CompoundTag tag, String key, java.util.Set<String> values) {
+    var list = tag.getList(key, 8);
+    for (int i = 0; i < Math.min(MAX_TYPES, list.size()); i++) values.add(bounded(list.getString(i)));
   }
 
   private static String bounded(String s) {

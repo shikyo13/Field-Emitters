@@ -6,9 +6,11 @@ import net.minecraft.nbt.*;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.energy.EnergyStorage;
 
 public final class EmitterEntity extends BlockEntity {
+  public final Map<UUID, Passage> spherePassages = new HashMap<>();
+  public boolean spherePresent;
+  public boolean isTower() { return getBlockState().is(FieldEmitters.TOWER.get()); }
   public ControlSettings controls = new ControlSettings();
   public final Map<BlockPos, ControlSettings> overrides = new HashMap<>();
 
@@ -27,6 +29,8 @@ public final class EmitterEntity extends BlockEntity {
   public int color = 0x52E5FF, mask = 1;
   public boolean enabled = true, powered = false;
   public UUID owner;
+  public boolean managementPublic;
+  public final Set<UUID> managerIds = new HashSet<>();
   public long placedAt = Long.MAX_VALUE;
   public String fieldName = "";
   public long transition = 0;
@@ -35,27 +39,15 @@ public final class EmitterEntity extends BlockEntity {
   public BlockPos root = BlockPos.ZERO;
   public net.minecraft.world.phys.Vec3 impact = net.minecraft.world.phys.Vec3.ZERO;
   public long impactTime = -1000;
+  public long lastFizzle = -1000;
   public final Map<UUID, Long> contacts = new HashMap<>();
   public List<Link> links = new ArrayList<>();
   /** Connected emitters as of the last topology rebuild; refreshed by FieldNetwork. */
   public List<EmitterEntity> network;
+  public com.zeromods.core.network.ManagedNetwork<BlockPos> managedNetwork;
   public Set<BlockPos> cells = new HashSet<>();
-  public final EnergyStorage energy =
-      new EnergyStorage(FieldConfig.capacity(), FieldConfig.transfer(), FieldConfig.transfer()) {
-        @Override
-        public int receiveEnergy(int amount, boolean simulate) {
-          int n = super.receiveEnergy(amount, simulate);
-          if (n > 0 && !simulate) setChanged();
-          return n;
-        }
-
-        @Override
-        public int extractEnergy(int amount, boolean simulate) {
-          int n = super.extractEnergy(amount, simulate);
-          if (n > 0 && !simulate) setChanged();
-          return n;
-        }
-      };
+  public final EmitterEnergyStorage energy = new EmitterEnergyStorage(
+      FieldConfig.capacity(), FieldConfig.transfer(), this::setChanged);
 
   public EmitterEntity(BlockPos p, BlockState s) {
     super(FieldEmitters.EMITTER_BE.get(), p, s);
@@ -128,10 +120,10 @@ public final class EmitterEntity extends BlockEntity {
       level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
       if (lastSentColor != color) {
         lastSentColor = color;
-        for (int i = 1; i < 5; i++) {
+        for (int i = 1; i < (isTower() ? TowerBlock.HEIGHT : 5); i++) {
           var part = worldPosition.above(i);
           var state = level.getBlockState(part);
-          if (state.is(FieldEmitters.EMITTER.get())) level.sendBlockUpdated(part, state, state, 3);
+          if (state.is(getBlockState().getBlock())) level.sendBlockUpdated(part, state, state, 3);
         }
       }
     }
@@ -139,6 +131,7 @@ public final class EmitterEntity extends BlockEntity {
 
   protected void saveAdditional(CompoundTag t, HolderLookup.Provider r) {
     super.saveAdditional(t, r);
+    t.put("Management", ManagementAccess.snapshot(this));
     t.putLong("PlacedAt", placedAt);
     t.putString("FieldName", fieldName);
     t.put("Controls", controls.save());
@@ -184,6 +177,9 @@ public final class EmitterEntity extends BlockEntity {
   }
 
   protected void loadAdditional(CompoundTag t, HolderLookup.Provider r) {
+    var management=t.getCompound("Management");
+    managementPublic=management.getBoolean("Public");managerIds.clear();
+    for(var value:management.getList("Managers",8))try{managerIds.add(UUID.fromString(value.getAsString()));}catch(IllegalArgumentException ignored){}
     int previousColor = color;
     super.loadAdditional(t, r);
     impactTime = t.contains("ImpactTime") ? t.getLong("ImpactTime") : -1000;

@@ -19,6 +19,6 @@ public final class FieldBlockTags extends BlockTagsProvider {
   @Override
   protected void addTags(HolderLookup.Provider provider) {
     tag(BlockTags.MINEABLE_WITH_PICKAXE)
-        .add(FieldEmitters.EMITTER.get(), FieldEmitters.RAIL.get());
+        .add(FieldEmitters.EMITTER.get(), FieldEmitters.RAIL.get(), FieldEmitters.TOWER.get());
   }
 }

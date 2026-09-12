@@ -1,0 +1,176 @@
+package com.zerotheabsolute.fieldemitters;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+
+public final class AccessPackets {
+  public static java.util.function.Consumer<Result> receive = result -> {};
+
+  public record Result(BlockPos pos, String message) implements CustomPacketPayload {
+    public static final Type<Result> TYPE =
+        new Type<>(ResourceLocation.fromNamespaceAndPath(FieldEmitters.ID, "badge_result"));
+    public static final StreamCodec<FriendlyByteBuf, Result> CODEC =
+        StreamCodec.of(
+            (b, p) -> {
+              b.writeBlockPos(p.pos);
+              b.writeUtf(p.message, 256);
+            },
+            b -> new Result(b.readBlockPos(), b.readUtf(256)));
+
+    public Type<? extends CustomPacketPayload> type() {
+      return TYPE;
+    }
+  }
+
+  private static void reply(
+      net.minecraft.world.entity.player.Player player, BlockPos pos, String message) {
+    net.neoforged.neoforge.network.PacketDistributor.sendToPlayer(
+        (net.minecraft.server.level.ServerPlayer) player, new Result(pos, message));
+  }
+
+  public record Request(BlockPos pos, String group, String player, int action)
+      implements CustomPacketPayload {
+    public static final Type<Request> TYPE =
+        new Type<>(ResourceLocation.fromNamespaceAndPath(FieldEmitters.ID, "badge_action"));
+    public static final StreamCodec<FriendlyByteBuf, Request> CODEC =
+        StreamCodec.of(
+            (b, p) -> {
+              b.writeBlockPos(p.pos);
+              b.writeUtf(p.group, 32);
+              b.writeUtf(p.player, 36);
+              b.writeVarInt(p.action);
+            },
+            b -> new Request(b.readBlockPos(), b.readUtf(32), b.readUtf(36), b.readVarInt()));
+
+    public Type<? extends CustomPacketPayload> type() {
+      return TYPE;
+    }
+  }
+
+  public record Grants(net.minecraft.nbt.CompoundTag data) implements CustomPacketPayload {
+    public static final Type<Grants> TYPE =
+        new Type<>(ResourceLocation.fromNamespaceAndPath(FieldEmitters.ID, "badge_grants"));
+    public static final StreamCodec<FriendlyByteBuf, Grants> CODEC =
+        StreamCodec.of((b, p) -> b.writeNbt(p.data), b -> new Grants(b.readNbt()));
+
+    public Type<? extends CustomPacketPayload> type() {
+      return TYPE;
+    }
+  }
+
+  private static final java.util.Map<
+          net.minecraft.server.level.ServerPlayer, net.minecraft.nbt.CompoundTag>
+      sent = new java.util.WeakHashMap<>();
+
+  public static void tick(net.neoforged.neoforge.event.tick.PlayerTickEvent.Post event) {
+    if (!(event.getEntity() instanceof net.minecraft.server.level.ServerPlayer player)
+        || player.tickCount % 5 != 0) return;
+    var data = BadgeAccess.grants(player, player.serverLevel());
+    if (!data.equals(sent.get(player))) {
+      sent.put(player, data.copy());
+      net.neoforged.neoforge.network.PacketDistributor.sendToPlayer(player, new Grants(data));
+    }
+  }
+
+  public static void register(
+      net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent event) {
+    event
+        .registrar("1")
+        .playToClient(Result.TYPE, Result.CODEC, (p, c) -> c.enqueueWork(() -> receive.accept(p)))
+        .playToClient(
+            Grants.TYPE,
+            Grants.CODEC,
+            (p, c) ->
+                c.enqueueWork(
+                    () -> {
+                      BadgeAccess.clientGrants.clear();
+                      if (p.data == null) return;
+                      for (var key : p.data.getAllKeys())
+                        try {
+                          var groups = new java.util.HashSet<String>();
+                          for (var value : p.data.getList(key, 8)) groups.add(value.getAsString());
+                          BadgeAccess.clientGrants.put(java.util.UUID.fromString(key), groups);
+                        } catch (IllegalArgumentException ignored) {
+                        }
+                    }));
+    event
+        .registrar("1")
+        .playToServer(
+            Request.TYPE,
+            Request.CODEC,
+            (p, c) ->
+                c.enqueueWork(
+                    () -> {
+                      var player = c.player();
+                      var level = (ServerLevel) player.level();
+                      if (!level.hasChunkAt(p.pos)
+                          || !(level.getBlockEntity(p.pos) instanceof EmitterEntity e)
+                          || !FieldControls.editable(e, player)
+                          || (!FieldControls.hasTuner(player)
+                              && player.distanceToSqr(
+                                      net.minecraft.world.phys.Vec3.atCenterOf(p.pos))
+                                  > 144)) return;
+                      String group = BadgeAccess.group(p.group);
+                      if (!BadgeAccess.validGroup(group)) return;
+                      java.util.UUID bound = null;
+                      if (!p.player.isBlank())
+                        try {
+                          bound = java.util.UUID.fromString(p.player);
+                        } catch (IllegalArgumentException ex) {
+                          reply(
+                              player,
+                              p.pos,
+                              Component.literal(
+                                      "Enter a player UUID, or leave blank for a transferable"
+                                          + " badge.")
+                                  .getString());
+                          return;
+                        }
+                      // An administrator editing somebody else's field still issues only their own
+                      // credentials.
+                      var issuer = player.getUUID();
+                      var data = BadgeAccess.get(level);
+                      if (p.action == 1) {
+                        int count = data.revoke(issuer, group);
+                        reply(
+                            player,
+                            p.pos,
+                            Component.literal("Revoked " + count + " badges for " + group + ".")
+                                .getString());
+                        return;
+                      }
+                      if (p.action != 0) return;
+                      var stack =
+                          player.getMainHandItem().is(FieldEmitters.BADGE.get())
+                              ? player.getMainHandItem()
+                              : player.getOffhandItem();
+                      if (!stack.is(FieldEmitters.BADGE.get())) {
+                        reply(
+                            player,
+                            p.pos,
+                            Component.literal("Hold an access badge in either hand to issue it.")
+                                .getString());
+                        return;
+                      }
+                      data.issue(stack, issuer, group, bound);
+                      player.getInventory().setChanged();
+                      player.containerMenu.broadcastChanges();
+                      reply(
+                          player,
+                          p.pos,
+                          Component.literal(
+                                  "Issued "
+                                      + group
+                                      + " badge"
+                                      + (bound == null
+                                          ? " (transferable)."
+                                          : " for " + bound + "."))
+                              .getString());
+                    }));
+  }
+}

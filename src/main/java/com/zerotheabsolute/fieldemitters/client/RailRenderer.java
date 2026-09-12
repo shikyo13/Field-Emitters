@@ -20,18 +20,19 @@ public final class RailRenderer {
           e.powered
               ? Math.min(l.length() + .5f, age / 2)
               : Math.max(-.5f, l.length() + .5f - age / 2);
-      if (end <= -.5) continue;
+      if (e.controls.formation != 0) end = l.length() + .5f;
+      if (end <= -.5 || FieldPattern.progress(e, age) <= 0) continue;
       var along = new Vec3(l.dx(), l.dy(), l.dz());
       var normal =
           Vec3.atLowerCornerOf(
               Direction.fromAxisAndDirection(l.normal(), Direction.AxisDirection.POSITIVE)
                   .getNormal());
       var across = normal.cross(along);
-      panel(v, m, along, across, -.5f, -.5f, end, .5f, e.color, .17f);
+
       if (!joined(e, l, across.scale(-1)))
-        line(v, m, along, across, -.5f, -.49f, end, -.49f, .012f, e.color, .75f);
+        line(v, m, along, across, -.5f, -.49f, end, -.49f, .012f, e.color, .75f * FieldPattern.progress(e, age));
       if (!joined(e, l, across))
-        line(v, m, along, across, -.5f, .49f, end, .49f, .012f, e.color, .75f);
+        line(v, m, along, across, -.5f, .49f, end, .49f, .012f, e.color, .75f * FieldPattern.progress(e, age));
       // The same world-space lattice and clock are used by every coplanar strip.
       float time = e.controls.animation ? e.getLevel().getGameTime() + partial : 0;
       var origin = Vec3.atCenterOf(e.getBlockPos());
@@ -59,7 +60,7 @@ public final class RailRenderer {
           hit ? hitAge : -1,
           (float) e.impact.dot(uAxis),
           (float) e.impact.dot(vAxis),
-          e.color,
+          e.color, e.controls, FieldPattern.progress(e, age),
           (x1, y1, x2, y2, w, color, alpha) ->
               clippedLine(
                   v,
@@ -77,7 +78,7 @@ public final class RailRenderer {
                   projectedEnd,
                   -.5f,
                   .5f));
-      line(v, m, along, across, end, -.5f, end, .5f, .025f, e.color, .9f);
+      line(v, m, along, across, end, -.5f, end, .5f, .025f, e.color, .9f * FieldPattern.progress(e, age));
     }
   }
 
@@ -90,6 +91,8 @@ public final class RailRenderer {
         && other.powered
         && other.controls.visible
         && other.color == e.color
+        && other.controls.pattern == e.controls.pattern
+        && other.controls.formation == e.controls.formation
         && other.links.stream()
             .anyMatch(
                 l -> l.target().equals(link.target().offset(delta)) && l.normal() == link.normal());

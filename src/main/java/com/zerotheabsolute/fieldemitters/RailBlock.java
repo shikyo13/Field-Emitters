@@ -29,6 +29,8 @@ public final class RailBlock extends BaseEntityBlock {
             .setValue(LIGHT, false));
   }
 
+  @Override public boolean canEntityDestroy(BlockState state, BlockGetter level, BlockPos pos, net.minecraft.world.entity.Entity entity) { return entity instanceof Player; }
+
   protected MapCodec<? extends BaseEntityBlock> codec() {
     return simpleCodec(RailBlock::new);
   }

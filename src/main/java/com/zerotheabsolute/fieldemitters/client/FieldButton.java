@@ -7,10 +7,16 @@ import net.minecraft.network.chat.Component;
 /** Shared controls for emitter settings and remote field management. */
 final class FieldButton extends Button {
   private final boolean selected;
+  private final Integer swatch;
 
   FieldButton(int x, int y, int w, int h, Component title, OnPress action, boolean selected) {
+    this(x, y, w, h, title, action, selected, null);
+  }
+
+  FieldButton(int x, int y, int w, int h, Component title, OnPress action, boolean selected, Integer swatch) {
     super(x, y, w, h, title, action, DEFAULT_NARRATION);
     this.selected = selected;
+    this.swatch = swatch;
   }
 
   @Override
@@ -26,6 +32,8 @@ final class FieldButton extends Button {
         getX() + width - 1,
         getY() + height - 1,
         selected ? 0xFF214755 : isHoveredOrFocused() ? 0xFF263F53 : 0xFF1B2D3E);
+    if (swatch != null)
+      g.fill(getX() + 2, getY() + height - 4, getX() + width - 2, getY() + height - 2, 0xFF000000 | swatch);
     var font = net.minecraft.client.Minecraft.getInstance().font;
     String fullText = getMessage().getString();
     // Direction labels need the whole button width; their selected state has a bright fill.

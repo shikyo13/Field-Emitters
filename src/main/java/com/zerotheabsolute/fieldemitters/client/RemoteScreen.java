@@ -85,8 +85,8 @@ public final class RemoteScreen extends FittedScreen {
           Tooltip.create(
               Component.literal(
                   "Name this entire connected field. Changes apply automatically. Blank restores"
-                      + " its location-based name. The location uses the oldest loaded emitter;"
-                      + " existing demo emitters use a coordinate fallback.")));
+                      + " its location-based name. The origin stays at the first known emitter even when"
+                      + " that emitter is unloaded.")));
       nameBox.setResponder(
           value -> {
             selected.putString("Name", value);
@@ -212,7 +212,7 @@ public final class RemoteScreen extends FittedScreen {
         font,
         selected == null
             ? "Loaded in " + data.getString("Dimension")
-            : "Field location: " + BlockPos.of(selected.getLong("Pos")).toShortString(),
+            : "Field location: " + BlockPos.of(selected.getLong(selected.contains("Origin") ? "Origin" : "Pos")).toShortString(),
         left + 12,
         top + 26,
         0x92A9BE,

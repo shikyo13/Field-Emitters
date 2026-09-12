@@ -7,10 +7,11 @@ import net.minecraft.world.entity.item.ItemEntity;
 /** A passage completes only after the entire entity clears the far side of the plane. */
 public final class FieldSensor {
   public static void tick(ServerLevel level, EmitterEntity e, long now) {
-    boolean present = false;
+    int mode = e.controls.sensorMode;
+    boolean present = e.isTower() && e.spherePresent;
     boolean monitoring = !e.isRail() || e.root.equals(e.getBlockPos());
     var detected = new java.util.HashSet<String>();
-    if (e.powered && monitoring && e.controls.sensorMode != 0) {
+    if (e.powered && monitoring && mode != 0) {
       for (var origin : e.isRail() ? FieldNetwork.members(e) : java.util.List.of(e)) {
         if (origin.isRemoved()) continue;
         var p = origin.getBlockPos();
@@ -22,7 +23,9 @@ public final class FieldSensor {
               level.getEntities(
                   (net.minecraft.world.entity.Entity) null,
                   area,
-                  a -> settings.sensor.matches(a, e.owner))) {
+                  a ->
+                      settings.detects(a, e.owner, link.movement(true))
+                          || settings.detects(a, e.owner, link.movement(false)))) {
             var position =
                 entity
                     .position()
@@ -61,8 +64,10 @@ public final class FieldSensor {
             var old = e.passages.get(key);
             present |=
                 side == 0
-                    && (settings.sensor.directions == 63
-                        || old != null && settings.sensor.direction(link.movement(old.side() < 0)));
+                    && (old != null
+                        ? settings.detects(entity, e.owner, link.movement(old.side() < 0))
+                        : settings.detects(entity, e.owner, link.movement(true))
+                            && settings.detects(entity, e.owner, link.movement(false)));
             if (side == 0) {
               if (old != null)
                 e.passages.put(key, new EmitterEntity.Passage(old.side(), old.position(), now));
@@ -86,7 +91,7 @@ public final class FieldSensor {
                   && (link.rail()
                       || intersection.y < link.ground()[ci] + 5
                           && intersection.y + entity.getBbHeight() > link.ground()[ci])
-                  && settings.sensor.direction(direction)
+                  && settings.detects(entity, e.owner, direction)
                   && detected.add(
                       entity.getUUID()
                           + ":"
@@ -100,8 +105,7 @@ public final class FieldSensor {
                         ? item.getItem().getCount()
                         : 1;
                 e.crossings += count;
-                if (e.controls.sensorMode == 1)
-                  e.queuedPulses = Math.min(100000, e.queuedPulses + count);
+                if (mode == 1) e.queuedPulses = Math.min(100000, e.queuedPulses + count);
                 e.lastDetection = entity.getName().getString() + " → " + direction.getName();
                 e.sync();
               }
@@ -110,18 +114,24 @@ public final class FieldSensor {
           }
         }
       }
-      e.passages.entrySet().removeIf(a -> now - a.getValue().time() > 2);
+      e.passages
+          .entrySet()
+          .removeIf(a -> !a.getKey().startsWith("checkpoint:") && now - a.getValue().time() > 2);
     } else {
-      e.passages.clear();
-      e.queuedPulses = 0;
-      e.pulseUntil = 0;
+      e.passages.entrySet().removeIf(a -> !a.getKey().startsWith("checkpoint:"));
+      if (!e.powered || !monitoring) {
+        e.queuedPulses = 0;
+        e.pulseUntil = 0;
+      }
     }
     int signal = 0;
-    if (e.powered && monitoring && e.controls.sensorMode == 2) signal = present ? 15 : 0;
-    if (e.powered && monitoring && e.controls.sensorMode == 1) {
+    if (e.powered && monitoring && mode == 2) signal = present ? 15 : 0;
+    if (e.powered && monitoring) {
       if (now < e.pulseUntil) signal = 15;
-      else if (e.outputSignal != 0) e.gapUntil = now + 2;
-      else if (e.queuedPulses > 0 && now >= e.gapUntil) {
+      else if (e.pulseUntil != 0) {
+        e.pulseUntil = 0;
+        e.gapUntil = now + 2;
+      } else if (e.queuedPulses > 0 && now >= e.gapUntil) {
         e.queuedPulses--;
         e.pulseUntil = now + e.controls.pulseTicks;
         signal = 15;

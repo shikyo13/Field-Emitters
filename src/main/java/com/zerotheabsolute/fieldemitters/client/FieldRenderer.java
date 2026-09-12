@@ -22,7 +22,7 @@ public final class FieldRenderer implements BlockEntityRenderer<EmitterEntity> {
   }
 
   public AABB getRenderBoundingBox(EmitterEntity e) {
-    return new AABB(e.getBlockPos()).inflate(21, 14, 21);
+    return new AABB(e.getBlockPos()).inflate(e.isTower()?SphereField.MAX_RADIUS+1:21,e.isTower()?SphereField.MAX_RADIUS+1:14,e.isTower()?SphereField.MAX_RADIUS+1:21);
   }
 
   public void render(
@@ -33,6 +33,14 @@ public final class FieldRenderer implements BlockEntityRenderer<EmitterEntity> {
       int light,
       int overlay) {
     if (e.getLevel() == null) return;
+    if (e.isTower()) {
+      float time = e.getLevel().getGameTime() + partial;
+      float age = time - e.transition;
+      float charge = e.powered ? Mth.clamp(age / 12, 0, 1) : Mth.clamp(1 - age / 30, 0, 1);
+      HardwareRenderer.render(e, time, charge, pose, buffers, light);
+      SphereRenderer.render(e, partial, pose, buffers);
+      return;
+    }
     if (e.isRail()) {
       FieldGuide.render(e, pose, buffers);
       RailRenderer.render(e, partial, pose, buffers);
@@ -126,17 +134,18 @@ public final class FieldRenderer implements BlockEntityRenderer<EmitterEntity> {
     for (var link : e.links) {
       float extent =
           e.powered ? Math.min(link.length(), age / 2) : Math.max(0, link.length() - age / 2);
-      if (extent <= .5f) continue;
+      if (e.controls.formation != 0) extent = link.length();
+      if (extent <= .5f || FieldPattern.progress(e, age) <= 0) continue;
       for (int i = 0; i <= link.length(); i++) {
         float from = Math.max(0, i - .5f), to = Math.min(Math.min(link.length(), i + .5f), extent);
         if (to <= from) continue;
         float floor = link.ground()[i] - e.getBlockPos().getY() + .035f, top = floor + 4.93f;
-        panel(v, m, link, from, floor, to, top, color, .17f);
-        strip(v, m, link, from, top, to, top, .22f, color, .075f);
-        strip(v, m, link, from, top, to, top, .075f, color, .22f);
-        strip(v, m, link, from, top, to, top, .015f, color, .72f);
-        strip(v, m, link, from, floor, to, floor, .15f, color, .12f);
-        strip(v, m, link, from, floor, to, floor, .012f, color, .60f);
+
+        strip(v, m, link, from, top, to, top, .22f, color, .075f * FieldPattern.progress(e, age));
+        strip(v, m, link, from, top, to, top, .075f, color, .22f * FieldPattern.progress(e, age));
+        strip(v, m, link, from, top, to, top, .015f, color, .72f * FieldPattern.progress(e, age));
+        strip(v, m, link, from, floor, to, floor, .15f, color, .12f * FieldPattern.progress(e, age));
+        strip(v, m, link, from, floor, to, floor, .012f, color, .60f * FieldPattern.progress(e, age));
         if (i > 0 && i < link.length() && link.ground()[i] != link.ground()[i - 1])
           strip(
               v,
@@ -172,7 +181,7 @@ public final class FieldRenderer implements BlockEntityRenderer<EmitterEntity> {
             hit ? hitAge : -1,
             (float) (link.dx() != 0 ? e.impact.x : e.impact.z),
             (float) e.impact.y,
-            color,
+            color, e.controls, FieldPattern.progress(e, age),
             (x1, y1, x2, y2, w, c, alpha) ->
                 clippedStrip(
                     v,
@@ -189,8 +198,10 @@ public final class FieldRenderer implements BlockEntityRenderer<EmitterEntity> {
                     to,
                     floor,
                     top));
-        float sweep = floor + (time * .018f % 4.93f);
-        strip(v, m, link, from, sweep, to, sweep, .016f, color, .11f);
+        if (e.controls.pattern == 0) {
+          float sweep = floor + (time * .018f % 4.93f);
+          strip(v, m, link, from, sweep, to, sweep, .016f, color, .11f * FieldPattern.progress(e, age));
+        }
         if (extent < link.length() && extent >= from && extent <= to) {
           strip(v, m, link, extent, floor, extent, top, .14f, color, .18f);
           strip(v, m, link, extent, floor, extent, top, .025f, 0xE4FCFF, .90f);

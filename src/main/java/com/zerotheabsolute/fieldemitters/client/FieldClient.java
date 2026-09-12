@@ -10,12 +10,19 @@ import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 public final class FieldClient {
   @SubscribeEvent
   public static void setup(net.neoforged.fml.event.lifecycle.FMLClientSetupEvent event) {
+    event.enqueueWork(() -> FizzleNotice.receive = FizzleDeaths::receive);
+    event.enqueueWork(() -> PlayerLookup.receive = result -> { PlayerListScreen.receive(result); ManagementScreen.lookup(result); });
+    event.enqueueWork(() -> ManagementPackets.receive = ManagementScreen::receive);
+    event.enqueueWork(() -> AccessPackets.receive = AccessScreen::receive);
     event.enqueueWork(() -> FieldControls.remoteData = RemoteScreen::receive);
     event.enqueueWork(
         () ->
             FieldControls.open =
                 e -> net.minecraft.client.Minecraft.getInstance().setScreen(new ControlScreen(e)));
   }
+
+  @SubscribeEvent
+  public static void keys(net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent event) { event.register(TunerKeys.OPEN); }
 
   @SubscribeEvent
   public static void renderers(EntityRenderersEvent.RegisterRenderers e) {
@@ -33,6 +40,7 @@ public final class FieldClient {
             return 0xFF000000 | emitter.color;
           return 0xFF52E5FF;
         },
+        FieldEmitters.TOWER.get(),
         FieldEmitters.EMITTER.get(),
         FieldEmitters.RAIL.get());
   }
@@ -47,6 +55,7 @@ public final class FieldClient {
           var tag = data == null ? new net.minecraft.nbt.CompoundTag() : data.copyTag();
           return 0xFF000000 | (tag.contains("FieldColor") ? tag.getInt("FieldColor") : 0x52E5FF);
         },
+        FieldEmitters.TOWER_ITEM.get(),
         FieldEmitters.TUNER.get(),
         FieldEmitters.EMITTER_ITEM.get(),
         FieldEmitters.RAIL_ITEM.get());
