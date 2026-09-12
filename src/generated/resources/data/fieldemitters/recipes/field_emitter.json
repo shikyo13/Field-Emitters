@@ -1,6 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "equipment",
+  "category": "redstone",
   "key": {
     "A": {
       "item": "minecraft:amethyst_shard"
@@ -9,22 +9,22 @@
       "item": "minecraft:copper_ingot"
     },
     "G": {
-      "tag": "c:glass_panes"
+      "tag": "forge:glass"
     },
     "I": {
       "item": "minecraft:iron_ingot"
     },
     "R": {
-      "item": "minecraft:redstone"
+      "item": "minecraft:redstone_block"
     }
   },
   "pattern": [
-    " A ",
-    "CGC",
-    "IRI"
+    "CAC",
+    "GRG",
+    "III"
   ],
   "result": {
     "count": 1,
-    "id": "fieldemitters:field_tuner"
+    "item": "fieldemitters:field_emitter"
   }
 }

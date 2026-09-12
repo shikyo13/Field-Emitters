@@ -47,13 +47,11 @@ public final class TunerItem extends Item {
 
       }
       var item = c.getItemInHand();
-      var saved = item.get(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
-      var tag = saved == null ? new net.minecraft.nbt.CompoundTag() : saved.copyTag();
+      var saved = item.getTag();
+      var tag = saved == null ? new net.minecraft.nbt.CompoundTag() : saved.copy();
       tag.putInt("FieldColor", e.color);
       tag.putInt("FieldTargets", e.mask);
-      item.set(
-          net.minecraft.core.component.DataComponents.CUSTOM_DATA,
-          net.minecraft.world.item.component.CustomData.of(tag));
+      item.setTag(tag);
     }
     return InteractionResult.SUCCESS;
   }
@@ -92,17 +90,15 @@ public final class TunerItem extends Item {
       ItemStack stack,
       net.minecraft.world.entity.player.Player player,
       net.minecraft.world.entity.Entity entity) {
-    var old = stack.get(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
-    var tag = old == null ? new net.minecraft.nbt.CompoundTag() : old.copyTag();
+    var old = stack.getTag();
+    var tag = old == null ? new net.minecraft.nbt.CompoundTag() : old.copy();
     tag.putString("SampleUUID", entity.getUUID().toString());
     tag.putString(
         "SampleType",
         net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE
             .getKey(entity.getType())
             .toString());
-    stack.set(
-        net.minecraft.core.component.DataComponents.CUSTOM_DATA,
-        net.minecraft.world.item.component.CustomData.of(tag));
+    stack.setTag(tag);
     player.displayClientMessage(
         Component.literal(
             "Sampled " + entity.getName().getString() + ". Apply identity or type in controls."),
@@ -112,7 +108,7 @@ public final class TunerItem extends Item {
   @Override
   public void appendHoverText(
       ItemStack stack,
-      Item.TooltipContext context,
+      net.minecraft.world.level.Level context,
       java.util.List<Component> lines,
       TooltipFlag flags) {
     lines.add(
@@ -121,10 +117,10 @@ public final class TunerItem extends Item {
     lines.add(
         Component.literal("Sneak-use emitter: color; mob / air: sample")
             .withStyle(net.minecraft.ChatFormatting.GRAY));
-    var data = stack.get(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
-    if (data != null && data.copyTag().contains("FieldTargets")) {
+    var data = stack.getTag();
+    if (data != null && data.copy().contains("FieldTargets")) {
       lines.add(
-          Component.literal("Last tuned: " + targets(data.copyTag().getInt("FieldTargets")))
+          Component.literal("Last tuned: " + targets(data.copy().getInt("FieldTargets")))
               .withStyle(net.minecraft.ChatFormatting.AQUA));
     }
   }

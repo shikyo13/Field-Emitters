@@ -1,11 +1,11 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_copper_ingot": {
+    "has_amethyst_shard": {
       "conditions": {
         "items": [
           {
-            "items": "minecraft:copper_ingot"
+            "items": "minecraft:amethyst_shard"
           }
         ]
       },
@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "fieldemitters:field_tuner"
+        "recipe": "fieldemitters:field_rail"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -21,12 +21,12 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_copper_ingot"
+      "has_amethyst_shard"
     ]
   ],
   "rewards": {
     "recipes": [
-      "fieldemitters:field_tuner"
+      "fieldemitters:field_rail"
     ]
   }
 }

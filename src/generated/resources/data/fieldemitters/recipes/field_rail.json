@@ -8,23 +8,20 @@
     "C": {
       "item": "minecraft:copper_ingot"
     },
-    "G": {
-      "tag": "c:glass_blocks"
-    },
     "I": {
       "item": "minecraft:iron_ingot"
     },
     "R": {
-      "item": "minecraft:redstone_block"
+      "item": "minecraft:redstone"
     }
   },
   "pattern": [
-    "CAC",
-    "GRG",
-    "III"
+    "ICI",
+    "ARA",
+    "ICI"
   ],
   "result": {
-    "count": 1,
-    "id": "fieldemitters:field_emitter"
+    "count": 4,
+    "item": "fieldemitters:field_rail"
   }
 }

@@ -38,7 +38,7 @@ public final class FieldEmitters {
                       .strength(-1, 3600000)
                       .noLootTable()
                       .noOcclusion()
-                      .noTerrainParticles()
+                      
                       .lightLevel(s -> s.getValue(FieldBlock.LIT) ? 8 : 0)));
   public static final RegistryObject<RailBlock> RAIL =
       BLOCKS.register(

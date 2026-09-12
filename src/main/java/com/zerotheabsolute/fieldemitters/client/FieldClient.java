@@ -43,8 +43,8 @@ public final class FieldClient {
     event.register(
         (stack, index) -> {
           if (index != 0) return -1;
-          var data = stack.get(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
-          var tag = data == null ? new net.minecraft.nbt.CompoundTag() : data.copyTag();
+          var data = stack.getTag();
+          var tag = data == null ? new net.minecraft.nbt.CompoundTag() : data.copy();
           return 0xFF000000 | (tag.contains("FieldColor") ? tag.getInt("FieldColor") : 0x52E5FF);
         },
         FieldEmitters.TUNER.get(),

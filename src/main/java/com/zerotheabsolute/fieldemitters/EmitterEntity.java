@@ -160,8 +160,8 @@ public final class EmitterEntity extends BlockEntity {
     }
   }
 
-  protected void saveAdditional(CompoundTag t, HolderLookup.Provider r) {
-    super.saveAdditional(t, r);
+  protected void saveAdditional(CompoundTag t) {
+    super.saveAdditional(t);
     t.putLong("PlacedAt", placedAt);
     t.putString("FieldName", fieldName);
     t.put("Controls", controls.save());
@@ -206,9 +206,9 @@ public final class EmitterEntity extends BlockEntity {
     t.put("Links", a);
   }
 
-  protected void loadAdditional(CompoundTag t, HolderLookup.Provider r) {
+  public void load(CompoundTag t) {
     int previousColor = color;
-    super.loadAdditional(t, r);
+    super.load(t);
     impactTime = t.contains("ImpactTime") ? t.getLong("ImpactTime") : -1000;
     impact =
         new net.minecraft.world.phys.Vec3(
@@ -237,8 +237,7 @@ public final class EmitterEntity extends BlockEntity {
     powered = t.getBoolean("Powered");
     transition = t.getLong("Transition");
     demand = t.getInt("Demand");
-    energy.deserializeNBT(
-        r, IntTag.valueOf(Math.max(0, Math.min(energy.getMaxEnergyStored(), t.getInt("Energy")))));
+    energy.deserializeNBT( IntTag.valueOf(Math.max(0, Math.min(energy.getMaxEnergyStored(), t.getInt("Energy")))));
     placedAt = t.contains("PlacedAt") ? t.getLong("PlacedAt") : Long.MAX_VALUE;
     fieldName = t.getString("FieldName");
     owner = t.hasUUID("Owner") ? t.getUUID("Owner") : null;
@@ -270,8 +269,8 @@ public final class EmitterEntity extends BlockEntity {
     }
   }
 
-  public CompoundTag getUpdateTag(HolderLookup.Provider r) {
-    return saveWithoutMetadata(r);
+  public CompoundTag getUpdateTag() {
+    return saveWithoutMetadata();
   }
 
   public ClientboundBlockEntityDataPacket getUpdatePacket() {

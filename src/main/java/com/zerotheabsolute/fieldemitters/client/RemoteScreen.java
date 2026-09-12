@@ -40,7 +40,7 @@ public final class RemoteScreen extends FittedScreen {
               mc.level.holderLookup(net.minecraft.core.registries.Registries.BLOCK),
               tag.getCompound("State"));
       var emitter = new EmitterEntity(pos, state);
-      emitter.loadWithComponents(tag.getCompound("Emitter"), mc.level.registryAccess());
+      emitter.load(tag.getCompound("Emitter"));
       emitter.setLevel(mc.level);
       mc.setScreen(new ControlScreen(emitter));
     } else if (mc.screen instanceof ControlScreen screen) screen.acknowledge(reply.message());
@@ -184,7 +184,7 @@ public final class RemoteScreen extends FittedScreen {
   }
 
   @Override
-  public void renderBackground(GuiGraphics g, int x, int y, float p) {}
+  public void renderBackground(GuiGraphics g) {}
 
   @Override
   public void render(GuiGraphics g, int x, int y, float p) {

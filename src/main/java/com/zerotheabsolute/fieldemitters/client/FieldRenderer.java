@@ -342,11 +342,11 @@ public final class FieldRenderer implements BlockEntityRenderer<EmitterEntity> {
 
   private static void vertex(
       VertexConsumer v, Matrix4f m, float x, float y, float z, int c, float a) {
-    v.addVertex(m, x, y, z)
-        .setColor((c >> 16 & 255) / 255f, (c >> 8 & 255) / 255f, (c & 255) / 255f, a)
-        .setUv(.5f, .5f)
-        .setOverlay(OverlayTexture.NO_OVERLAY)
-        .setLight(0xF000F0)
-        .setNormal(0, 1, 0);
+    v.vertex(m, x, y, z)
+        .color((c >> 16 & 255) / 255f, (c >> 8 & 255) / 255f, (c & 255) / 255f, a)
+        .uv(.5f, .5f)
+        .overlayCoords(OverlayTexture.NO_OVERLAY)
+        .uv2(0xF000F0)
+        .normal(0, 1, 0).endVertex();
   }
 }

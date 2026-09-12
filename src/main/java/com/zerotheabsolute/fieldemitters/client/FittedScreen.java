@@ -47,8 +47,8 @@ abstract class FittedScreen extends Screen {
   }
 
   @Override
-  public boolean mouseScrolled(double x, double y, double dx, double dy) {
-    return super.mouseScrolled(x / fitScale, y / fitScale, dx, dy);
+  public boolean mouseScrolled(double x, double y, double dy) {
+    return super.mouseScrolled(x / fitScale, y / fitScale, dy);
   }
 
   @Override

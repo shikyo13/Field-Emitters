@@ -11,7 +11,7 @@ import org.joml.Matrix4f;
 /** Mechanical iris vanes open smoothly around the exposed projector lens. */
 final class HardwareRenderer {
   private static final ResourceLocation MATERIAL =
-      ResourceLocation.fromNamespaceAndPath("fieldemitters", "textures/block/titanium.png");
+      new ResourceLocation("fieldemitters", "textures/block/titanium.png");
 
   static void render(
       EmitterEntity e,
@@ -89,11 +89,11 @@ final class HardwareRenderer {
       float ny,
       float nz,
       int light) {
-    v.addVertex(m, x, y, z)
-        .setColor(255, 255, 255, 255)
-        .setUv(u, w)
-        .setOverlay(OverlayTexture.NO_OVERLAY)
-        .setLight(light)
-        .setNormal(nx, ny, nz);
+    v.vertex(m, x, y, z)
+        .color(255, 255, 255, 255)
+        .uv(u, w)
+        .overlayCoords(OverlayTexture.NO_OVERLAY)
+        .uv2(light)
+        .normal(nx, ny, nz).endVertex();
   }
 }

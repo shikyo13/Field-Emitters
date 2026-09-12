@@ -4,8 +4,8 @@ import java.util.function.Consumer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import com.zerotheabsolute.fieldemitters.network.PacketCodec;
+import com.zerotheabsolute.fieldemitters.network.FieldPayload;
 import net.minecraft.resources.ResourceLocation;
 import com.zerotheabsolute.fieldemitters.network.ForgeNetworkRegistrar;
 
@@ -18,44 +18,44 @@ public final class FieldControls {
         || player.getOffhandItem().is(FieldEmitters.TUNER.get());
   }
 
-  public record RemoteRequest(boolean list, BlockPos pos) implements CustomPacketPayload {
+  public record RemoteRequest(boolean list, BlockPos pos) implements FieldPayload {
     public static final Type<RemoteRequest> TYPE =
-        new Type<>(ResourceLocation.fromNamespaceAndPath(FieldEmitters.ID, "remote_request"));
-    public static final StreamCodec<FriendlyByteBuf, RemoteRequest> CODEC =
-        StreamCodec.of(
+        new Type<>(new ResourceLocation(FieldEmitters.ID, "remote_request"));
+    public static final PacketCodec<FriendlyByteBuf, RemoteRequest> CODEC =
+        PacketCodec.of(
             (b, p) -> {
               b.writeBoolean(p.list);
               b.writeBlockPos(p.pos);
             },
             b -> new RemoteRequest(b.readBoolean(), b.readBlockPos()));
 
-    public Type<? extends CustomPacketPayload> type() {
+    public Type<? extends FieldPayload> type() {
       return TYPE;
     }
   }
 
-  public record Rename(BlockPos pos, String name) implements CustomPacketPayload {
+  public record Rename(BlockPos pos, String name) implements FieldPayload {
     public static final Type<Rename> TYPE =
-        new Type<>(ResourceLocation.fromNamespaceAndPath(FieldEmitters.ID, "rename"));
-    public static final StreamCodec<FriendlyByteBuf, Rename> CODEC =
-        StreamCodec.of(
+        new Type<>(new ResourceLocation(FieldEmitters.ID, "rename"));
+    public static final PacketCodec<FriendlyByteBuf, Rename> CODEC =
+        PacketCodec.of(
             (b, p) -> {
               b.writeBlockPos(p.pos);
               b.writeUtf(p.name, 32);
             },
             b -> new Rename(b.readBlockPos(), b.readUtf(32)));
 
-    public Type<? extends CustomPacketPayload> type() {
+    public Type<? extends FieldPayload> type() {
       return TYPE;
     }
   }
 
   public record RemoteData(int kind, CompoundTag data, String message)
-      implements CustomPacketPayload {
+      implements FieldPayload {
     public static final Type<RemoteData> TYPE =
-        new Type<>(ResourceLocation.fromNamespaceAndPath(FieldEmitters.ID, "remote_data"));
-    public static final StreamCodec<FriendlyByteBuf, RemoteData> CODEC =
-        StreamCodec.of(
+        new Type<>(new ResourceLocation(FieldEmitters.ID, "remote_data"));
+    public static final PacketCodec<FriendlyByteBuf, RemoteData> CODEC =
+        PacketCodec.of(
             (b, p) -> {
               b.writeInt(p.kind);
               b.writeNbt(p.data);
@@ -63,7 +63,7 @@ public final class FieldControls {
             },
             b -> new RemoteData(b.readInt(), b.readNbt(), b.readUtf(256)));
 
-    public Type<? extends CustomPacketPayload> type() {
+    public Type<? extends FieldPayload> type() {
       return TYPE;
     }
   }
@@ -105,7 +105,7 @@ public final class FieldControls {
                     java.util.Comparator.comparingLong((EmitterEntity e) -> e.placedAt)
                         .thenComparingLong(e -> e.getBlockPos().asLong()))
                 .toList();
-        var anchor = members.getFirst();
+        var anchor = members.get(0);
         var entry = new CompoundTag();
         entry.putLong("Pos", anchor.getBlockPos().asLong());
         entry.putString(
@@ -146,7 +146,7 @@ public final class FieldControls {
       var data = new CompoundTag();
       data.putLong("Pos", e.getBlockPos().asLong());
       data.put("State", net.minecraft.nbt.NbtUtils.writeBlockState(e.getBlockState()));
-      data.put("Emitter", e.getUpdateTag(level.registryAccess()));
+      data.put("Emitter", e.getUpdateTag());
       reply(player, 1, data, "");
     }
   }
@@ -160,11 +160,11 @@ public final class FieldControls {
       boolean reset,
       BlockPos target,
       boolean linkOnly)
-      implements CustomPacketPayload {
+      implements FieldPayload {
     public static final Type<Update> TYPE =
-        new Type<>(ResourceLocation.fromNamespaceAndPath(FieldEmitters.ID, "controls"));
-    public static final StreamCodec<FriendlyByteBuf, Update> CODEC =
-        StreamCodec.of(
+        new Type<>(new ResourceLocation(FieldEmitters.ID, "controls"));
+    public static final PacketCodec<FriendlyByteBuf, Update> CODEC =
+        PacketCodec.of(
             (b, p) -> {
               b.writeBlockPos(p.pos);
               b.writeNbt(p.settings);
@@ -186,7 +186,7 @@ public final class FieldControls {
                     b.readBlockPos(),
                     b.readBoolean()));
 
-    public Type<? extends CustomPacketPayload> type() {
+    public Type<? extends FieldPayload> type() {
       return TYPE;
     }
   }
@@ -322,12 +322,12 @@ public final class FieldControls {
     if (!f.entityType.isEmpty()
         && !f.entityType.startsWith("#")
         && !net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.containsKey(
-            net.minecraft.resources.ResourceLocation.parse(f.entityType)))
+            new net.minecraft.resources.ResourceLocation(f.entityType)))
       return "Unknown entity ID: " + f.entityType;
     if (!f.itemType.isEmpty()
         && !f.itemType.startsWith("#")
         && !net.minecraft.core.registries.BuiltInRegistries.ITEM.containsKey(
-            net.minecraft.resources.ResourceLocation.parse(f.itemType)))
+            new net.minecraft.resources.ResourceLocation(f.itemType)))
       return "Unknown item ID: " + f.itemType;
     return null;
   }

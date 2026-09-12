@@ -13,18 +13,18 @@ public final class FieldCell extends BlockEntity {
     super(FieldEmitters.CELL_BE.get(), p, s);
   }
 
-  protected void saveAdditional(CompoundTag t, HolderLookup.Provider r) {
-    super.saveAdditional(t, r);
+  protected void saveAdditional(CompoundTag t) {
+    super.saveAdditional(t);
     t.putLong("Source", source.asLong());
   }
 
-  protected void loadAdditional(CompoundTag t, HolderLookup.Provider r) {
-    super.loadAdditional(t, r);
+  public void load(CompoundTag t) {
+    super.load(t);
     source = BlockPos.of(t.getLong("Source"));
   }
 
-  public CompoundTag getUpdateTag(HolderLookup.Provider r) {
-    return saveWithoutMetadata(r);
+  public CompoundTag getUpdateTag() {
+    return saveWithoutMetadata();
   }
 
   public ClientboundBlockEntityDataPacket getUpdatePacket() {

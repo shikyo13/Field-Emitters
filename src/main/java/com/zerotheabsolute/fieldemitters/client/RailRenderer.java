@@ -171,11 +171,11 @@ public final class RailRenderer {
   private static void vertex(
       VertexConsumer v, Matrix4f m, Vec3 a, Vec3 b, float x, float y, int c, float alpha) {
     var p = a.scale(x).add(b.scale(y)).add(.5, .5, .5);
-    v.addVertex(m, (float) p.x, (float) p.y, (float) p.z)
-        .setColor((c >> 16 & 255) / 255f, (c >> 8 & 255) / 255f, (c & 255) / 255f, alpha)
-        .setUv(.5f, .5f)
-        .setOverlay(OverlayTexture.NO_OVERLAY)
-        .setLight(LightTexture.FULL_BRIGHT)
-        .setNormal(0, 1, 0);
+    v.vertex(m, (float) p.x, (float) p.y, (float) p.z)
+        .color((c >> 16 & 255) / 255f, (c >> 8 & 255) / 255f, (c & 255) / 255f, alpha)
+        .uv(.5f, .5f)
+        .overlayCoords(OverlayTexture.NO_OVERLAY)
+        .uv2(LightTexture.FULL_BRIGHT)
+        .normal(0, 1, 0).endVertex();
   }
 }

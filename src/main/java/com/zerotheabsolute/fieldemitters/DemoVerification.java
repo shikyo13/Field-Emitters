@@ -26,7 +26,7 @@ public final class DemoVerification {
       source.sendFailure(Component.literal("Stand near a powered emitter with an outgoing link."));
       return 0;
     }
-    var link = e.links.getFirst();
+    var link = e.links.get(0);
     int index = link.length() / 2;
     var p = e.getBlockPos();
     double x = p.getX() + .5 + index * link.dx(),
@@ -36,12 +36,12 @@ public final class DemoVerification {
     var zombie = EntityType.ZOMBIE.create(l);
     var cow = EntityType.COW.create(l);
     var owner =
-        FixturePlayers.get(
+        net.minecraftforge.common.util.FakePlayerFactory.get(
             l,
             new GameProfile(
                 UUID.fromString("56f3e2a2-9270-4b13-8822-303bef87c5ac"), "FieldTestOwner"));
     var other =
-        FixturePlayers.get(
+        net.minecraftforge.common.util.FakePlayerFactory.get(
             l,
             new GameProfile(
                 UUID.fromString("642cae2b-cd05-45eb-88dd-7788aa732915"), "FieldTestGuest"));

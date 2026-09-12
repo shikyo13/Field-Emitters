@@ -1,6 +1,5 @@
 package com.zerotheabsolute.fieldemitters;
 
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
@@ -21,9 +20,6 @@ public final class FieldBlock extends BaseEntityBlock {
     registerDefaultState(stateDefinition.any().setValue(X_AXIS, true).setValue(LIT, false));
   }
 
-  protected MapCodec<? extends BaseEntityBlock> codec() {
-    return simpleCodec(FieldBlock::new);
-  }
 
   protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> b) {
     b.add(X_AXIS, LIT);
@@ -92,7 +88,7 @@ public final class FieldBlock extends BaseEntityBlock {
     return Shapes.empty();
   }
 
-  protected void tick(BlockState s, ServerLevel l, BlockPos p, RandomSource random) {
+  public void tick(BlockState s, ServerLevel l, BlockPos p, RandomSource random) {
     if (!(l.getBlockEntity(p) instanceof FieldCell c)
         || !l.hasChunkAt(c.source)
         || !(l.getBlockEntity(c.source) instanceof EmitterEntity e)

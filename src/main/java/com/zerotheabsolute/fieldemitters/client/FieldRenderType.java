@@ -21,7 +21,7 @@ final class FieldRenderType extends RenderStateShard {
               .setShaderState(RENDERTYPE_EYES_SHADER)
               .setTextureState(
                   new TextureStateShard(
-                      ResourceLocation.fromNamespaceAndPath(
+                      new ResourceLocation(
                           "fieldemitters", "textures/misc/white.png"),
                       false,
                       false))

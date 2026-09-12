@@ -1,6 +1,5 @@
 package com.zerotheabsolute.fieldemitters;
 
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.*;
 import net.minecraft.world.*;
 import net.minecraft.world.entity.*;
@@ -29,9 +28,6 @@ public final class RailBlock extends BaseEntityBlock {
             .setValue(LIGHT, false));
   }
 
-  protected MapCodec<? extends BaseEntityBlock> codec() {
-    return simpleCodec(RailBlock::new);
-  }
 
   protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> b) {
     b.add(FACING, ACTIVE, LIGHT);
@@ -91,21 +87,10 @@ public final class RailBlock extends BaseEntityBlock {
         : null;
   }
 
-  protected ItemInteractionResult useItemOn(
-      ItemStack stack,
-      BlockState s,
-      Level l,
-      BlockPos p,
-      Player player,
-      InteractionHand hand,
-      BlockHitResult hit) {
-    return stack.isEmpty()
-        ? ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION
-        : ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
-  }
 
-  protected InteractionResult useWithoutItem(
-      BlockState s, Level l, BlockPos p, Player player, BlockHitResult hit) {
+  public InteractionResult use(
+      BlockState s, Level l, BlockPos p, Player player, net.minecraft.world.InteractionHand hand, BlockHitResult hit) {
+    if (!player.getItemInHand(hand).isEmpty()) return InteractionResult.PASS;
     if (l.isClientSide && l.getBlockEntity(p) instanceof EmitterEntity e)
       FieldControls.open.accept(e);
     return InteractionResult.SUCCESS;

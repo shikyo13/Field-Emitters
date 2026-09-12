@@ -74,12 +74,12 @@ public final class FieldGuide {
   private static void quad(
       VertexConsumer v, Matrix4f m, Vec3 a, Vec3 b, Vec3 c, Vec3 d, int color) {
     for (var p : new Vec3[] {a, b, c, d})
-      v.addVertex(m, (float) p.x, (float) p.y, (float) p.z)
-          .setColor(
+      v.vertex(m, (float) p.x, (float) p.y, (float) p.z)
+          .color(
               (color >> 16 & 255) / 255f, (color >> 8 & 255) / 255f, (color & 255) / 255f, .85f)
-          .setUv(.5f, .5f)
-          .setOverlay(OverlayTexture.NO_OVERLAY)
-          .setLight(LightTexture.FULL_BRIGHT)
-          .setNormal(0, 1, 0);
+          .uv(.5f, .5f)
+          .overlayCoords(OverlayTexture.NO_OVERLAY)
+          .uv2(LightTexture.FULL_BRIGHT)
+          .normal(0, 1, 0).endVertex();
   }
 }

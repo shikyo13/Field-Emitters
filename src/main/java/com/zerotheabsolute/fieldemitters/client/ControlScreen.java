@@ -33,7 +33,7 @@ public final class ControlScreen extends FittedScreen {
   }
 
   @Override
-  public void renderBackground(GuiGraphics g, int mx, int my, float partial) {}
+  public void renderBackground(GuiGraphics g) {}
 
   public boolean isPauseScreen() {
     return false;
@@ -543,9 +543,9 @@ public final class ControlScreen extends FittedScreen {
   private void sample(EntityFilter f, boolean individual) {
     for (var stack : minecraft.player.getInventory().items) {
       if (!stack.is(FieldEmitters.TUNER.get())) continue;
-      var data = stack.get(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
+      var data = stack.getTag();
       if (data == null) continue;
-      var t = data.copyTag();
+      var t = data.copy();
       if (!t.contains("SampleUUID")) continue;
       f.groups = 31;
       f.exemptOwner = false;

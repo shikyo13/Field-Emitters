@@ -35,7 +35,7 @@ public final class AutomationVerification {
       f.groups = 31;
       f.identity = cow.getUUID().toString();
       require(f.matches(cow, e.owner) && !f.matches(zombie, e.owner), "UUID match");
-      var link = e.links.getFirst();
+      var link = e.links.get(0);
       int i = link.length() / 2;
       Vec3 center =
           new Vec3(

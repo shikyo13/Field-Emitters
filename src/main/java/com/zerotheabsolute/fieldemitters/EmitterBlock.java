@@ -1,6 +1,5 @@
 package com.zerotheabsolute.fieldemitters;
 
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
@@ -28,9 +27,6 @@ public final class EmitterBlock extends BaseEntityBlock {
         stateDefinition.any().setValue(SECTION, 0).setValue(ACTIVE, false).setValue(LIGHT, false));
   }
 
-  protected MapCodec<? extends BaseEntityBlock> codec() {
-    return simpleCodec(EmitterBlock::new);
-  }
 
   protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> b) {
     b.add(SECTION, ACTIVE, LIGHT);
@@ -68,23 +64,10 @@ public final class EmitterBlock extends BaseEntityBlock {
     return s.hasProperty(SECTION) ? p.below(s.getValue(SECTION)) : p;
   }
 
-  @Override
-  protected net.minecraft.world.ItemInteractionResult useItemOn(
-      ItemStack stack,
-      BlockState state,
-      Level level,
-      BlockPos pos,
-      Player player,
-      net.minecraft.world.InteractionHand hand,
-      BlockHitResult hit) {
-    // Nonempty hands must reach the item's own interaction (tuner or block placement).
-    return stack.isEmpty()
-        ? net.minecraft.world.ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION
-        : net.minecraft.world.ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
-  }
 
-  protected InteractionResult useWithoutItem(
-      BlockState s, Level l, BlockPos p, Player player, BlockHitResult hit) {
+  public InteractionResult use(
+      BlockState s, Level l, BlockPos p, Player player, net.minecraft.world.InteractionHand hand, BlockHitResult hit) {
+    if (!player.getItemInHand(hand).isEmpty()) return InteractionResult.PASS;
     if (l.isClientSide && l.getBlockEntity(base(p, s)) instanceof EmitterEntity e)
       FieldControls.open.accept(e);
     return InteractionResult.SUCCESS;
@@ -113,7 +96,7 @@ public final class EmitterBlock extends BaseEntityBlock {
         : null;
   }
 
-  protected void onRemove(BlockState old, Level l, BlockPos p, BlockState next, boolean moving) {
+  public void onRemove(BlockState old, Level l, BlockPos p, BlockState next, boolean moving) {
     if (!old.is(next.getBlock()) && !l.isClientSide) {
       BlockPos b = base(p, old);
       for (int i = 0; i < 5; i++) {

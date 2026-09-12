@@ -2,47 +2,22 @@ plugins {
     id 'java-library'
     id 'maven-publish'
     id 'idea'
-    id 'net.minecraftforge.gradle' version '6.0.54'
+    id 'net.neoforged.moddev.legacyforge' version '2.0.141'
 }
 version = mod_version
 group = mod_group_id
 base.archivesName = mod_archive_name
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 tasks.withType(AbstractArchiveTask).configureEach {
     preserveFileTimestamps = false
     reproducibleFileOrder = true
 }
-minecraft {
-    mappings channel: 'official', version: minecraft_version
-    reobf = false
-    copyIdeResources = true
-    runs {
-        configureEach {
-            workingDirectory project.file('run')
-            property 'forge.logging.console.level', 'info'
-            property 'forge.enabledGameTestNamespaces', mod_id
-            mods { "${mod_id}" { source sourceSets.main } }
-        }
-        client {}
-        server { args '--nogui' }
-        gameTestServer {}
-        data {
-            workingDirectory project.file('run-data')
-            args '--mod', mod_id, '--all', '--output', file('src/generated/resources'), '--existing', file('src/main/resources')
-        }
-    }
+legacyForge {
+ enable { forgeVersion = "${project.minecraft_version}-${project.forge_version}"; disableRecompilation = false }
+ runs { client { client() }; server { server(); programArgument '--nogui' } }
+ mods { "${mod_id}" { sourceSet(sourceSets.main) } }
 }
 sourceSets.main.resources.srcDir 'src/generated/resources'
-// Forge scans each development mod as one directory.
-sourceSets.main.output.resourcesDir = layout.buildDirectory.dir('classes/java/main').get().asFile
-tasks.named('processResources') { dependsOn tasks.named('compileJava') }
-repositories {
-    exclusiveContent {
-        forRepository { maven { url = 'https://libraries.minecraft.net'; metadataSources { mavenPom(); artifact() } } }
-        filter { includeGroup 'org.lwjgl' }
-    }
-}
-dependencies { minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}" }
 // This block of code expands all declared replace properties in the specified resource targets.
 // A missing property will result in an error. Properties are expanded using ${} Groovy notation.
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {

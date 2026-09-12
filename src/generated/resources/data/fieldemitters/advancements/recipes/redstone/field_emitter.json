@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "fieldemitters:field_rail"
+        "recipe": "fieldemitters:field_emitter"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -26,7 +26,7 @@
   ],
   "rewards": {
     "recipes": [
-      "fieldemitters:field_rail"
+      "fieldemitters:field_emitter"
     ]
   }
 }
