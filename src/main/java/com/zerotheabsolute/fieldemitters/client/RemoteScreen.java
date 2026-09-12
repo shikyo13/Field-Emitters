@@ -7,7 +7,7 @@ import net.minecraft.client.gui.components.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import com.zerotheabsolute.fieldemitters.network.ForgePacketDistributor;
+import com.zerotheabsolute.fieldemitters.network.NativeNetwork;
 
 /** Server-backed field directory, then the emitters in a selected field. */
 public final class RemoteScreen extends FittedScreen {
@@ -25,7 +25,7 @@ public final class RemoteScreen extends FittedScreen {
   }
 
   public static void openManager() {
-    ForgePacketDistributor.sendToServer(new FieldControls.RemoteRequest(true, BlockPos.ZERO));
+    NativeNetwork.sendToServer(new FieldControls.RemoteRequest(true, BlockPos.ZERO));
   }
 
   public static void receive(FieldControls.RemoteData reply) {
@@ -54,7 +54,7 @@ public final class RemoteScreen extends FittedScreen {
     renameDue = 0;
     String name = nameBox.getValue().strip();
     selected.putString("Name", name);
-    ForgePacketDistributor.sendToServer(
+    NativeNetwork.sendToServer(
         new FieldControls.Rename(BlockPos.of(selected.getLong("Pos")), name));
   }
 
@@ -122,7 +122,7 @@ public final class RemoteScreen extends FittedScreen {
                           rebuildWidgets();
                         } else {
                           rename();
-                          ForgePacketDistributor.sendToServer(
+                          NativeNetwork.sendToServer(
                               new FieldControls.RemoteRequest(false, pos));
                         }
                       })

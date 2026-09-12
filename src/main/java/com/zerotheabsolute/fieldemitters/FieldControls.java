@@ -7,7 +7,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import com.zerotheabsolute.fieldemitters.network.PacketCodec;
 import com.zerotheabsolute.fieldemitters.network.FieldPayload;
 import net.minecraft.resources.ResourceLocation;
-import com.zerotheabsolute.fieldemitters.network.ForgeNetworkRegistrar;
+import com.zerotheabsolute.fieldemitters.network.NativeNetwork;
 
 public final class FieldControls {
   public static Consumer<EmitterEntity> open = e -> {};
@@ -70,7 +70,7 @@ public final class FieldControls {
 
   private static void reply(
       net.minecraft.world.entity.player.Player player, int kind, CompoundTag data, String message) {
-    com.zerotheabsolute.fieldemitters.network.ForgePacketDistributor.sendToPlayer(
+    com.zerotheabsolute.fieldemitters.network.NativeNetwork.sendToPlayer(
         (net.minecraft.server.level.ServerPlayer) player, new RemoteData(kind, data, message));
   }
 
@@ -191,11 +191,11 @@ public final class FieldControls {
     }
   }
 
-  public static void register(ForgeNetworkRegistrar event) {
+  public static void register(NativeNetwork event) {
     event
         
         .playToServer(
-            Rename.class,
+            Rename.TYPE,
             Rename.CODEC,
             (p, c) ->
                 c.enqueueWork(
@@ -228,15 +228,15 @@ public final class FieldControls {
     event
         
         .playToServer(
-            RemoteRequest.class,
+            RemoteRequest.TYPE,
             RemoteRequest.CODEC,
             (p, c) -> c.enqueueWork(() -> remote(p, c.player())))
         .playToClient(
-            RemoteData.class, RemoteData.CODEC, (p, c) -> c.enqueueWork(() -> remoteData.accept(p)));
+            RemoteData.TYPE, RemoteData.CODEC, (p, c) -> c.enqueueWork(() -> remoteData.accept(p)));
     event
         
         .playToServer(
-            Update.class,
+            Update.TYPE,
             Update.CODEC,
             (p, context) ->
                 context.enqueueWork(

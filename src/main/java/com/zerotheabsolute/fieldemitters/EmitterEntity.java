@@ -6,7 +6,7 @@ import net.minecraft.nbt.*;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.energy.EnergyStorage;
+import com.zerotheabsolute.fieldemitters.energy.EnergyStorage;
 
 public final class EmitterEntity extends BlockEntity {
   public ControlSettings controls = new ControlSettings();
@@ -42,6 +42,7 @@ public final class EmitterEntity extends BlockEntity {
   public Set<BlockPos> cells = new HashSet<>();
   public final EnergyStorage energy =
       new EnergyStorage(FieldConfig.capacity(), FieldConfig.transfer(), FieldConfig.transfer()) {
+        @Override protected void onFinalCommit() { setChanged(); }
         @Override
         public int receiveEnergy(int amount, boolean simulate) {
           int n = super.receiveEnergy(amount, simulate);
@@ -56,29 +57,6 @@ public final class EmitterEntity extends BlockEntity {
           return n;
         }
       };
-
-    private net.minecraftforge.common.util.LazyOptional<net.minecraftforge.energy.IEnergyStorage> energyCapability =
-            net.minecraftforge.common.util.LazyOptional.of(() -> energy);
-
-    @Override
-    public <T> net.minecraftforge.common.util.LazyOptional<T> getCapability(
-            net.minecraftforge.common.capabilities.Capability<T> capability, net.minecraft.core.Direction side) {
-        if (capability == net.minecraftforge.common.capabilities.ForgeCapabilities.ENERGY) return energyCapability.cast();
-        return super.getCapability(capability, side);
-    }
-
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        energyCapability.invalidate();
-    }
-
-    @Override
-    public void reviveCaps() {
-        super.reviveCaps();
-        energyCapability = net.minecraftforge.common.util.LazyOptional.of(() -> energy);
-    }
-
 
   public EmitterEntity(BlockPos p, BlockState s) {
     super(FieldEmitters.EMITTER_BE.get(), p, s);

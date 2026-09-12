@@ -32,10 +32,8 @@ jobs:
       - name: Make Gradle wrapper executable
         run: chmod +x ./gradlew
 
-      - name: Verify generated data is committed
-        run: |
-          ./gradlew --no-daemon runData
-          git diff --exit-code -- src/generated
+      - name: Verify converted resource JSON
+        run: python3 tools/verify_resources.py
 
       - name: Build
         run: ./gradlew --no-daemon clean build

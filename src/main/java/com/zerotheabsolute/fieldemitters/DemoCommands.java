@@ -5,15 +5,15 @@ import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraftforge.event.RegisterCommandsEvent;
+
 
 public final class DemoCommands {
-  public static void register(RegisterCommandsEvent event) {
-    event
-        .getDispatcher()
+  public static void register(com.mojang.brigadier.CommandDispatcher<net.minecraft.commands.CommandSourceStack> dispatcher) {
+    dispatcher
         .register(
             Commands.literal("fielddemo")
                 .requires(s -> s.hasPermission(2))
+                .then(Commands.literal("verifyenergy").executes(ctx -> EnergyVerification.run(ctx.getSource())))
                 .then(
                     Commands.literal("verifyrails")
                         .executes(ctx -> RailVerification.run(ctx.getSource())))
@@ -72,8 +72,10 @@ public final class DemoCommands {
                                           .defaultBlockState()
                                           .setValue(EmitterBlock.SECTION, i),
                                       3);
-                                if (l.getBlockEntity(p) instanceof EmitterEntity e
-                                    && s.getEntity() != null) e.owner = s.getEntity().getUUID();
+                                if (l.getBlockEntity(p) instanceof EmitterEntity e) {
+                                  e.controls.inputFace = net.minecraft.core.Direction.WEST;
+                                  if (s.getEntity() != null) e.owner = s.getEntity().getUUID();
+                                }
                               }
                               l.setBlock(
                                   origin.offset(-1, 1, 0),

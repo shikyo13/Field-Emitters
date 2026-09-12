@@ -36,12 +36,12 @@ public final class DemoVerification {
     var zombie = EntityType.ZOMBIE.create(l);
     var cow = EntityType.COW.create(l);
     var owner =
-        net.minecraftforge.common.util.FakePlayerFactory.get(
+        FixturePlayers.get(
             l,
             new GameProfile(
                 UUID.fromString("56f3e2a2-9270-4b13-8822-303bef87c5ac"), "FieldTestOwner"));
     var other =
-        net.minecraftforge.common.util.FakePlayerFactory.get(
+        FixturePlayers.get(
             l,
             new GameProfile(
                 UUID.fromString("642cae2b-cd05-45eb-88dd-7788aa732915"), "FieldTestGuest"));

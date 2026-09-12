@@ -4,9 +4,9 @@ import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.renderer.*;
 import net.minecraft.resources.ResourceLocation;
 
-final class FieldRenderType extends RenderStateShard {
+final class FieldRenderType extends RenderType {
   private FieldRenderType() {
-    super("field_dummy", () -> {}, () -> {});
+    super("field_dummy", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, false, true, () -> {}, () -> {});
   }
 
   static final RenderType ENERGY =

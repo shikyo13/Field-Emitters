@@ -1,55 +1,33 @@
 plugins {
-    id 'java-library'
+    id 'fabric-loom' version '1.10.5'
     id 'maven-publish'
-    id 'idea'
-    id 'net.neoforged.moddev.legacyforge' version '2.0.141'
 }
 version = mod_version
 group = mod_group_id
-base.archivesName = mod_archive_name
+base.archivesName = 'field-emitters-fabric-1.20.1'
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
-tasks.withType(AbstractArchiveTask).configureEach {
-    preserveFileTimestamps = false
-    reproducibleFileOrder = true
+repositories {
+    maven { url = 'https://api.modrinth.com/maven' }
 }
-legacyForge {
- enable { forgeVersion = "${project.minecraft_version}-${project.forge_version}"; disableRecompilation = false }
- runs { client { client() }; server { server(); programArgument '--nogui' } }
- mods { "${mod_id}" { sourceSet(sourceSets.main) } }
+dependencies {
+    minecraft 'com.mojang:minecraft:1.20.1'
+    mappings loom.officialMojangMappings()
+    modImplementation 'net.fabricmc:fabric-loader:0.19.5'
+    modImplementation 'net.fabricmc.fabric-api:fabric-api:0.92.12+1.20.1'
+    include modApi('teamreborn:energy:3.0.0')
+    modImplementation 'maven.modrinth:forge-config-api-port:HvR3IdRE'
+    // Loom does not put dependency jar-in-jar libraries on the development classpath.
+    runtimeOnly 'com.electronwill.night-config:core:3.6.5'
+    runtimeOnly 'com.electronwill.night-config:toml:3.6.5'
 }
 sourceSets.main.resources.srcDir 'src/generated/resources'
-// This block of code expands all declared replace properties in the specified resource targets.
-// A missing property will result in an error. Properties are expanded using ${} Groovy notation.
-var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
-    var replaceProperties = [
-            minecraft_version      : minecraft_version,
-            minecraft_version_range: minecraft_version_range,
-            forge_version            : forge_version,
-            forge_version_range      : forge_version_range,
-            loader_version_range   : loader_version_range,
-            mod_id                 : mod_id,
-            mod_name               : mod_name,
-            mod_license            : mod_license,
-            mod_version            : mod_version,
-            mod_authors            : mod_authors,
-            mod_homepage           : mod_homepage,
-            mod_issue_tracker      : mod_issue_tracker,
-            mod_description        : mod_description
-    ]
-    inputs.properties replaceProperties
-    expand replaceProperties
-    from "src/main/templates"
-    into "build/generated/sources/modMetadata"
-}
-// Include the output of "generateModMetadata" as an input directory for the build
-// this works with both building through Gradle and the IDE.
-sourceSets.main.resources.srcDir generateModMetadata
-// To avoid having to run "generateModMetadata" manually, make it run on every project reload
 
-
-
-tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }
+loom { runs { client { client() }; server { server(); programArg '--nogui' } } }
+tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8'; options.release = 17 }
+tasks.withType(AbstractArchiveTask).configureEach { preserveFileTimestamps = false; reproducibleFileOrder = true }
+processResources { inputs.property 'version', project.version; filesMatching('fabric.mod.json') { expand version: project.version } }
 jar { includeEmptyDirs = false; exclude '.cache/**'; from('LICENSE') { into 'META-INF' } }
-if (providers.gradleProperty('extraMods').isPresent()) {
- dependencies { runtimeOnly files(providers.gradleProperty('extraMods').get().split(',')) }
-}
+if (providers.gradleProperty('extraMods').isPresent()) { dependencies { modLocalRuntime files(providers.gradleProperty('extraMods').get().split(',')) } }
+
+// Isolated localhost server validation; normal server launches retain their defaults.
+if (providers.gradleProperty('qaPort').isPresent()) { loom.runs.server { programArg '--port'; programArg providers.gradleProperty('qaPort').get() } }
