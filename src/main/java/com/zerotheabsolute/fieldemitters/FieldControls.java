@@ -256,7 +256,7 @@ public final class FieldControls {
                             player,
                             2,
                             new CompoundTag(),
-                            "Emitter unavailable. Stay nearby or hold a Field Tuner.");
+                            "Emitter unavailable. Stay nearby or carry or equip a Field Tuner.");
                         return;
                       }
                       if (!editable(seed, player)) {
@@ -264,7 +264,7 @@ public final class FieldControls {
                             player,
                             2,
                             new CompoundTag(),
-                            "Access denied: this emitter belongs to another player.");
+                            "Access denied. Ask the field owner for management access.");
                         return;
                       }
                       var validated = ControlSettings.load(p.settings);

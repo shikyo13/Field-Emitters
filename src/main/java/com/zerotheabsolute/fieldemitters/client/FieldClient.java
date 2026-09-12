@@ -18,7 +18,13 @@ public final class FieldClient {
     event.enqueueWork(
         () ->
             FieldControls.open =
-                e -> net.minecraft.client.Minecraft.getInstance().setScreen(new ControlScreen(e)));
+                e -> {
+                  var mc = net.minecraft.client.Minecraft.getInstance();
+                  if (mc.player == null) return;
+                  if (FieldControls.editable(e, mc.player)) mc.setScreen(new ControlScreen(e));
+                  else mc.player.displayClientMessage(net.minecraft.network.chat.Component.literal(
+                      "This field is private. Ask its owner for management access."), true);
+                });
   }
 
   @SubscribeEvent
