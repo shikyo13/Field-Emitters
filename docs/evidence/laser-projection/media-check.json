@@ -1,0 +1,66 @@
+{
+  "hex-lattice": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 960,
+        "height": 640,
+        "r_frame_rate": "30/1",
+        "nb_frames": "282"
+      }
+    ],
+    "format": {
+      "duration": "9.400000"
+    }
+  },
+  "smooth-glow": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 960,
+        "height": 640,
+        "r_frame_rate": "30/1",
+        "nb_frames": "283"
+      }
+    ],
+    "format": {
+      "duration": "9.433333"
+    }
+  },
+  "drifting-pixels": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 960,
+        "height": 640,
+        "r_frame_rate": "30/1",
+        "nb_frames": "283"
+      }
+    ],
+    "format": {
+      "duration": "9.433333"
+    }
+  },
+  "plasma": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 960,
+        "height": 640,
+        "r_frame_rate": "30/1",
+        "nb_frames": "283"
+      }
+    ],
+    "format": {
+      "duration": "9.433333"
+    }
+  }
+}

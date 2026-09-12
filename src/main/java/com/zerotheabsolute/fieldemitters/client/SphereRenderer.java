@@ -9,11 +9,15 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 
 final class SphereRenderer {
-  private static final int LONGITUDES = 64, LATITUDES = 24, FANS = 4;
+  private static final int LONGITUDES = 64, LATITUDES = 24, BEAMS = 4;
   private static final float IDLE_ALPHA = .11f, SHUTDOWN_TICKS = 25;
   // Fixed pattern coordinates bound detail work even on the largest sphere.
   private static final float PATTERN_RADIUS = 8;
   private static final double DETAIL_OFFSET = .015;
+  private static final int TRAIL_SAMPLES = 6;
+  private static final float TRAIL_SECONDS = .09f;
+  private static final float BEAM_WIDTH = .045f;
+  private static final double TAU = Math.PI * 2;
 
   private SphereRenderer() {}
 
@@ -32,9 +36,6 @@ final class SphereRenderer {
     double waveAge = (e.getLevel().getGameTime() + partial - e.impactTime) / 20.0;
     for (int longitude = 0; longitude < LONGITUDES; longitude++) {
       double azimuth = longitude * Math.PI * 2 / LONGITUDES;
-      // Four fans each build one quadrant; the leading edge matches the projection sheets.
-      double sector = (longitude % (LONGITUDES / FANS)) / (double) (LONGITUDES / FANS);
-      if (sector > progress) continue;
       for (int latitude = 0; latitude < LATITUDES; latitude++) {
         double elevation = minLatitude + range * latitude / LATITUDES;
         Vec3 a = point(radius, azimuth, elevation),
@@ -48,28 +49,119 @@ final class SphereRenderer {
                 ? (float) Math.exp(-Math.pow((arc - waveAge * 9) / .6, 2))
                     * (float) (1 - waveAge / 2)
                 : 0;
-        float alpha = ((e.controls.pattern == 3 ? 0 : IDLE_ALPHA) + ripple * .45f) * opacity;
+        float reveal = progress * progress;
+        float alpha =
+            ((e.controls.pattern == 3 ? 0 : IDLE_ALPHA * reveal) + ripple * .45f) * opacity;
         quad(vertices, matrix, a, b, c, d, e.color, alpha);
       }
     }
     renderPattern(e, vertices, matrix, partial, progress, opacity, minLatitude);
-    if (e.powered && progress < 1 && e.controls.animation) {
-      var tip = new Vec3(.5, TowerBlock.HEIGHT - .25, .5);
-      for (int fan = 0; fan < FANS; fan++) {
-        double angle = (fan + progress) * Math.PI * 2 / FANS;
-        for (int band = 0; band < LATITUDES; band++) {
-          double elevation = minLatitude + range * band / LATITUDES;
-          var a = point(radius, angle, elevation);
-          var b = point(radius, angle, elevation + range / LATITUDES);
-          quad(vertices, matrix, tip, a, b, tip, e.color, .10f);
-          if (band == 0 || band == LATITUDES / 2 || band == LATITUDES - 1)
-            quad(vertices, matrix, tip, a, a.add(0, .08, 0), tip, 0xDFFFFF, .65f);
-          // Soft trailing sheet gives the broad translucent laser fan in the reference.
-          var trail = point(radius, angle - .035, elevation);
-          quad(vertices, matrix, tip, a, trail, tip, e.color, .14f);
-        }
+    if (e.powered && progress < 1 && e.controls.animation)
+      renderProjectors(vertices, matrix, radius, minLatitude, age / 20, progress, e.color);
+  }
+
+  /** Accelerating mirror sweeps: each beam has its own phase, direction and elevation. */
+  private static Vec3 scanTarget(double radius, double minimum, float seconds, int beam) {
+    double t = Math.max(0, seconds);
+    double phase = TAU * (.18 * t + .38 * t * t);
+    double offset = beam * TAU / BEAMS;
+    double direction = (beam & 1) == 0 ? 1 : -1;
+    double azimuth =
+        offset
+            + direction * phase * (1 + beam * .17)
+            + .55 * Math.sin(phase * (1.3 + beam * .19) + offset);
+    double height =
+        .5
+            + .43 * Math.sin(phase * (.61 + beam * .13) + offset)
+            + .06 * Math.sin(phase * 2.3 - offset);
+    return point(radius, azimuth, minimum + (Math.PI / 2 - minimum) * height);
+  }
+
+  private static void renderProjectors(
+      VertexConsumer vertices,
+      Matrix4f matrix,
+      int radius,
+      double minimum,
+      float seconds,
+      float progress,
+      int color) {
+    var tip = new Vec3(.5, TowerBlock.HEIGHT - .25, .5);
+    float fade = Mth.clamp((1 - progress) * 8, 0, 1);
+    for (int beam = 0; beam < BEAMS; beam++) {
+      var target = scanTarget(radius, minimum, seconds, beam);
+      for (int sample = 1; sample <= TRAIL_SAMPLES; sample++) {
+        float delay = TRAIL_SECONDS * sample / TRAIL_SAMPLES;
+        var previous = scanTarget(radius, minimum, seconds - delay, beam);
+        float strength = 1 - sample / (float) (TRAIL_SAMPLES + 1);
+        // A short curved trail gives the moving ray a soft laser-projector fan.
+        quad(vertices, matrix, tip, target, previous, tip, color, .10f * strength * fade);
+        ray(vertices, matrix, tip, previous, color, BEAM_WIDTH * 2, .06f * strength * fade);
+        target = previous;
       }
+      target = scanTarget(radius, minimum, seconds, beam);
+      ray(vertices, matrix, tip, target, color, BEAM_WIDTH * 4, .08f * fade);
+      ray(vertices, matrix, tip, target, 0xE8FFFF, BEAM_WIDTH, .8f * fade);
+      var normal = target.subtract(.5, 0, .5).normalize();
+      var tangent = normal.cross(new Vec3(0, 1, 0));
+      if (tangent.lengthSqr() < .001) tangent = normal.cross(new Vec3(1, 0, 0));
+      tangent = tangent.normalize().scale(.14);
+      var up = normal.cross(tangent).normalize().scale(.14);
+      var spot = target.add(normal.scale(DETAIL_OFFSET));
+      quad(
+          vertices,
+          matrix,
+          spot.subtract(tangent).subtract(up),
+          spot.add(tangent).subtract(up),
+          spot.add(tangent).add(up),
+          spot.subtract(tangent).add(up),
+          0xE8FFFF,
+          .8f * fade);
     }
+  }
+
+  private static void ray(
+      VertexConsumer vertices,
+      Matrix4f matrix,
+      Vec3 start,
+      Vec3 end,
+      int color,
+      float width,
+      float alpha) {
+    var direction = end.subtract(start).normalize();
+    var across = direction.cross(new Vec3(0, 1, 0));
+    if (across.lengthSqr() < .001) across = direction.cross(new Vec3(1, 0, 0));
+    across = across.normalize().scale(width);
+    var other = direction.cross(across).normalize().scale(width);
+    quad(
+        vertices,
+        matrix,
+        start.subtract(across),
+        end.subtract(across),
+        end.add(across),
+        start.add(across),
+        color,
+        alpha);
+    quad(
+        vertices,
+        matrix,
+        start.subtract(other),
+        end.subtract(other),
+        end.add(other),
+        start.add(other),
+        color,
+        alpha);
+  }
+
+  private static float coverage(double azimuth, double elevation, double minimum, float progress) {
+    if (progress >= 1) return 1;
+    int column = (int) Math.floor(azimuth / TAU * LONGITUDES);
+    int row = (int) Math.floor((elevation - minimum) / (Math.PI / 2 - minimum) * LATITUDES);
+    // Stable tile ordering lets repeated scans build up a persistent hologram, without a frame
+    // cache.
+    double seed = Math.sin(column * 12.9898 + row * 78.233) * 43758.5453;
+    seed -= Math.floor(seed);
+    float reveal = Mth.clamp((progress - (float) seed * .85f) / .15f, 0, 1);
+    return reveal * reveal * (3 - 2 * reveal);
   }
 
   private static void renderPattern(
@@ -102,8 +194,11 @@ final class SphereRenderer {
           // The curved shell above supplies the broad fill. Keep the detailed strokes and tiles.
           if (width > .2f) return;
           float middle = (x1 + x2) * .5f;
-          float sector = middle / right * FANS;
-          if (sector - Math.floor(sector) > progress || middle < 0 || middle > right) return;
+          if (middle < 0 || middle > right) return;
+          float reveal =
+              coverage(
+                  middle / PATTERN_RADIUS, (y1 + y2) * .5 / PATTERN_RADIUS, minLatitude, progress);
+          if (reveal <= 0) return;
           float dx = x2 - x1, dy = y2 - y1;
           float length = (float) Math.hypot(dx, dy);
           if (length < .0001f) return;
@@ -117,7 +212,7 @@ final class SphereRenderer {
               mapped(radius, x2 - ox, y2 - oy, right, bottom, top),
               mapped(radius, x1 - ox, y1 - oy, right, bottom, top),
               color,
-              alpha * opacity);
+              alpha * opacity * reveal);
         });
   }
 
