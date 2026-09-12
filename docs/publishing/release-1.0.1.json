@@ -1,0 +1,114 @@
+{
+  "version": "1.0.1",
+  "recorded_at": "2026-09-12T12:34:55.515645+00:00",
+  "github": {
+    "status": "published",
+    "url": "https://github.com/shikyo13/Field-Emitters/releases/tag/v1.0.1",
+    "tag_commit": "ba1baff1b26f3ab9897f871abc6a757796d29866"
+  },
+  "curseforge": {
+    "project_id": 1691807,
+    "status": "four_approved_one_processing",
+    "automatic_publish_after_approval": true
+  },
+  "modrinth": {
+    "project_id": "C7knFbss",
+    "status": "project_under_review",
+    "all_five_versions_uploaded": true
+  },
+  "validation": {
+    "github_ci": "all_five_success",
+    "local_builds": "all_five_passed",
+    "native_client_and_dedicated_startup": "all_five_passed",
+    "two_client_multiplayer": "not_tested",
+    "large_network_benchmark": "not_tested",
+    "evidence": "../evidence/ports-1.0.1/README.md"
+  },
+  "artifacts": [
+    {
+      "minecraft": "1.21.1",
+      "loader": "NeoForge",
+      "java": 21,
+      "file": "field-emitters-neoforge-1.21.1-1.0.1.jar",
+      "sha256": "2022278a5db9e7fb8d9e34186457ba7b2874de8e508c5e7609e579b8d172a47a",
+      "bytes": 198250,
+      "github": "https://github.com/shikyo13/Field-Emitters/releases/download/v1.0.1/field-emitters-neoforge-1.21.1-1.0.1.jar",
+      "curseforge_file_id": 8864270,
+      "curseforge_url": "https://www.curseforge.com/minecraft/mc-mods/field-emitters/files/8864270",
+      "curseforge_download_sha256_verified": true,
+      "modrinth_version_id": "FuYGlHWG",
+      "modrinth_url": "https://modrinth.com/mod/field-emitters/version/1.0.1-neoforge-1.21.1",
+      "modrinth_download_sha256_verified": true,
+      "curseforge_status": "approved",
+      "modrinth_status": "uploaded_project_under_review"
+    },
+    {
+      "minecraft": "1.21.1",
+      "loader": "Forge",
+      "java": 21,
+      "file": "field-emitters-forge-1.21.1-1.0.1.jar",
+      "sha256": "51a5057aec9ee6e8e2cbeea19243289cb654cf560b59edfcbc37ffe1e7b953db",
+      "bytes": 206888,
+      "github": "https://github.com/shikyo13/Field-Emitters/releases/download/v1.0.1/field-emitters-forge-1.21.1-1.0.1.jar",
+      "curseforge_file_id": 8864283,
+      "curseforge_url": "https://www.curseforge.com/minecraft/mc-mods/field-emitters/files/8864283",
+      "curseforge_download_sha256_verified": true,
+      "modrinth_version_id": "IWMKanv2",
+      "modrinth_url": "https://modrinth.com/mod/field-emitters/version/1.0.1-forge-1.21.1",
+      "modrinth_download_sha256_verified": true,
+      "curseforge_status": "approved",
+      "modrinth_status": "uploaded_project_under_review"
+    },
+    {
+      "minecraft": "1.21.1",
+      "loader": "Fabric",
+      "java": 21,
+      "file": "field-emitters-fabric-1.21.1-1.0.1.jar",
+      "sha256": "509aafe5de827bfbedfa2181b3fe9894a550ab944a1d983da3379936a2096295",
+      "bytes": 226237,
+      "github": "https://github.com/shikyo13/Field-Emitters/releases/download/v1.0.1/field-emitters-fabric-1.21.1-1.0.1.jar",
+      "curseforge_file_id": 8864321,
+      "curseforge_url": "https://www.curseforge.com/minecraft/mc-mods/field-emitters/files/8864321",
+      "curseforge_download_sha256_verified": true,
+      "modrinth_version_id": "1PUDSCYD",
+      "modrinth_url": "https://modrinth.com/mod/field-emitters/version/1.0.1-fabric-1.21.1",
+      "modrinth_download_sha256_verified": true,
+      "curseforge_status": "approved",
+      "modrinth_status": "uploaded_project_under_review"
+    },
+    {
+      "minecraft": "1.20.1",
+      "loader": "Forge",
+      "java": 17,
+      "file": "field-emitters-forge-1.20.1-1.0.1.jar",
+      "sha256": "6100f8b288ba156e735c88c6ad3011e76bc82846114b42667fbda0b1fa7cb580",
+      "bytes": 202232,
+      "github": "https://github.com/shikyo13/Field-Emitters/releases/download/v1.0.1/field-emitters-forge-1.20.1-1.0.1.jar",
+      "curseforge_file_id": 8864290,
+      "curseforge_url": "https://www.curseforge.com/minecraft/mc-mods/field-emitters/files/8864290",
+      "curseforge_download_sha256_verified": true,
+      "modrinth_version_id": "R6TnHWj4",
+      "modrinth_url": "https://modrinth.com/mod/field-emitters/version/1.0.1-forge-1.20.1",
+      "modrinth_download_sha256_verified": true,
+      "curseforge_status": "approved",
+      "modrinth_status": "uploaded_project_under_review"
+    },
+    {
+      "minecraft": "1.20.1",
+      "loader": "Fabric",
+      "java": 17,
+      "file": "field-emitters-fabric-1.20.1-1.0.1.jar",
+      "sha256": "3fc5c66efdf880157d2e2501dad901e72ca9c3ef5f06311f8c3caa80675e5af2",
+      "bytes": 229438,
+      "github": "https://github.com/shikyo13/Field-Emitters/releases/download/v1.0.1/field-emitters-fabric-1.20.1-1.0.1.jar",
+      "curseforge_file_id": 8864371,
+      "curseforge_url": "https://www.curseforge.com/minecraft/mc-mods/field-emitters/files/8864371",
+      "curseforge_download_sha256_verified": true,
+      "modrinth_version_id": "rsOk06xh",
+      "modrinth_url": "https://modrinth.com/mod/field-emitters/version/1.0.1-fabric-1.20.1",
+      "modrinth_download_sha256_verified": true,
+      "curseforge_status": "processing",
+      "modrinth_status": "uploaded_project_under_review"
+    }
+  ]
+}

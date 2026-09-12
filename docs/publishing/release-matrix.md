@@ -11,3 +11,7 @@
 Fabric requires Fabric API and Forge Config API Port. Team Reborn Energy is bundled. Each loader has a native energy and packet adapter; install only the matching JAR.
 
 See [artifact hashes](artifacts-1.0.1.json) and [port validation](../evidence/ports-1.0.1/README.md). These tests establish isolated client and dedicated-server startup, not a two-client multiplayer session or a large-network performance benchmark. Published platform status is recorded separately from local validation. The original 1.0.0 assets remain unchanged.
+
+## Publication
+
+All five artifacts are published in the [GitHub release](https://github.com/shikyo13/Field-Emitters/releases/tag/v1.0.1). All were uploaded to CurseForge and Modrinth, and the downloaded hashes match. CurseForge approved four files; Fabric 1.20.1 is processing with automatic publication enabled. The Modrinth project remains under review. Exact file IDs and observed states are in [release record](release-1.0.1.json).
