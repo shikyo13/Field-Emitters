@@ -1,0 +1,56 @@
+{
+  "capture": "Native Minecraft 1.21.1 screenshots, HUD hidden, isolated QA world. One game tick advanced per frame; assembled at 20 fps. No synthetic frames or AI image generation. Silent footage.",
+  "source_commit": "3ec6e63076efbedc1fc9687e7ac1d7d6a0aad2a9",
+  "files": [
+    {
+      "file": "doorway-impact-06.png",
+      "bytes": 359014,
+      "sha256": "acaaa78d447d146866c0d9926ba03d975b0b441129044a4aa1597e4747c08046"
+    },
+    {
+      "file": "doorway-impact-11.png",
+      "bytes": 368208,
+      "sha256": "26224866f004abe822f75aa23b3e6bfd00aa4cdfdb25864fd1284a4ca61a2670"
+    },
+    {
+      "file": "doorway-impact-17.png",
+      "bytes": 364022,
+      "sha256": "67b5b74532e60880965ec79ca91553312a7d4a31a467cd506fafe8d00ca78e69"
+    },
+    {
+      "file": "doorway-impact.mp4",
+      "bytes": 852318,
+      "sha256": "560524a97ad9c54100e2af4880249d6c7ec2a0677c8ef5b515cab32c140359ba"
+    },
+    {
+      "file": "impact-showcase.gif",
+      "bytes": 7442816,
+      "sha256": "cbd9315b829fa72a20102d2c4709dd424376404595ae450c4ffdf23ee5957dcd"
+    },
+    {
+      "file": "impact-showcase.mp4",
+      "bytes": 1646754,
+      "sha256": "a65f0c4578b2320a16d2f951962179be09611e59a8fe20ee73436474db5c7421"
+    },
+    {
+      "file": "perimeter-impact-06.png",
+      "bytes": 644771,
+      "sha256": "8e5d7bcca1d4e5fa23eafb6d9361abd5d7e6b12a4492dc871c8d44a71d92e89a"
+    },
+    {
+      "file": "perimeter-impact-11.png",
+      "bytes": 646301,
+      "sha256": "4020638e06e7e08041a3d00c93508ff028380b01c8ce99f0acd7a98e9e531212"
+    },
+    {
+      "file": "perimeter-impact-17.png",
+      "bytes": 660753,
+      "sha256": "b618f60ad226f9beb9c9a9ad3f91b07782830f808368eb0b730f305bc89532a6"
+    },
+    {
+      "file": "perimeter-impact.mp4",
+      "bytes": 805784,
+      "sha256": "d7f45978d84e6599dd9b9e4cb72b5276c0c2eedcecf9102533d96f7c228564d9"
+    }
+  ]
+}

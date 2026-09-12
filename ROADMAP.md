@@ -3,11 +3,11 @@
 ## Released in 1.0.0
 
 - Terrain-following perimeter fields, surface rails, entity filters, detection output and the Field Tuner for Minecraft 1.21.1 on NeoForge.
+- Connected impact waves across perimeter fields and adjoining rail sections.
 
 ## Next updates
 
 - Address reproducible blocking, detection, energy and multiplayer problems reported by players.
-- Impact-wave effects for rail fields to match the perimeter posts.
 - Tag suggestions and lists in the filter editors.
 
 ## Version and loader ports

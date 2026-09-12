@@ -164,23 +164,31 @@ public final class FieldNetwork {
       var network = connected(seed);
       network.forEach(e -> seen.add(e.getBlockPos()));
       boolean redstone = network.stream().anyMatch(e -> e.enabled && input(l, e));
-      int demand = network.stream().mapToInt(e -> e.demand).sum();
-      int stored =
+      long demand = network.stream().mapToLong(e -> e.demand).sum();
+      long stored =
           network.stream()
               .filter(e -> e.enabled)
-              .mapToInt(e -> e.energy.extractEnergy(Integer.MAX_VALUE, true))
+              .mapToLong(e -> e.energy.extractEnergy(Integer.MAX_VALUE, true))
               .sum();
       boolean demo = FieldConfig.DEMO_POWER.get() && redstone;
       boolean allowed =
           network.stream()
               .allMatch(
                   e -> e.controls.inputMode == 0 || (input(l, e) == (e.controls.inputMode == 1)));
-      boolean on = demand > 0 && allowed && (demo || stored >= demand);
+      // A zero-cost field still needs a span; a lone emitter must stay idle.
+      boolean hasField =
+          network.stream()
+              .anyMatch(
+                  e ->
+                      e.enabled
+                          && e.links.stream().anyMatch(link -> link.rail() || link.length() > 1));
+      boolean on = hasField && allowed && (demo || stored >= demand);
       if (on && !demo) {
-        int remaining = demand;
+        long remaining = demand;
         for (var e : network)
           if (e.enabled) {
-            remaining -= e.energy.extractEnergy(remaining, false);
+            remaining -=
+                e.energy.extractEnergy((int) Math.min(remaining, Integer.MAX_VALUE), false);
             if (remaining == 0) break;
           }
       }

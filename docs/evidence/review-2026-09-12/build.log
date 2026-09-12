@@ -1,0 +1,103 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.12/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+> Task :clean
+
+> Task :createMinecraftArtifacts
+ Deleted 5 outdated lock files
+Loaded 137 artifacts from /Users/zero/Documents/Dev/MC Mods/Field-Emitters/build/tmp/createMinecraftArtifacts/nfrt_artifact_manifest.properties
+*** Started working on downloadJson
+ ✓ Completed downloadJson in 0.01s
+*** Started working on downloadClientMappings
+*** Started working on downloadClient
+*** Started working on downloadServer
+ ✓ Completed downloadServer in 0.01s
+ ✓ Completed downloadClient in 0.01s
+ ✓ Completed downloadClientMappings in 0.01s
+*** Started working on mergeMappings
+ ♻ Used cache of mergeMappings in 0.00s
+*** Started working on stripClient
+ ♻ Used cache of stripClient in 0.00s
+*** Started working on extractServer
+ ♻ Used cache of extractServer in 0.00s
+*** Started working on stripServer
+ ♻ Used cache of stripServer in 0.00s
+*** Started working on merge
+ ♻ Used cache of merge in 0.00s
+*** Started working on rename
+ ♻ Used cache of rename in 0.00s
+*** Started working on decompile
+ ♻ Used cache of decompile in 0.00s
+*** Started working on inject
+ ♻ Used cache of inject in 0.00s
+*** Started working on patch
+ ♻ Used cache of patch in 0.00s
+*** Started working on applyNeoforgePatches
+ ♻ Used cache of applyNeoforgePatches in 0.00s
+*** Started working on transformSources
+ ♻ Used cache of transformSources in 0.00s
+*** Started working on recompile
+ ♻ Used cache of recompile in 0.00s
+*** Started working on sourcesWithNeoForge
+ ♻ Used cache of sourcesWithNeoForge in 0.00s
+*** Started working on compiledWithNeoForge
+ ♻ Used cache of compiledWithNeoForge in 0.00s
+*** Started working on sourcesAndCompiledWithNeoForge
+ ♻ Used cache of sourcesAndCompiledWithNeoForge in 0.01s
+Total runtime: 0.61s
+
+
+> Task :compileJava FROM-CACHE
+> Task :generateModMetadata
+> Task :processResources
+> Task :classes
+> Task :jarJar NO-SOURCE
+> Task :jar
+> Task :assemble
+> Task :compileTestJava NO-SOURCE
+> Task :processTestResources NO-SOURCE
+> Task :testClasses UP-TO-DATE
+> Task :test NO-SOURCE
+> Task :check UP-TO-DATE
+> Task :build
+
+> Task :downloadAssets
+Loaded 137 artifacts from /Users/zero/Documents/Dev/MC Mods/Field-Emitters/build/tmp/downloadAssets/nfrt_artifact_manifest.properties
+Downloading asset index 17
+Using Minecraft asset root: /Users/zero/.gradle/caches/neoformruntime/assets
+  ↓ https://piston-meta.mojang.com/v1/packages/1bea2d05d348a4edb44440633545b60177d0d920/17.json
+
+> Task :writeDataLegacyClasspath
+> Task :prepareDataRun
+
+> Task :runData
+WARN StatusConsoleListener Advanced terminal features are not available in this environment
+[06:11:23] [main/INFO] [cp.mo.mo.Launcher/MODLAUNCHER]: ModLauncher running: args [--launchTarget, forgedatadev, --assetIndex, 17, --assetsDir, /Users/zero/.gradle/caches/neoformruntime/assets, --gameDir, ., --fml.fmlVersion, 4.0.41, --fml.mcVersion, 1.21.1, --fml.neoForgeVersion, 21.1.206, --fml.neoFormVersion, 20240808.144430, --mod, fieldemitters, --all, --output, /Users/zero/Documents/Dev/MC Mods/Field-Emitters/src/generated/resources, --existing, /Users/zero/Documents/Dev/MC Mods/Field-Emitters/src/main/resources]
+[06:11:23] [main/INFO] [cp.mo.mo.Launcher/MODLAUNCHER]: JVM identified as Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 21.0.7+8-LTS-245
+[06:11:23] [main/INFO] [cp.mo.mo.Launcher/MODLAUNCHER]: ModLauncher 11.0.5+main.901c6ea8 starting: java version 21.0.7 by Oracle Corporation; OS Mac OS X arch aarch64 version 26.6.2
+[06:11:23] [main/INFO] [ne.ne.fm.lo.ImmediateWindowHandler/]: ImmediateWindowProvider not loading because launch target is forgedatadev
+[06:11:23] [main/INFO] [mixin/]: SpongePowered MIXIN Subsystem Version=0.8.7 Source=union:/Users/zero/.gradle/caches/modules-2/files-2.1/net.fabricmc/sponge-mixin/0.15.2+mixin.0.8.7/2af2f021d8e02a0220dc27a7a72b4666d66d44ca/sponge-mixin-0.15.2+mixin.0.8.7.jar%23132!/ Service=ModLauncher Env=CLIENT
+[06:11:23] [main/INFO] [ne.ne.fm.lo.mo.lo.JarInJarDependencyLocator/]: Found 2 dependencies adding them to mods collection
+[06:11:23] [main/INFO] [ne.ne.fm.lo.mo.ModDiscoverer/]: 
+     Mod List:
+		Name Version (Mod Id)
+
+		Field Emitters 1.0.0 (fieldemitters)
+		Minecraft 1.21.1 (minecraft)
+		NeoForge 21.1.206 (neoforge)
+[06:11:23] [main/INFO] [cp.mo.mo.LaunchServiceHandler/MODLAUNCHER]: Launching target 'forgedatadev' with arguments [--gameDir, ., --assetsDir, /Users/zero/.gradle/caches/neoformruntime/assets, --assetIndex, 17, --mod, fieldemitters, --all, --output, /Users/zero/Documents/Dev/MC Mods/Field-Emitters/src/generated/resources, --existing, /Users/zero/Documents/Dev/MC Mods/Field-Emitters/src/main/resources]
+[06:11:24] [main/INFO] [ne.ne.ne.da.lo.DatagenModLoader/]: Initializing Data Gatherer for mods [fieldemitters]
+[06:11:24] [main/INFO] [MixinExtras|Service/]: Initializing MixinExtras via com.llamalad7.mixinextras.service.MixinExtrasServiceImpl(version=0.5.0).
+[06:11:26] [modloading-worker-0/INFO] [ne.ne.ne.co.NeoForgeMod/NEOFORGE-MOD]: NeoForge mod loading, version 21.1.206, for MC 1.21.1
+[06:11:26] [main/WARN] [minecraft/VanillaPackResourcesBuilder]: Assets URL 'union:/Users/zero/Documents/Dev/MC%20Mods/Field-Emitters/build/moddev/artifacts/neoforge-21.1.206.jar%23184!/assets/.mcassetsroot' uses unexpected schema
+[06:11:26] [main/WARN] [minecraft/VanillaPackResourcesBuilder]: Assets URL 'union:/Users/zero/Documents/Dev/MC%20Mods/Field-Emitters/build/moddev/artifacts/neoforge-21.1.206.jar%23184!/data/.mcassetsroot' uses unexpected schema
+[06:11:26] [main/INFO] [minecraft/DataGenerator]: Starting provider: Recipes
+[06:11:26] [main/INFO] [minecraft/DataGenerator]: Recipes finished after 56 ms
+[06:11:26] [main/INFO] [minecraft/DataGenerator]: Starting provider: Loot Tables
+[06:11:26] [main/INFO] [minecraft/DataGenerator]: Loot Tables finished after 4 ms
+[06:11:26] [main/INFO] [minecraft/DataGenerator]: Starting provider: Tags for minecraft:block mod id fieldemitters
+[06:11:26] [main/INFO] [minecraft/DataGenerator]: Tags for minecraft:block mod id fieldemitters finished after 1 ms
+[06:11:26] [main/INFO] [minecraft/DataGenerator]: All providers took: 65 ms
+[06:11:26] [main/INFO] [minecraft/HashCache]: Caching: total files: 9, old count: 9, new count: 10, removed stale: 0, written: 0
+
+BUILD SUCCESSFUL in 9s
+10 actionable tasks: 9 executed, 1 from cache

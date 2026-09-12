@@ -1,0 +1,38 @@
+[
+  {
+    "dimension": "minecraft:overworld",
+    "blocks": [
+      {
+        "x": 50,
+        "y": -49,
+        "z": 10,
+        "state": "fieldemitters:field_emitter[active=false,light=false,section=0]",
+        "nbt": "{Color:5432831,Controls:{Animation:1b,Barrier:{Age:0,Directions:63,Entity:\"\",Groups:1,Identity:\"\",Invert:0b,Item:\"\",OwnerExempt:1b,Tag:\"\"},CountItems:0b,InputFace:1,InputMode:0,Light:1b,OutputFace:0,PulseTicks:4,RailNormal:2,Sensor:{Age:0,Directions:63,Entity:\"\",Groups:31,Identity:\"\",Invert:0b,Item:\"\",OwnerExempt:0b,Tag:\"\"},SensorMode:0,Visible:1b},Crossings:0L,Demand:90,Enabled:1b,Energy:1800,FieldName:\"\",ImpactTime:52502L,ImpactX:55.5d,ImpactY:-47.927499973773955d,ImpactZ:10.5d,LastDetection:\"None\",Links:[{DX:1,DY:0,DZ:0,Ground:[I;-49,-49,-49,-49,-49,-49,-49,-49,-49,-49,-49],Normal:\"z\",Rail:0b,Target:16492674461647L}],Mask:1,OutputSignal:0,Overrides:[],PlacedAt:9223372036854775807L,Powered:0b,QueuedPulses:0,Root:13743895392207L,Transition:53386L,id:\"fieldemitters:emitter\",x:50,y:-49,z:10}"
+      }
+    ]
+  },
+  {
+    "dimension": "minecraft:overworld",
+    "blocks": [
+      {
+        "x": 50,
+        "y": -49,
+        "z": 10,
+        "state": "fieldemitters:field_emitter[active=true,light=true,section=0]",
+        "nbt": "{Color:5432831,Controls:{Animation:1b,Barrier:{Age:0,Directions:63,Entity:\"\",Groups:1,Identity:\"\",Invert:0b,Item:\"\",OwnerExempt:1b,Tag:\"\"},CountItems:0b,InputFace:1,InputMode:0,Light:1b,OutputFace:0,PulseTicks:4,RailNormal:2,Sensor:{Age:0,Directions:63,Entity:\"\",Groups:31,Identity:\"\",Invert:0b,Item:\"\",OwnerExempt:0b,Tag:\"\"},SensorMode:0,Visible:1b},Crossings:0L,Demand:90,Enabled:1b,Energy:900,FieldName:\"\",ImpactTime:52502L,ImpactX:55.5d,ImpactY:-47.927499973773955d,ImpactZ:10.5d,LastDetection:\"None\",Links:[{DX:1,DY:0,DZ:0,Ground:[I;-49,-49,-49,-49,-49,-49,-49,-49,-49,-49,-49],Normal:\"z\",Rail:0b,Target:16492674461647L}],Mask:1,OutputSignal:0,Overrides:[],PlacedAt:9223372036854775807L,Powered:1b,QueuedPulses:0,Root:13743895392207L,Transition:60060L,id:\"fieldemitters:emitter\",x:50,y:-49,z:10}"
+      }
+    ]
+  },
+  {
+    "dimension": "minecraft:overworld",
+    "blocks": [
+      {
+        "x": 50,
+        "y": -49,
+        "z": 10,
+        "state": "fieldemitters:field_emitter[active=false,light=false,section=0]",
+        "nbt": "{Color:5432831,Controls:{Animation:1b,Barrier:{Age:0,Directions:63,Entity:\"\",Groups:1,Identity:\"\",Invert:0b,Item:\"\",OwnerExempt:1b,Tag:\"\"},CountItems:0b,InputFace:1,InputMode:0,Light:1b,OutputFace:0,PulseTicks:4,RailNormal:2,Sensor:{Age:0,Directions:63,Entity:\"\",Groups:31,Identity:\"\",Invert:0b,Item:\"\",OwnerExempt:0b,Tag:\"\"},SensorMode:0,Visible:1b},Crossings:0L,Demand:90,Enabled:1b,Energy:0,FieldName:\"\",ImpactTime:52502L,ImpactX:55.5d,ImpactY:-47.927499973773955d,ImpactZ:10.5d,LastDetection:\"None\",Links:[{DX:1,DY:0,DZ:0,Ground:[I;-49,-49,-49,-49,-49,-49,-49,-49,-49,-49,-49],Normal:\"z\",Rail:0b,Target:16492674461647L}],Mask:1,OutputSignal:0,Overrides:[],PlacedAt:9223372036854775807L,Powered:0b,QueuedPulses:0,Root:13743895392207L,Transition:60080L,id:\"fieldemitters:emitter\",x:50,y:-49,z:10}"
+      }
+    ]
+  }
+]

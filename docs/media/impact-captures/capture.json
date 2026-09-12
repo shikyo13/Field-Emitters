@@ -1,0 +1,8 @@
+{
+  "source": "Minecraft 1.21.1 NeoForge release 1.0.0; real rendered game frames",
+  "method": "One server tick per frame, encoded at native 20 ticks/second; fixed camera; HUD hidden",
+  "frames_per_clip": 64,
+  "world": "isolated run-menu Field Emitters Demo",
+  "audio": "silent",
+  "screenshots": "unaltered native PNG captures"
+}

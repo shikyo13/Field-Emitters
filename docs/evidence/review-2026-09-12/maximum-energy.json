@@ -1,0 +1,236 @@
+{
+  "two": {
+    "dimension": "minecraft:overworld",
+    "blocks": [
+      {
+        "x": 50,
+        "y": -49,
+        "z": 10,
+        "state": "fieldemitters:field_emitter[active=true,light=true,section=0]",
+        "nbt": "{Color:5432831,Controls:{Animation:1b,Barrier:{Age:0,Directions:63,Entity:\"\",Groups:1,Identity:\"\",Invert:0b,Item:\"\",OwnerExempt:1b,Tag:\"\"},CountItems:0b,InputFace:1,InputMode:0,Light:1b,OutputFace:0,PulseTicks:4,RailNormal:2,Sensor:{Age:0,Directions:63,Entity:\"\",Groups:31,Identity:\"\",Invert:0b,Item:\"\",OwnerExempt:0b,Tag:\"\"},SensorMode:0,Visible:1b},Crossings:0L,Demand:135,Enabled:1b,Energy:999997975,FieldName:\"\",ImpactTime:52502L,ImpactX:55.5d,ImpactY:-47.927499973773955d,ImpactZ:10.5d,LastDetection:\"None\",Links:[{DX:1,DY:0,DZ:0,Ground:[I;-49,-49,-49,-49,-49,-49,-49,-49,-49,-49,-49],Normal:\"z\",Rail:0b,Target:16492674461647L}],Mask:1,OutputSignal:0,Overrides:[],PlacedAt:9223372036854775807L,Powered:1b,QueuedPulses:0,Root:13743895392207L,Transition:62378L,id:\"fieldemitters:emitter\",x:50,y:-49,z:10}"
+      },
+      {
+        "x": 51,
+        "y": -49,
+        "z": 10,
+        "state": "fieldemitters:forcefield[lit=true,x_axis=true]",
+        "nbt": "{Source:13743895392207L,id:\"fieldemitters:field_cell\",x:51,y:-49,z:10}"
+      },
+      {
+        "x": 52,
+        "y": -49,
+        "z": 10,
+        "state": "fieldemitters:forcefield[lit=true,x_axis=true]",
+        "nbt": "{Source:13743895392207L,id:\"fieldemitters:field_cell\",x:52,y:-49,z:10}"
+      },
+      {
+        "x": 53,
+        "y": -49,
+        "z": 10,
+        "state": "fieldemitters:forcefield[lit=true,x_axis=true]",
+        "nbt": "{Source:13743895392207L,id:\"fieldemitters:field_cell\",x:53,y:-49,z:10}"
+      },
+      {
+        "x": 54,
+        "y": -49,
+        "z": 10,
+        "state": "fieldemitters:forcefield[lit=true,x_axis=true]",
+        "nbt": "{Source:13743895392207L,id:\"fieldemitters:field_cell\",x:54,y:-49,z:10}"
+      },
+      {
+        "x": 55,
+        "y": -49,
+        "z": 10,
+        "state": "fieldemitters:forcefield[lit=true,x_axis=true]",
+        "nbt": "{Source:13743895392207L,id:\"fieldemitters:field_cell\",x:55,y:-49,z:10}"
+      },
+      {
+        "x": 56,
+        "y": -49,
+        "z": 10,
+        "state": "fieldemitters:forcefield[lit=true,x_axis=true]",
+        "nbt": "{Source:13743895392207L,id:\"fieldemitters:field_cell\",x:56,y:-49,z:10}"
+      },
+      {
+        "x": 57,
+        "y": -49,
+        "z": 10,
+        "state": "fieldemitters:forcefield[lit=true,x_axis=true]",
+        "nbt": "{Source:13743895392207L,id:\"fieldemitters:field_cell\",x:57,y:-49,z:10}"
+      },
+      {
+        "x": 58,
+        "y": -49,
+        "z": 10,
+        "state": "fieldemitters:forcefield[lit=false,x_axis=true]",
+        "nbt": "{Source:13743895392207L,id:\"fieldemitters:field_cell\",x:58,y:-49,z:10}"
+      },
+      {
+        "x": 59,
+        "y": -49,
+        "z": 10,
+        "state": "fieldemitters:forcefield[lit=false,x_axis=true]",
+        "nbt": "{Source:13743895392207L,id:\"fieldemitters:field_cell\",x:59,y:-49,z:10}"
+      },
+      {
+        "x": 60,
+        "y": -49,
+        "z": 10,
+        "state": "fieldemitters:field_emitter[active=true,light=true,section=0]",
+        "nbt": "{Color:5432831,Controls:{Animation:1b,Barrier:{Age:0,Directions:63,Entity:\"\",Groups:1,Identity:\"\",Invert:0b,Item:\"\",OwnerExempt:1b,Tag:\"\"},CountItems:0b,InputFace:1,InputMode:0,Light:1b,OutputFace:0,PulseTicks:4,RailNormal:2,Sensor:{Age:0,Directions:63,Entity:\"\",Groups:31,Identity:\"\",Invert:0b,Item:\"\",OwnerExempt:0b,Tag:\"\"},SensorMode:0,Visible:1b},Crossings:0L,Demand:0,Enabled:1b,Energy:1000000000,FieldName:\"\",ImpactTime:-1000L,ImpactX:0.0d,ImpactY:0.0d,ImpactZ:0.0d,LastDetection:\"None\",Links:[],Mask:1,OutputSignal:0,Overrides:[],PlacedAt:9223372036854775807L,Powered:1b,QueuedPulses:0,Root:13743895392207L,Transition:62378L,id:\"fieldemitters:emitter\",x:60,y:-49,z:10}"
+      }
+    ]
+  },
+  "three": {
+    "dimension": "minecraft:overworld",
+    "blocks": [
+      {
+        "x": 50,
+        "y": -49,
+        "z": 10,
+        "state": "fieldemitters:field_emitter[active=false,light=false,section=0]",
+        "nbt": "{Color:5432831,Controls:{Animation:1b,Barrier:{Age:0,Directions:63,Entity:\"\",Groups:1,Identity:\"\",Invert:0b,Item:\"\",OwnerExempt:1b,Tag:\"\"},CountItems:0b,InputFace:1,InputMode:0,Light:1b,OutputFace:0,PulseTicks:4,RailNormal:2,Sensor:{Age:0,Directions:63,Entity:\"\",Groups:31,Identity:\"\",Invert:0b,Item:\"\",OwnerExempt:0b,Tag:\"\"},SensorMode:0,Visible:1b},Crossings:0L,Demand:135,Enabled:1b,Energy:999997975,FieldName:\"\",ImpactTime:52502L,ImpactX:55.5d,ImpactY:-47.927499973773955d,ImpactZ:10.5d,LastDetection:\"None\",Links:[{DX:1,DY:0,DZ:0,Ground:[I;-49,-49,-49,-49,-49,-49,-49,-49,-49,-49,-49],Normal:\"z\",Rail:0b,Target:16492674461647L}],Mask:1,OutputSignal:0,Overrides:[],PlacedAt:9223372036854775807L,Powered:0b,QueuedPulses:0,Root:13743895392207L,Transition:62395L,id:\"fieldemitters:emitter\",x:50,y:-49,z:10}"
+      },
+      {
+        "x": 51,
+        "y": -49,
+        "z": 10,
+        "state": "fieldemitters:forcefield[lit=false,x_axis=true]",
+        "nbt": "{Source:13743895392207L,id:\"fieldemitters:field_cell\",x:51,y:-49,z:10}"
+      },
+      {
+        "x": 52,
+        "y": -49,
+        "z": 10,
+        "state": "fieldemitters:forcefield[lit=false,x_axis=true]",
+        "nbt": "{Source:13743895392207L,id:\"fieldemitters:field_cell\",x:52,y:-49,z:10}"
+      },
+      {
+        "x": 53,
+        "y": -49,
+        "z": 10,
+        "state": "fieldemitters:forcefield[lit=false,x_axis=true]",
+        "nbt": "{Source:13743895392207L,id:\"fieldemitters:field_cell\",x:53,y:-49,z:10}"
+      },
+      {
+        "x": 54,
+        "y": -49,
+        "z": 10,
+        "state": "fieldemitters:forcefield[lit=false,x_axis=true]",
+        "nbt": "{Source:13743895392207L,id:\"fieldemitters:field_cell\",x:54,y:-49,z:10}"
+      },
+      {
+        "x": 55,
+        "y": -49,
+        "z": 10,
+        "state": "fieldemitters:forcefield[lit=false,x_axis=true]",
+        "nbt": "{Source:13743895392207L,id:\"fieldemitters:field_cell\",x:55,y:-49,z:10}"
+      },
+      {
+        "x": 56,
+        "y": -49,
+        "z": 10,
+        "state": "fieldemitters:forcefield[lit=false,x_axis=true]",
+        "nbt": "{Source:13743895392207L,id:\"fieldemitters:field_cell\",x:56,y:-49,z:10}"
+      },
+      {
+        "x": 57,
+        "y": -49,
+        "z": 10,
+        "state": "fieldemitters:forcefield[lit=false,x_axis=true]",
+        "nbt": "{Source:13743895392207L,id:\"fieldemitters:field_cell\",x:57,y:-49,z:10}"
+      },
+      {
+        "x": 58,
+        "y": -49,
+        "z": 10,
+        "state": "fieldemitters:forcefield[lit=false,x_axis=true]",
+        "nbt": "{Source:13743895392207L,id:\"fieldemitters:field_cell\",x:58,y:-49,z:10}"
+      },
+      {
+        "x": 59,
+        "y": -49,
+        "z": 10,
+        "state": "fieldemitters:forcefield[lit=false,x_axis=true]",
+        "nbt": "{Source:13743895392207L,id:\"fieldemitters:field_cell\",x:59,y:-49,z:10}"
+      },
+      {
+        "x": 60,
+        "y": -49,
+        "z": 10,
+        "state": "fieldemitters:field_emitter[active=false,light=false,section=0]",
+        "nbt": "{Color:5432831,Controls:{Animation:1b,Barrier:{Age:0,Directions:63,Entity:\"\",Groups:1,Identity:\"\",Invert:0b,Item:\"\",OwnerExempt:1b,Tag:\"\"},CountItems:0b,InputFace:1,InputMode:0,Light:1b,OutputFace:0,PulseTicks:4,RailNormal:2,Sensor:{Age:0,Directions:63,Entity:\"\",Groups:31,Identity:\"\",Invert:0b,Item:\"\",OwnerExempt:0b,Tag:\"\"},SensorMode:0,Visible:1b},Crossings:0L,Demand:135,Enabled:1b,Energy:999999730,FieldName:\"\",ImpactTime:-1000L,ImpactX:0.0d,ImpactY:0.0d,ImpactZ:0.0d,LastDetection:\"None\",Links:[{DX:1,DY:0,DZ:0,Ground:[I;-49,-49,-49,-49,-49,-49,-49,-49,-49,-49,-49],Normal:\"z\",Rail:0b,Target:19241453531087L}],Mask:1,OutputSignal:0,Overrides:[],PlacedAt:9223372036854775807L,Powered:0b,QueuedPulses:0,Root:13743895392207L,Transition:62395L,id:\"fieldemitters:emitter\",x:60,y:-49,z:10}"
+      },
+      {
+        "x": 61,
+        "y": -49,
+        "z": 10,
+        "state": "fieldemitters:forcefield[lit=false,x_axis=true]",
+        "nbt": "{Source:16492674461647L,id:\"fieldemitters:field_cell\",x:61,y:-49,z:10}"
+      },
+      {
+        "x": 62,
+        "y": -49,
+        "z": 10,
+        "state": "fieldemitters:forcefield[lit=false,x_axis=true]",
+        "nbt": "{Source:16492674461647L,id:\"fieldemitters:field_cell\",x:62,y:-49,z:10}"
+      },
+      {
+        "x": 63,
+        "y": -49,
+        "z": 10,
+        "state": "fieldemitters:forcefield[lit=false,x_axis=true]",
+        "nbt": "{Source:16492674461647L,id:\"fieldemitters:field_cell\",x:63,y:-49,z:10}"
+      },
+      {
+        "x": 64,
+        "y": -49,
+        "z": 10,
+        "state": "fieldemitters:forcefield[lit=false,x_axis=true]",
+        "nbt": "{Source:16492674461647L,id:\"fieldemitters:field_cell\",x:64,y:-49,z:10}"
+      },
+      {
+        "x": 65,
+        "y": -49,
+        "z": 10,
+        "state": "fieldemitters:forcefield[lit=false,x_axis=true]",
+        "nbt": "{Source:16492674461647L,id:\"fieldemitters:field_cell\",x:65,y:-49,z:10}"
+      },
+      {
+        "x": 66,
+        "y": -49,
+        "z": 10,
+        "state": "fieldemitters:forcefield[lit=false,x_axis=true]",
+        "nbt": "{Source:16492674461647L,id:\"fieldemitters:field_cell\",x:66,y:-49,z:10}"
+      },
+      {
+        "x": 67,
+        "y": -49,
+        "z": 10,
+        "state": "fieldemitters:forcefield[lit=false,x_axis=true]",
+        "nbt": "{Source:16492674461647L,id:\"fieldemitters:field_cell\",x:67,y:-49,z:10}"
+      },
+      {
+        "x": 68,
+        "y": -49,
+        "z": 10,
+        "state": "fieldemitters:forcefield[lit=false,x_axis=true]",
+        "nbt": "{Source:16492674461647L,id:\"fieldemitters:field_cell\",x:68,y:-49,z:10}"
+      },
+      {
+        "x": 69,
+        "y": -49,
+        "z": 10,
+        "state": "fieldemitters:forcefield[lit=false,x_axis=true]",
+        "nbt": "{Source:16492674461647L,id:\"fieldemitters:field_cell\",x:69,y:-49,z:10}"
+      },
+      {
+        "x": 70,
+        "y": -49,
+        "z": 10,
+        "state": "fieldemitters:field_emitter[active=false,light=false,section=0]",
+        "nbt": "{Color:5432831,Controls:{Animation:1b,Barrier:{Age:0,Directions:63,Entity:\"\",Groups:1,Identity:\"\",Invert:0b,Item:\"\",OwnerExempt:1b,Tag:\"\"},CountItems:0b,InputFace:1,InputMode:0,Light:1b,OutputFace:0,PulseTicks:4,RailNormal:2,Sensor:{Age:0,Directions:63,Entity:\"\",Groups:31,Identity:\"\",Invert:0b,Item:\"\",OwnerExempt:0b,Tag:\"\"},SensorMode:0,Visible:1b},Crossings:0L,Demand:0,Enabled:1b,Energy:1000000000,FieldName:\"\",ImpactTime:-1000L,ImpactX:0.0d,ImpactY:0.0d,ImpactZ:0.0d,LastDetection:\"None\",Links:[],Mask:1,OutputSignal:0,Overrides:[],PlacedAt:9223372036854775807L,Powered:0b,QueuedPulses:0,Root:13743895392207L,Transition:62395L,id:\"fieldemitters:emitter\",x:70,y:-49,z:10}"
+      }
+    ]
+  }
+}

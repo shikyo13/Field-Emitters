@@ -1,0 +1,14 @@
+
+/Users/zero/Documents/Dev/MC Mods/Field-Emitters/tools/showcase/scripts/prepare-assets.mjs
+  78:36  error  'Buffer' is not defined   no-undef
+  92:1   error  'console' is not defined  no-undef
+
+/Users/zero/Documents/Dev/MC Mods/Field-Emitters/tools/showcase/scripts/render-stills.mjs
+  19:16  error  'process' is not defined  no-undef
+
+/Users/zero/Documents/Dev/MC Mods/Field-Emitters/tools/showcase/scripts/write-manifest.mjs
+  10:42  error  'process' is not defined  no-undef
+  39:1   error  'console' is not defined  no-undef
+
+✖ 5 problems (5 errors, 0 warnings)
+

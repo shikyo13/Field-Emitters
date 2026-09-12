@@ -1,0 +1,12 @@
+{
+  "dimension": "minecraft:overworld",
+  "blocks": [
+    {
+      "x": 50,
+      "y": -49,
+      "z": 20,
+      "state": "fieldemitters:field_rail[active=true,facing=east,light=false]",
+      "nbt": "{Color:5432831,Controls:{Animation:1b,Barrier:{Age:0,Directions:63,Entity:\"\",Groups:1,Identity:\"\",Invert:0b,Item:\"\",OwnerExempt:1b,Tag:\"\"},CountItems:0b,InputFace:4,InputMode:0,Light:0b,OutputFace:0,PulseTicks:4,RailNormal:2,Sensor:{Age:0,Directions:63,Entity:\"\",Groups:31,Identity:\"\",Invert:0b,Item:\"\",OwnerExempt:0b,Tag:\"\"},SensorMode:0,Visible:1b},Crossings:0L,Demand:10,Enabled:1b,Energy:0,FieldName:\"\",ImpactTime:59546L,ImpactX:52.5d,ImpactY:-47.0d,ImpactZ:20.5d,LastDetection:\"None\",Links:[{DX:1,DY:0,DZ:0,Ground:[I;-49,-49,-49,-49,-49],Normal:\"z\",Rail:1b,Target:14843407060943L}],Mask:1,OutputSignal:0,Overrides:[],PlacedAt:9223372036854775807L,Powered:1b,QueuedPulses:0,Root:13743895433167L,Transition:59429L,id:\"fieldemitters:emitter\",x:50,y:-49,z:20}"
+    }
+  ]
+}

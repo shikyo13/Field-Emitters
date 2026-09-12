@@ -1,0 +1,28 @@
+{
+  "entities": [
+    {
+      "name": "Dev",
+      "z": 4.5,
+      "y": -49.0,
+      "x": 47.5,
+      "id": 6,
+      "type": "minecraft:player"
+    },
+    {
+      "name": "Field Rail",
+      "z": 6.09379564061761,
+      "y": -49.0,
+      "x": 49.70460578128696,
+      "id": 35,
+      "type": "minecraft:item"
+    },
+    {
+      "name": "Smooth Quartz Block",
+      "z": 6.798674086699612,
+      "y": -51.142129581919995,
+      "x": 48.875,
+      "id": 39,
+      "type": "minecraft:item"
+    }
+  ]
+}

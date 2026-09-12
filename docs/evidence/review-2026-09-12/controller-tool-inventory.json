@@ -1,0 +1,513 @@
+[
+  {
+    "name": "mc.background.state",
+    "description": "Get background input mode and window status",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.block.interact",
+    "description": "Right-click a block through the normal client interaction path",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.block.state",
+    "description": "Get block state at coordinates",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.block.use",
+    "description": "Use the held item on a block face, with precise hit fractions for stairs, slabs and mod controls",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.build.apply",
+    "description": "Apply up to 8192 creative block edits or fills, including exact block-state properties and optional block-entity SNBT. Saves undo before editing. Requires an integrated creative world.",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.build.command",
+    "description": "Run a vanilla or mod command as the local player and return the actual command result",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.build.inspect",
+    "description": "Read exact authoritative block states and optional block entity data from an inclusive cuboid",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.build.undo",
+    "description": "Restore a saved build receipt in the same world and dimension",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.chat.send",
+    "description": "Send a normal chat message through the current client connection",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.client.quit",
+    "description": "Save and close this Minecraft client",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.client.state",
+    "description": "Get Minecraft client state",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.command.run",
+    "description": "Send a slash command through the current client connection",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.command.suggest",
+    "description": "Request vanilla command suggestions and wait for the matching server response",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.condition.wait",
+    "description": "Wait until a client condition is true",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.container.click",
+    "description": "Click any inventory slot using normal game handling; supports PICKUP, QUICK_MOVE, SWAP, CLONE, THROW, PICKUP_ALL, QUICK_CRAFT",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.container.close",
+    "description": "Close the currently open container/menu",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.container.drop",
+    "description": "Drop one or all items from a container slot",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.container.quick_move",
+    "description": "Shift-click / quick-move a container slot",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.container.state",
+    "description": "Get current player container/menu state",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.creative.item",
+    "description": "Set a creative hotbar slot to a registered vanilla or mod item",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.debug.capabilities",
+    "description": "Return MCP mod capabilities",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.entities.nearby",
+    "description": "Inspect nearby rendered entities and positions",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.entity.interact",
+    "description": "Interact with or attack a nearby entity through normal game handling",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.hotbar.select",
+    "description": "Select a hotbar slot by zero-based index",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.input.perform",
+    "description": "Hold game keys and mouse buttons for 1-200 ticks, then release. Optional yaw and pitch. Keys: w, space, left.shift, e. Buttons: 0 attack, 1 use, 2 pick. Held use supports eating and charging bows.",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.input.stop",
+    "description": "Immediately release every virtual key",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.inventory.count",
+    "description": "Count matching items in the player inventory",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.inventory.find",
+    "description": "Find item stacks in the player inventory",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.inventory.selected",
+    "description": "Get the selected hotbar item",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.inventory.state",
+    "description": "Get player inventory snapshot",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.keyboard.hold",
+    "description": "Hold a game key, releasing even if the caller times out",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.keyboard.press",
+    "description": "Press a game key without OS input",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.mouse.scroll",
+    "description": "Scroll in gameplay through Minecraft and NeoForge's normal mouse hooks",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.movement.waypoints",
+    "description": "Move the client player through one or more waypoints",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.packet.dump",
+    "description": "Dump recorded packets with optional filters",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.packet.recording.clear",
+    "description": "Clear recorded packets",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.packet.recording.start",
+    "description": "Start client packet recording",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.packet.recording.status",
+    "description": "Return packet recording status",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.packet.recording.stop",
+    "description": "Stop client packet recording",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.packet.wait",
+    "description": "Wait until recorded packets matching a filter reach a required count",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.player.attack.block",
+    "description": "Attack or start breaking a block through the normal client interaction path",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.player.destroy.block",
+    "description": "Keep breaking a block through the normal client interaction path until it is gone or timeout expires",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.player.details",
+    "description": "Inspect game mode, health, food, flight, selected slot, position and rotation",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.player.drop",
+    "description": "Drop the selected item stack or a single item",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.player.flight",
+    "description": "Toggle creative flight and set fly speed; requires creative or spectator",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.player.jump",
+    "description": "Make the player jump once",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.player.look",
+    "description": "Set player yaw and pitch",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.player.look_at",
+    "description": "Rotate player to look at a world position",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.player.state",
+    "description": "Get player state",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.player.swing",
+    "description": "Swing player hand and send the normal client interaction packet",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.player.use_item",
+    "description": "Use the currently held item with main hand or offhand",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.scenario.batch.run",
+    "description": "Run scenarios from a directory",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.scenario.report",
+    "description": "Return latest scenario report",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.screen.click.at",
+    "description": "Click and release at scaled GUI coordinates",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.screen.close",
+    "description": "Close the active game screen",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.screen.current",
+    "description": "Get current screen",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.screen.drag",
+    "description": "Drag within a mod GUI using scaled coordinates",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.screen.hover",
+    "description": "Move the virtual cursor in scaled GUI coordinates",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.screen.scroll",
+    "description": "Scroll the current screen at virtual cursor coordinates",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.screen.state",
+    "description": "Get structured state for the current screen",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.screen.text.type",
+    "description": "Type text into the current screen and optionally submit with Enter",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.screen.widget.click",
+    "description": "Click an observed widget ID or exact message",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.screenshot.take",
+    "description": "Take a client screenshot and save it under the game directory",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.server.call",
+    "description": "Proxy a server-side MCP tool through the connected server plugin channel",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.server.connect",
+    "description": "Connect the client to a multiplayer server, reconnecting if already connected",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.server.disconnect.state",
+    "description": "Return disconnect screen/message state if the client is disconnected",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.server.disconnect.wait",
+    "description": "Wait for a disconnect screen, optionally matching messageContains",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.server.sync",
+    "description": "Synchronize with the server using a vanilla command suggestion round-trip",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.ticks.wait",
+    "description": "Wait client ticks",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.vehicle.state",
+    "description": "Get player vehicle state",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.world.join",
+    "description": "Join a singleplayer world, creating it with supplied options when missing",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.world.leave",
+    "description": "Leave the current world to title",
+    "inputSchema": {
+      "type": "object"
+    }
+  },
+  {
+    "name": "mc.world.snapshot",
+    "description": "Get current world snapshot",
+    "inputSchema": {
+      "type": "object"
+    }
+  }
+]
