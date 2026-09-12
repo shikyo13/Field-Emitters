@@ -1,67 +1,56 @@
 plugins {
     id 'java-library'
-    id 'net.neoforged.moddev' version '2.0.141'
+    id 'maven-publish'
+    id 'idea'
+    id 'net.minecraftforge.gradle' version '6.0.54'
 }
-
 version = mod_version
 group = mod_group_id
-
-base {
-    archivesName = mod_archive_name
-}
-
+base.archivesName = mod_archive_name
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
-
 tasks.withType(AbstractArchiveTask).configureEach {
     preserveFileTimestamps = false
     reproducibleFileOrder = true
 }
-
-neoForge {
-    version = neo_version
-
+minecraft {
+    mappings channel: 'official', version: minecraft_version
+    reobf = false
+    copyIdeResources = true
     runs {
-        client {
-            client()
-            if (providers.gradleProperty('visualQa').isPresent()) {
-                gameDirectory = project.file('run-visual')
-            }
-            if (providers.gradleProperty('automationQa').isPresent()) {
-                gameDirectory = project.file('run-automation')
-            }
-            if (providers.gradleProperty('menuQa').isPresent()) {
-                gameDirectory = project.file('run-menu')
-            }
-            if (providers.gradleProperty('demoWorld').isPresent()) {
-                programArguments.addAll '--quickPlaySingleplayer', 'Field Emitters Demo'
-            }
+        configureEach {
+            workingDirectory project.file('run')
+            property 'forge.logging.console.level', 'info'
+            property 'forge.enabledGameTestNamespaces', mod_id
+            mods { "${mod_id}" { source sourceSets.main } }
         }
-        server {
-            server()
-            programArgument '--nogui'
-        }
+        client {}
+        server { args '--nogui' }
+        gameTestServer {}
         data {
-            data()
-            programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
-        }
-    }
-
-    mods {
-        "${mod_id}" {
-            sourceSet(sourceSets.main)
+            workingDirectory project.file('run-data')
+            args '--mod', mod_id, '--all', '--output', file('src/generated/resources'), '--existing', file('src/main/resources')
         }
     }
 }
-
-// Generated resources (recipes, loot tables, tags) are produced by the data run and committed.
-sourceSets.main.resources { srcDir 'src/generated/resources' }
-
-var generateModMetadata = tasks.register('generateModMetadata', ProcessResources) {
+sourceSets.main.resources.srcDir 'src/generated/resources'
+// Forge scans each development mod as one directory.
+sourceSets.main.output.resourcesDir = layout.buildDirectory.dir('classes/java/main').get().asFile
+tasks.named('processResources') { dependsOn tasks.named('compileJava') }
+repositories {
+    exclusiveContent {
+        forRepository { maven { url = 'https://libraries.minecraft.net'; metadataSources { mavenPom(); artifact() } } }
+        filter { includeGroup 'org.lwjgl' }
+    }
+}
+dependencies { minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}" }
+// This block of code expands all declared replace properties in the specified resource targets.
+// A missing property will result in an error. Properties are expanded using ${} Groovy notation.
+var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
     var replaceProperties = [
             minecraft_version      : minecraft_version,
             minecraft_version_range: minecraft_version_range,
-            neo_version            : neo_version,
-            neo_version_range      : neo_version_range,
+            forge_version            : forge_version,
+            forge_version_range      : forge_version_range,
             loader_version_range   : loader_version_range,
             mod_id                 : mod_id,
             mod_name               : mod_name,
@@ -74,38 +63,18 @@ var generateModMetadata = tasks.register('generateModMetadata', ProcessResources
     ]
     inputs.properties replaceProperties
     expand replaceProperties
-    from 'src/main/templates'
-    into 'build/generated/sources/modMetadata'
+    from "src/main/templates"
+    into "build/generated/sources/modMetadata"
 }
+// Include the output of "generateModMetadata" as an input directory for the build
+// this works with both building through Gradle and the IDE.
 sourceSets.main.resources.srcDir generateModMetadata
-neoForge.ideSyncTask generateModMetadata
+// To avoid having to run "generateModMetadata" manually, make it run on every project reload
 
-// Local testing only: -PextraMods=/path/one.jar,/path/two.jar adds mod JARs to the run configurations.
-var extraMods = providers.gradleProperty('extraMods')
-if (extraMods.isPresent()) {
-    dependencies {
-        runtimeOnly files(extraMods.get().split(',').collect { it.trim() }.findAll { !it.isEmpty() })
-    }
-}
 
-tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8'
-}
 
-tasks.named('jar', Jar).configure {
-    includeEmptyDirs = false
-    exclude '.cache/**'
-    manifest {
-        attributes([
-                'Specification-Title'   : mod_id,
-                'Specification-Vendor'  : mod_authors,
-                'Specification-Version' : mod_version,
-                'Implementation-Title'  : mod_name,
-                'Implementation-Vendor' : mod_authors,
-                'Implementation-Version': mod_version
-        ])
-    }
-    from('LICENSE') {
-        into 'META-INF'
-    }
+tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }
+jar { includeEmptyDirs = false; exclude '.cache/**'; from('LICENSE') { into 'META-INF' } }
+if (providers.gradleProperty('extraMods').isPresent()) {
+ dependencies { runtimeOnly files(providers.gradleProperty('extraMods').get().split(',')) }
 }

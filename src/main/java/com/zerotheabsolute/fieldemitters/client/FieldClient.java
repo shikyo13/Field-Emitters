@@ -1,15 +1,15 @@
 package com.zerotheabsolute.fieldemitters.client;
 
 import com.zerotheabsolute.fieldemitters.*;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+import net.minecraftforge.client.event.EntityRenderersEvent;
 
 @EventBusSubscriber(modid = FieldEmitters.ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public final class FieldClient {
   @SubscribeEvent
-  public static void setup(net.neoforged.fml.event.lifecycle.FMLClientSetupEvent event) {
+  public static void setup(net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent event) {
     event.enqueueWork(() -> FieldControls.remoteData = RemoteScreen::receive);
     event.enqueueWork(
         () ->
@@ -24,7 +24,7 @@ public final class FieldClient {
 
   @SubscribeEvent
   public static void blockColors(
-      net.neoforged.neoforge.client.event.RegisterColorHandlersEvent.Block event) {
+      net.minecraftforge.client.event.RegisterColorHandlersEvent.Block event) {
     event.register(
         (state, level, pos, index) -> {
           if (index != 0 || level == null || pos == null) return -1;
@@ -39,7 +39,7 @@ public final class FieldClient {
 
   @SubscribeEvent
   public static void itemColors(
-      net.neoforged.neoforge.client.event.RegisterColorHandlersEvent.Item event) {
+      net.minecraftforge.client.event.RegisterColorHandlersEvent.Item event) {
     event.register(
         (stack, index) -> {
           if (index != 0) return -1;

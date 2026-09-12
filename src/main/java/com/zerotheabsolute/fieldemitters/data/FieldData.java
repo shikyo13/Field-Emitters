@@ -1,9 +1,9 @@
 package com.zerotheabsolute.fieldemitters.data;
 
 import com.zerotheabsolute.fieldemitters.FieldEmitters;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+import net.minecraftforge.data.event.GatherDataEvent;
 
 /** Entry point for the data run: recipes, loot tables and tags land in src/generated/resources. */
 @EventBusSubscriber(modid = FieldEmitters.ID, bus = EventBusSubscriber.Bus.MOD)

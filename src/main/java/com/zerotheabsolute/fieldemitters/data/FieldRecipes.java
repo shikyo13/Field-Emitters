@@ -9,7 +9,7 @@ import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.world.item.Items;
-import net.neoforged.neoforge.common.Tags;
+import net.minecraftforge.common.Tags;
 
 public final class FieldRecipes extends RecipeProvider {
   public FieldRecipes(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {

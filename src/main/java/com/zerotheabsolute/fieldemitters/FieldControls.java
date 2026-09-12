@@ -7,7 +7,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import com.zerotheabsolute.fieldemitters.network.ForgeNetworkRegistrar;
 
 public final class FieldControls {
   public static Consumer<EmitterEntity> open = e -> {};
@@ -70,7 +70,7 @@ public final class FieldControls {
 
   private static void reply(
       net.minecraft.world.entity.player.Player player, int kind, CompoundTag data, String message) {
-    net.neoforged.neoforge.network.PacketDistributor.sendToPlayer(
+    com.zerotheabsolute.fieldemitters.network.ForgePacketDistributor.sendToPlayer(
         (net.minecraft.server.level.ServerPlayer) player, new RemoteData(kind, data, message));
   }
 
@@ -191,11 +191,11 @@ public final class FieldControls {
     }
   }
 
-  public static void register(RegisterPayloadHandlersEvent event) {
+  public static void register(ForgeNetworkRegistrar event) {
     event
-        .registrar("1")
+        
         .playToServer(
-            Rename.TYPE,
+            Rename.class,
             Rename.CODEC,
             (p, c) ->
                 c.enqueueWork(
@@ -226,17 +226,17 @@ public final class FieldControls {
                       reply(player, 2, new CompoundTag(), "Field name updated.");
                     }));
     event
-        .registrar("1")
+        
         .playToServer(
-            RemoteRequest.TYPE,
+            RemoteRequest.class,
             RemoteRequest.CODEC,
             (p, c) -> c.enqueueWork(() -> remote(p, c.player())))
         .playToClient(
-            RemoteData.TYPE, RemoteData.CODEC, (p, c) -> c.enqueueWork(() -> remoteData.accept(p)));
+            RemoteData.class, RemoteData.CODEC, (p, c) -> c.enqueueWork(() -> remoteData.accept(p)));
     event
-        .registrar("1")
+        
         .playToServer(
-            Update.TYPE,
+            Update.class,
             Update.CODEC,
             (p, context) ->
                 context.enqueueWork(

@@ -5,20 +5,20 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.capabilities.*;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.registries.*;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.common.Mod;
+
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.registries.*;
 
 @Mod(FieldEmitters.ID)
 public final class FieldEmitters {
   public static final String ID = "fieldemitters";
-  public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(ID);
-  public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(ID);
+  public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(Registries.BLOCK, ID);
+  public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(Registries.ITEM, ID);
   public static final DeferredRegister<BlockEntityType<?>> TYPES =
       DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, ID);
-  public static final DeferredBlock<EmitterBlock> EMITTER =
+  public static final RegistryObject<EmitterBlock> EMITTER =
       BLOCKS.register(
           "field_emitter",
           () ->
@@ -29,7 +29,7 @@ public final class FieldEmitters {
                       .sound(SoundType.NETHERITE_BLOCK)
                       .noOcclusion()
                       .lightLevel(s -> s.getValue(EmitterBlock.LIGHT) ? 12 : 0)));
-  public static final DeferredBlock<FieldBlock> FIELD =
+  public static final RegistryObject<FieldBlock> FIELD =
       BLOCKS.register(
           "forcefield",
           () ->
@@ -40,7 +40,7 @@ public final class FieldEmitters {
                       .noOcclusion()
                       .noTerrainParticles()
                       .lightLevel(s -> s.getValue(FieldBlock.LIT) ? 8 : 0)));
-  public static final DeferredBlock<RailBlock> RAIL =
+  public static final RegistryObject<RailBlock> RAIL =
       BLOCKS.register(
           "field_rail",
           () ->
@@ -51,23 +51,23 @@ public final class FieldEmitters {
                       .sound(SoundType.NETHERITE_BLOCK)
                       .noOcclusion()
                       .lightLevel(s -> s.getValue(RailBlock.LIGHT) ? 8 : 0)));
-  public static final DeferredItem<BlockItem> RAIL_ITEM = ITEMS.registerSimpleBlockItem(RAIL);
-  public static final DeferredItem<BlockItem> EMITTER_ITEM = ITEMS.registerSimpleBlockItem(EMITTER);
-  public static final DeferredItem<TunerItem> TUNER =
+  public static final RegistryObject<BlockItem> RAIL_ITEM = ITEMS.register("field_rail", () -> new BlockItem(RAIL.get(), new Item.Properties()));
+  public static final RegistryObject<BlockItem> EMITTER_ITEM = ITEMS.register("field_emitter", () -> new BlockItem(EMITTER.get(), new Item.Properties()));
+  public static final RegistryObject<TunerItem> TUNER =
       ITEMS.register("field_tuner", () -> new TunerItem(new Item.Properties().stacksTo(1)));
-  public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<EmitterEntity>>
+  public static final RegistryObject<BlockEntityType<EmitterEntity>>
       EMITTER_BE =
           TYPES.register(
               "emitter",
               () ->
                   BlockEntityType.Builder.of(EmitterEntity::new, EMITTER.get(), RAIL.get())
                       .build(null));
-  public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<FieldCell>> CELL_BE =
+  public static final RegistryObject<BlockEntityType<FieldCell>> CELL_BE =
       TYPES.register(
           "field_cell", () -> BlockEntityType.Builder.of(FieldCell::new, FIELD.get()).build(null));
   public static final DeferredRegister<CreativeModeTab> TABS =
       DeferredRegister.create(Registries.CREATIVE_MODE_TAB, ID);
-  public static final DeferredHolder<CreativeModeTab, CreativeModeTab> TAB =
+  public static final RegistryObject<CreativeModeTab> TAB =
       TABS.register(
           "field_emitters",
           () ->
@@ -82,28 +82,26 @@ public final class FieldEmitters {
                       })
                   .build());
 
-  public FieldEmitters(IEventBus bus, net.neoforged.fml.ModContainer container) {
-    container.registerConfig(net.neoforged.fml.config.ModConfig.Type.SERVER, FieldConfig.SPEC);
+  public FieldEmitters() {
+    IEventBus bus = net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext.get().getModEventBus();
+    var container = net.minecraftforge.fml.ModLoadingContext.get();
+    container.registerConfig(net.minecraftforge.fml.config.ModConfig.Type.SERVER, FieldConfig.SPEC);
     container.registerConfig(
-        net.neoforged.fml.config.ModConfig.Type.CLIENT, FieldConfig.CLIENT_SPEC);
-    bus.addListener(FieldControls::register);
+        net.minecraftforge.fml.config.ModConfig.Type.CLIENT, FieldConfig.CLIENT_SPEC);
+    FieldControls.register(new com.zerotheabsolute.fieldemitters.network.ForgeNetworkRegistrar());
     BLOCKS.register(bus);
     ITEMS.register(bus);
     TYPES.register(bus);
     TABS.register(bus);
     bus.addListener(
-        (RegisterCapabilitiesEvent e) ->
-            e.registerBlockEntity(
-                Capabilities.EnergyStorage.BLOCK, EMITTER_BE.get(), (be, side) -> be.energy));
-    bus.addListener(
-        (net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent e) -> {
+        (net.minecraftforge.event.BuildCreativeModeTabContentsEvent e) -> {
           if (e.getTabKey() == CreativeModeTabs.FUNCTIONAL_BLOCKS) {
             e.accept(EMITTER_ITEM);
             e.accept(RAIL_ITEM);
             e.accept(TUNER);
           }
         });
-    NeoForge.EVENT_BUS.addListener(FieldNetwork::tick);
-    NeoForge.EVENT_BUS.addListener(DemoCommands::register);
+    MinecraftForge.EVENT_BUS.addListener(FieldNetwork::tick);
+    MinecraftForge.EVENT_BUS.addListener(DemoCommands::register);
   }
 }

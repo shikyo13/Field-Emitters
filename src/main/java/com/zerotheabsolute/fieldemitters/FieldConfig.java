@@ -1,22 +1,22 @@
 package com.zerotheabsolute.fieldemitters;
 
-import net.neoforged.neoforge.common.ModConfigSpec;
+import net.minecraftforge.common.ForgeConfigSpec;
 
 public final class FieldConfig {
-  public static final ModConfigSpec SPEC;
-  public static final ModConfigSpec CLIENT_SPEC;
-  public static final ModConfigSpec.BooleanValue SHOW_GUIDES;
-  public static final ModConfigSpec.BooleanValue DEMO_POWER;
-  public static final ModConfigSpec.IntValue ENERGY_PER_CELL;
-  public static final ModConfigSpec.IntValue CAPACITY;
-  public static final ModConfigSpec.IntValue TRANSFER;
+  public static final ForgeConfigSpec SPEC;
+  public static final ForgeConfigSpec CLIENT_SPEC;
+  public static final ForgeConfigSpec.BooleanValue SHOW_GUIDES;
+  public static final ForgeConfigSpec.BooleanValue DEMO_POWER;
+  public static final ForgeConfigSpec.IntValue ENERGY_PER_CELL;
+  public static final ForgeConfigSpec.IntValue CAPACITY;
+  public static final ForgeConfigSpec.IntValue TRANSFER;
 
   public static final int DEFAULT_ENERGY_PER_CELL = 2;
   public static final int DEFAULT_CAPACITY = 100000;
   public static final int DEFAULT_TRANSFER = 10000;
 
   static {
-    var b = new ModConfigSpec.Builder();
+    var b = new ForgeConfigSpec.Builder();
     b.push("balance");
     ENERGY_PER_CELL =
         b.comment("FE consumed per projected field block each tick while a field is running.")
@@ -33,7 +33,7 @@ public final class FieldConfig {
                 "Testing only: redstone input supplies unlimited energy. Normal worlds require FE.")
             .define("demoRedstonePower", false);
     SPEC = b.build();
-    var client = new ModConfigSpec.Builder();
+    var client = new ForgeConfigSpec.Builder();
     SHOW_GUIDES =
         client
             .comment("Show direction arrows while holding the tuner or previewing a connection.")
