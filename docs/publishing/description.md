@@ -1,28 +1,42 @@
-Field Emitters adds terrain-following forcefields. Place Field Emitter posts around an area and they link into a five-block-high perimeter that climbs and descends with the ground between them. Mount Field Rails on walls, floors and ceilings to seal doorways, pits and shafts. Every field decides what passes through it, reports what crossed it over redstone, and runs on Forge Energy from any energy mod.
+<iframe width="560" height="315" src="https://www.youtube.com/embed/HvTZJLOWlAM" title="Field Emitters showcase" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
+Field Emitters protects an area with glowing, terrain-following forcefields. Place emitter posts around your base, or mount Field Rails on walls, floors and ceilings to seal doorways, pits and shafts. Choose what passes through and use crossings to trigger redstone automation.
+
+Feed energy into an emitter, then use the handheld Field Tuner to configure it. Connected, loaded emitters form one managed field and pool their stored energy, so one energy input can run the connected field.
 
 ## Getting started
 
-1. Craft a Field Emitter from copper, an amethyst shard, glass, a block of redstone and iron. Craft a Field Tuner from an amethyst shard, copper, a glass pane, iron and redstone.
-2. Place emitters on the ground up to 20 blocks apart in a rectangle or a line. Each post needs five free blocks of height and links to the nearest post to its north, south, east and west.
-3. Feed energy into any post from a cable or generator. Connected posts pool their energy, so one input runs the whole perimeter.
-4. Right-click a post with an empty hand or the tuner to choose what the field blocks and what it reports.
-5. Right-click the air with the tuner to open the Field Manager and reach any loaded field remotely.
+1. Craft a Field Emitter and a Field Tuner. Each emitter post needs five free blocks of height.
+2. Place posts up to 20 blocks apart. They link to the nearest post to the north, south, east or west and follow the terrain between them.
+3. Supply energy from a cable or generator. The mod needs a power source from another mod.
+4. Right-click an emitter with an empty hand or the tuner to choose what it blocks and detects. Changes apply immediately.
+5. Right-click the air with the tuner to open the Field Manager and manage your loaded fields remotely.
 
-Field Rails are crafted four at a time. Place one on a wall, floor or ceiling and another facing it up to 20 blocks away, then add rails side by side to widen the field.
+Field Rails are crafted four at a time. Place one on a wall, floor or ceiling and another facing it up to 20 blocks away. Add rails side by side to widen the field.
 
-## Blocking and detection
+## See what's happening
 
-- Block hostile mobs, passive mobs, players, dropped items or anything else, in any combination. Narrow a rule with age, entity type or tag, item, UUID or scoreboard tag, choose the movement directions it applies to, invert it, or exempt the owner.
-- Detection sends one redstone pulse per completed crossing or a steady signal while something touches the field. Dropped items count per stack or per item, and a lifetime counter tracks crossings.
-- Each link can carry its own rules, so one side of a perimeter can stop everything while another side lets villagers through.
+Impacts send a wave across the forcefield, continuing seamlessly across connected rails.
 
-## Fields and power
+![Impact ripples spreading seamlessly across connected forcefields](https://raw.githubusercontent.com/shikyo13/Field-Emitters/v1.0.1/docs/media/impact-captures/impact-showcase.gif)
 
-- Six color presets or any hex color, an animated field pattern, optional block light, and impact ripples where entities are stopped.
-- Redstone input can enable, pause or gate a field. Detection output and redstone input use separate faces.
-- With default settings a running field costs 2 FE per projected block each tick, and each emitter or rail stores 100,000 FE and accepts 10,000 FE/t. A 20 by 16 perimeter costs about 680 FE/t. Server settings can change these values.
+Use the Field Manager to find and rename your loaded fields, then open an emitter's controls remotely. The controls separate power, blocking, detection, appearance and connections.
 
-Install the mod on both the server and clients. Field Emitters needs an energy source from another mod and does not keep chunks loaded.
+## Set up each field
+
+- Block hostile mobs, passive mobs, players, dropped items or other entities in any combination. Narrow the filter by age, entity type or tag, item, UUID or scoreboard tag.
+- Choose which movement directions a rule applies to, invert the filter or exempt the owner. Each connection can have its own rules.
+- Set a separate detection filter. Send one redstone pulse per completed crossing or a steady signal while something touches the field. Count dropped items per stack or per item, with a lifetime crossing counter.
+- Pick one of six colors or enter a hex color. Turn block lighting off for dark builds and mob farms.
+- Use redstone to enable, pause or gate the field. Detection output and redstone input use separate faces.
+
+With default settings, a running field costs 2 FE per projected block each tick. Each emitter or rail stores 100,000 FE and accepts 10,000 FE/t. Fabric uses the same values in E and E/t through Team Reborn's Energy API. Server settings can change these values.
+
+## Compatibility
+
+Available for NeoForge 1.21.1, Forge 1.21.1 and 1.20.1, and Fabric 1.21.1 and 1.20.1. Install the matching build on both the server and clients. The Fabric build also needs [Fabric API](https://modrinth.com/mod/fabric-api) and [Forge Config API Port](https://modrinth.com/mod/forge-config-api-port); Team Reborn Energy is bundled.
+
+Fields work in loaded chunks. The mod does not keep chunks loaded.
 
 ## Modpacks
 
