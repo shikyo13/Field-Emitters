@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "id": "fieldemitters",
+  "version": "${version}",
+  "name": "Field Emitters",
+  "description": "Terrain-following forcefields with filters, detection and a Field Tuner.",
+  "authors": [
+    "ZeroTheAbsolute"
+  ],
+  "contact": {
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/field-emitters",
+    "sources": "https://github.com/shikyo13/Field-Emitters/tree/mc/1.21.1-fabric",
+    "issues": "https://github.com/shikyo13/Field-Emitters/issues"
+  },
+  "license": "LicenseRef-Field-Emitters-1.0",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.zerotheabsolute.fieldemitters.FieldEmitters"
+    ],
+    "client": [
+      "com.zerotheabsolute.fieldemitters.client.FieldClient"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.16.14",
+    "minecraft": "1.21.1",
+    "java": ">=21",
+    "fabric-api": ">=0.116.0",
+    "team_reborn_energy": ">=4.1.0 <4.2",
+    "forgeconfigapiport": ">=21.1.0 <21.2"
+  },
+  "custom": {
+    "modrinth": {
+      "environments": {
+        "client": "required",
+        "server": "required"
+      }
+    }
+  }
+}

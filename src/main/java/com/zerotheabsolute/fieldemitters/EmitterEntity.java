@@ -6,7 +6,7 @@ import net.minecraft.nbt.*;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.energy.EnergyStorage;
+import com.zerotheabsolute.fieldemitters.energy.EnergyStorage;
 
 public final class EmitterEntity extends BlockEntity {
   public ControlSettings controls = new ControlSettings();
@@ -42,6 +42,7 @@ public final class EmitterEntity extends BlockEntity {
   public Set<BlockPos> cells = new HashSet<>();
   public final EnergyStorage energy =
       new EnergyStorage(FieldConfig.capacity(), FieldConfig.transfer(), FieldConfig.transfer()) {
+        @Override protected void onFinalCommit() { setChanged(); }
         @Override
         public int receiveEnergy(int amount, boolean simulate) {
           int n = super.receiveEnergy(amount, simulate);

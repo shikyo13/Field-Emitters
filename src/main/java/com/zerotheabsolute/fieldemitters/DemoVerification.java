@@ -7,7 +7,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.util.FakePlayerFactory;
+
 
 /** Exercises Minecraft's actual entity movement against the placed demo, on the server thread. */
 public final class DemoVerification {
@@ -36,12 +36,12 @@ public final class DemoVerification {
     var zombie = EntityType.ZOMBIE.create(l);
     var cow = EntityType.COW.create(l);
     var owner =
-        FakePlayerFactory.get(
+        FixturePlayers.get(
             l,
             new GameProfile(
                 UUID.fromString("56f3e2a2-9270-4b13-8822-303bef87c5ac"), "FieldTestOwner"));
     var other =
-        FakePlayerFactory.get(
+        FixturePlayers.get(
             l,
             new GameProfile(
                 UUID.fromString("642cae2b-cd05-45eb-88dd-7788aa732915"), "FieldTestGuest"));

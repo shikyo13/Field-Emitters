@@ -1,31 +1,25 @@
 package com.zerotheabsolute.fieldemitters.client;
 
 import com.zerotheabsolute.fieldemitters.*;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 
-@EventBusSubscriber(modid = FieldEmitters.ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
-public final class FieldClient {
-  @SubscribeEvent
-  public static void setup(net.neoforged.fml.event.lifecycle.FMLClientSetupEvent event) {
-    event.enqueueWork(() -> FieldControls.remoteData = RemoteScreen::receive);
-    event.enqueueWork(
+public final class FieldClient implements net.fabricmc.api.ClientModInitializer {
+  private static void run(Runnable action) { action.run(); }
+  @Override public void onInitializeClient() {
+    com.zerotheabsolute.fieldemitters.network.NativeNetwork.initClient();
+    renderers(); blockColors(); itemColors();
+    run(() -> FieldControls.remoteData = RemoteScreen::receive);
+    run(
         () ->
             FieldControls.open =
                 e -> net.minecraft.client.Minecraft.getInstance().setScreen(new ControlScreen(e)));
   }
 
-  @SubscribeEvent
-  public static void renderers(EntityRenderersEvent.RegisterRenderers e) {
-    e.registerBlockEntityRenderer(FieldEmitters.EMITTER_BE.get(), FieldRenderer::new);
+  public static void renderers() {
+    net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry.register(FieldEmitters.EMITTER_BE.get(), FieldRenderer::new);
   }
 
-  @SubscribeEvent
-  public static void blockColors(
-      net.neoforged.neoforge.client.event.RegisterColorHandlersEvent.Block event) {
-    event.register(
+  public static void blockColors() {
+    net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry.BLOCK.register(
         (state, level, pos, index) -> {
           if (index != 0 || level == null || pos == null) return -1;
           var base = EmitterBlock.base(pos, state);
@@ -37,10 +31,8 @@ public final class FieldClient {
         FieldEmitters.RAIL.get());
   }
 
-  @SubscribeEvent
-  public static void itemColors(
-      net.neoforged.neoforge.client.event.RegisterColorHandlersEvent.Item event) {
-    event.register(
+  public static void itemColors() {
+    net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry.ITEM.register(
         (stack, index) -> {
           if (index != 0) return -1;
           var data = stack.get(net.minecraft.core.component.DataComponents.CUSTOM_DATA);

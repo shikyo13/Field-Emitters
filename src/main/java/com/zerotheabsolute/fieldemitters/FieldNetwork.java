@@ -6,7 +6,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.LeavesBlock;
-import net.neoforged.neoforge.event.tick.LevelTickEvent;
+
 
 public final class FieldNetwork {
   private static final Map<Level, Set<BlockPos>> KNOWN = new WeakHashMap<>();
@@ -140,8 +140,7 @@ public final class FieldNetwork {
     return new EmitterEntity.Link(t, dx, dz, heights);
   }
 
-  public static void tick(LevelTickEvent.Post event) {
-    if (!(event.getLevel() instanceof ServerLevel l)) return;
+  public static void tick(ServerLevel l) {
     List<EmitterEntity> all = loaded(l);
     if (all.isEmpty()) return;
     long now = l.getGameTime();

@@ -6,7 +6,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.*;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.neoforged.neoforge.network.PacketDistributor;
+import com.zerotheabsolute.fieldemitters.network.NativeNetwork;
 
 /** Changes are sent immediately; text is validated after a short typing pause. */
 public final class ControlScreen extends FittedScreen {
@@ -369,7 +369,7 @@ public final class ControlScreen extends FittedScreen {
     if (!reset && signature.equals(lastSent)) return;
     var target =
         selectedLink < 0 ? emitter.getBlockPos() : emitter.links.get(selectedLink).target();
-    PacketDistributor.sendToServer(
+    NativeNetwork.sendToServer(
         new FieldControls.Update(
             emitter.getBlockPos(),
             draft.save(),

@@ -1,111 +1,30 @@
 plugins {
-    id 'java-library'
-    id 'net.neoforged.moddev' version '2.0.141'
+    id 'fabric-loom' version '1.10.5'
+    id 'maven-publish'
 }
-
 version = mod_version
 group = mod_group_id
-
-base {
-    archivesName = mod_archive_name
-}
-
+base.archivesName = 'field-emitters-fabric-1.21.1'
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
-
-tasks.withType(AbstractArchiveTask).configureEach {
-    preserveFileTimestamps = false
-    reproducibleFileOrder = true
+repositories {
+    maven { url = 'https://api.modrinth.com/maven' }
 }
-
-neoForge {
-    version = neo_version
-
-    runs {
-        client {
-            client()
-            if (providers.gradleProperty('visualQa').isPresent()) {
-                gameDirectory = project.file('run-visual')
-            }
-            if (providers.gradleProperty('automationQa').isPresent()) {
-                gameDirectory = project.file('run-automation')
-            }
-            if (providers.gradleProperty('menuQa').isPresent()) {
-                gameDirectory = project.file('run-menu')
-            }
-            if (providers.gradleProperty('demoWorld').isPresent()) {
-                programArguments.addAll '--quickPlaySingleplayer', 'Field Emitters Demo'
-            }
-        }
-        server {
-            server()
-            programArgument '--nogui'
-        }
-        data {
-            data()
-            programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
-        }
-    }
-
-    mods {
-        "${mod_id}" {
-            sourceSet(sourceSets.main)
-        }
-    }
+dependencies {
+    minecraft 'com.mojang:minecraft:1.21.1'
+    mappings loom.officialMojangMappings()
+    modImplementation 'net.fabricmc:fabric-loader:0.19.5'
+    modImplementation 'net.fabricmc.fabric-api:fabric-api:0.116.17+1.21.1'
+    include modApi('teamreborn:energy:4.1.0')
+    modImplementation 'maven.modrinth:forge-config-api-port:N5qzq0XV'
+    // Loom does not put dependency jar-in-jar libraries on the development classpath.
+    runtimeOnly 'com.electronwill.night-config:core:3.8.0'
+    runtimeOnly 'com.electronwill.night-config:toml:3.8.0'
 }
+sourceSets.main.resources.srcDir 'src/generated/resources'
 
-// Generated resources (recipes, loot tables, tags) are produced by the data run and committed.
-sourceSets.main.resources { srcDir 'src/generated/resources' }
-
-var generateModMetadata = tasks.register('generateModMetadata', ProcessResources) {
-    var replaceProperties = [
-            minecraft_version      : minecraft_version,
-            minecraft_version_range: minecraft_version_range,
-            neo_version            : neo_version,
-            neo_version_range      : neo_version_range,
-            loader_version_range   : loader_version_range,
-            mod_id                 : mod_id,
-            mod_name               : mod_name,
-            mod_license            : mod_license,
-            mod_version            : mod_version,
-            mod_authors            : mod_authors,
-            mod_homepage           : mod_homepage,
-            mod_issue_tracker      : mod_issue_tracker,
-            mod_description        : mod_description
-    ]
-    inputs.properties replaceProperties
-    expand replaceProperties
-    from 'src/main/templates'
-    into 'build/generated/sources/modMetadata'
-}
-sourceSets.main.resources.srcDir generateModMetadata
-neoForge.ideSyncTask generateModMetadata
-
-// Local testing only: -PextraMods=/path/one.jar,/path/two.jar adds mod JARs to the run configurations.
-var extraMods = providers.gradleProperty('extraMods')
-if (extraMods.isPresent()) {
-    dependencies {
-        runtimeOnly files(extraMods.get().split(',').collect { it.trim() }.findAll { !it.isEmpty() })
-    }
-}
-
-tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8'
-}
-
-tasks.named('jar', Jar).configure {
-    includeEmptyDirs = false
-    exclude '.cache/**'
-    manifest {
-        attributes([
-                'Specification-Title'   : mod_id,
-                'Specification-Vendor'  : mod_authors,
-                'Specification-Version' : mod_version,
-                'Implementation-Title'  : mod_name,
-                'Implementation-Vendor' : mod_authors,
-                'Implementation-Version': mod_version
-        ])
-    }
-    from('LICENSE') {
-        into 'META-INF'
-    }
-}
+loom { runs { client { client() }; server { server(); programArg '--nogui' } } }
+tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8'; options.release = 21 }
+tasks.withType(AbstractArchiveTask).configureEach { preserveFileTimestamps = false; reproducibleFileOrder = true }
+processResources { inputs.property 'version', project.version; filesMatching('fabric.mod.json') { expand version: project.version } }
+jar { includeEmptyDirs = false; exclude '.cache/**'; from('LICENSE') { into 'META-INF' } }
+if (providers.gradleProperty('extraMods').isPresent()) { dependencies { modLocalRuntime files(providers.gradleProperty('extraMods').get().split(',')) } }
