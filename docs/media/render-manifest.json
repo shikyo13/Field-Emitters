@@ -1,0 +1,82 @@
+{
+  "remotion": "4.0.523",
+  "composition": "FieldEmitters",
+  "sourcesSha256": "c3992e3c93e5bb645b062ac403c526aa2984a6ea53c785094463324d3b978ee2",
+  "video": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "codec_type": "video",
+        "width": 1920,
+        "height": 1080,
+        "pix_fmt": "yuv420p",
+        "r_frame_rate": "30/1",
+        "duration": "30.000000",
+        "nb_frames": "900"
+      }
+    ],
+    "format": {
+      "duration": "30.000000",
+      "size": "5889669"
+    }
+  },
+  "exports": [
+    {
+      "file": "blocking-filters.png",
+      "bytes": 788361,
+      "sha256": "dfe0d0549d69eafcfaef92f9c234c06e41f93eb64c3d95027afdb58ee8abd074",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "file": "detection-output.png",
+      "bytes": 795186,
+      "sha256": "f9da1f1a2d6b4db4fdb58c5b95c9dc43e6b170c79aa86de66fae66acd59a2ceb",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "file": "field-emitters-showcase.mp4",
+      "bytes": 5889669,
+      "sha256": "666b83ae5721386c7eabb6078a01e4ebb8c49c76b97c3772c9c8d48cde0c7d20"
+    },
+    {
+      "file": "hardware.png",
+      "bytes": 1027272,
+      "sha256": "e6d5110acaf4dc8dcf98f3f3e1d0d41f00d591747ff8ae591c68d0566689d108",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "file": "perimeter-day.png",
+      "bytes": 1370085,
+      "sha256": "4745bebd9307e36155f78635f72a282f8147502fd9f6cfcfc95960eb06526ab9",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "file": "perimeter-night.png",
+      "bytes": 1318579,
+      "sha256": "d12508c52174bd30545699632efcfed7def1bf0ef19dc8c4016043d34dc422f8",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "file": "rails.png",
+      "bytes": 1295045,
+      "sha256": "79e73bba1e5d7ef0b2605ddcedad25214373159fdd0877afd351fa7abd3ddaa0",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "file": "showcase-poster.png",
+      "bytes": 1063607,
+      "sha256": "59efea5fea6ff524d1d4e1d12ffc36b099f8b2ce8f8b3205a072c78bf8fe2131",
+      "width": 1920,
+      "height": 1080
+    }
+  ],
+  "verification": "Export metadata and image dimensions match. Capture and model input hashes are recorded separately in sources.json."
+}

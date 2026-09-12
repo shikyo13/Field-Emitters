@@ -4,7 +4,15 @@ Terrain-following forcefields for Minecraft. Place Field Emitter posts around an
 
 [Download](https://www.curseforge.com/minecraft/mc-mods/field-emitters) · [Wiki](https://github.com/shikyo13/Field-Emitters/tree/main/docs/wiki) · [Issues](https://github.com/shikyo13/Field-Emitters/issues) · [Discord](https://discord.gg/NrdXnbWzGC)
 
-![Two Field Emitters, an energy cube and the field between them](docs/images/emitters.png)
+[![Field Emitters: terrain-following forcefields](docs/media/showcase-poster.png)](https://youtu.be/HvTZJLOWlAM)
+
+**[Watch the 30-second showcase](https://youtu.be/HvTZJLOWlAM)** · [Full gallery and media downloads](docs/media/README.md) · [Editable video source](tools/showcase/README.md)
+
+The showcase combines studio views of the shipped models with gameplay captures.
+
+| Posts link, the field follows | Rails seal the openings |
+|---|---|
+| ![Four posts around a stepped hillside](docs/publishing/gallery/gallery-perimeter-day.png) | ![Rails sealing a doorway, a shaft and a walkway](docs/publishing/gallery/gallery-rails-doorway.png) |
 
 ## Features
 

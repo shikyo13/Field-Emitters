@@ -1,0 +1,44 @@
+{
+  "composition": "ProjectIcon",
+  "reference": "docs/media/showcase-poster.png",
+  "source": "tools/showcase/src/ProjectIcon.tsx",
+  "render_scale": 2,
+  "model_pixel_ratio": 2,
+  "exports": [
+    {
+      "file": "field-emitters-logo-master.png",
+      "width": 2048,
+      "height": 2048,
+      "bytes": 1897192,
+      "sha256": "a664dc54ae54477e1358566ed87e886dbd543d8840a2bb78728873c0b5d0b164"
+    },
+    {
+      "file": "curseforge-icon.png",
+      "width": 400,
+      "height": 400,
+      "bytes": 115064,
+      "sha256": "4d2df73fb1a98ff2c1a4c1cbbc898566216b5edcb46ee791bcf321b2c7010974"
+    },
+    {
+      "file": "modrinth-icon.webp",
+      "width": 768,
+      "height": 768,
+      "bytes": 238718,
+      "sha256": "8e7e67f4fca15b857b6b131a07da207cca985c963c790524e52d33437fb7fae7"
+    }
+  ],
+  "curseforge": {
+    "format": "PNG",
+    "dimensions": [
+      400,
+      400
+    ],
+    "requirements": "https://support.curseforge.com/support/solutions/articles/9000199552"
+  },
+  "modrinth": {
+    "maximum_bytes": 262144,
+    "format": "lossless WebP",
+    "requirements": "https://docs.modrinth.com/api/operations/changeprojecticon/",
+    "original_retained": true
+  }
+}

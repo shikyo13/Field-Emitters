@@ -1,0 +1,185 @@
+{
+  "publicName": "Field Emitters",
+  "captureBuildSha256": "029ba534a36c51c5cbe4d08769b4409fb156efba530ec3c46be149a6b9ff5fd9",
+  "captureDates": "2026-09-11",
+  "presentation": "Gameplay screenshots are unedited captures of the Field Emitters 1.0.0 release build at 1708 × 960. The video and presentation images place those captures inside animated framing and typography, alongside Three.js studio turntables of the shipped Minecraft model JSON and textures. Studio lighting is illustrative; the in-game field renderer and interface appear only in the captures.",
+  "audio": "The mod ships no sound assets, so the showcase is silent.",
+  "records": [
+    {
+      "source": "src/main/resources/assets/fieldemitters/models/block/emitter_0_active.json",
+      "sha256": "31a19a0e9633f65d183b8589d36cfed8a35c4a75f4c80a79b484da9d8b5d4854"
+    },
+    {
+      "source": "src/main/resources/assets/fieldemitters/models/block/emitter_0.json",
+      "sha256": "8eb2f7c181cd67fbc7bfd47ee71b06fe4b4921dc1569447832f47a10154f0336"
+    },
+    {
+      "source": "src/main/resources/assets/fieldemitters/models/block/emitter_1_active.json",
+      "sha256": "d29479de13e1ce528e21db466b7bbdf36f1e8f3a2487a3e139cf035a8480b4bd"
+    },
+    {
+      "source": "src/main/resources/assets/fieldemitters/models/block/emitter_1.json",
+      "sha256": "c0dc1f5a4db15ebfbf4b57cc52d7e4d6a8ae46a5bb9c05fbca79b52468b5aa95"
+    },
+    {
+      "source": "src/main/resources/assets/fieldemitters/models/block/emitter_2_active.json",
+      "sha256": "22ade8d976b5867907c4ee54e8abc287031fbc4609a515ae05c805fc68cd7ced"
+    },
+    {
+      "source": "src/main/resources/assets/fieldemitters/models/block/emitter_2.json",
+      "sha256": "c0dc1f5a4db15ebfbf4b57cc52d7e4d6a8ae46a5bb9c05fbca79b52468b5aa95"
+    },
+    {
+      "source": "src/main/resources/assets/fieldemitters/models/block/emitter_3_active.json",
+      "sha256": "dc7f9bf74355854e7ee3d0865908c44adc0c14680d2963689a3bccebe94c52af"
+    },
+    {
+      "source": "src/main/resources/assets/fieldemitters/models/block/emitter_3.json",
+      "sha256": "c0dc1f5a4db15ebfbf4b57cc52d7e4d6a8ae46a5bb9c05fbca79b52468b5aa95"
+    },
+    {
+      "source": "src/main/resources/assets/fieldemitters/models/block/emitter_4_active.json",
+      "sha256": "4b64d45b8d0ff8e5a1f85232ef88c9a8b45eec6441161b155f100d2028cdfddb"
+    },
+    {
+      "source": "src/main/resources/assets/fieldemitters/models/block/emitter_4.json",
+      "sha256": "ebd35fc4f71f240aaa164fd09f8a5265569604183891ba63773ecb78b2c4caa6"
+    },
+    {
+      "source": "src/main/resources/assets/fieldemitters/models/block/field_rail_active.json",
+      "sha256": "ba1e48e461d73170a1d35e0d5a23f129dcdf577aa3235abe3764beead6624d68"
+    },
+    {
+      "source": "src/main/resources/assets/fieldemitters/models/item/field_tuner.json",
+      "sha256": "f47d1e5509f03a19ab98043c887af4a77e321486782fc1b7a90691f20f3ff5cc"
+    },
+    {
+      "source": "src/main/resources/assets/fieldemitters/textures/block/graphite.png",
+      "sha256": "4054d017f92c1fa5a7a64fecf5b7517f7678d7ca600705fa3ed3c00828f97a22"
+    },
+    {
+      "source": "src/main/resources/assets/fieldemitters/textures/block/ceramic_plate.png",
+      "sha256": "60aa556d3b212a57f966fc437cced50bf090ca071384e7bac228e9054b89ef31"
+    },
+    {
+      "source": "src/main/resources/assets/fieldemitters/textures/block/titanium.png",
+      "sha256": "ef006d04a5fd32d498652f722c1398862012ac6a03beebb876eb0ba3849be084"
+    },
+    {
+      "source": "src/main/resources/assets/fieldemitters/textures/block/heat_sink.png",
+      "sha256": "62cf1978209747d1eda9c9f8a588ed2056736435f948711dc78cc5cf62873315"
+    },
+    {
+      "source": "src/main/resources/assets/fieldemitters/textures/item/grip.png",
+      "sha256": "d6b24f1f23d3dda15abcc7aaf10568dd52dcac22e9f54a05409422c7351aae14"
+    },
+    {
+      "source": "src/main/resources/assets/fieldemitters/textures/block/energy_channel.png",
+      "sha256": "ad00e340a0512ec5d9be7972c70baa872aa9f53c345a58cacf4c1d90ea22fe0f"
+    },
+    {
+      "source": "src/main/resources/assets/fieldemitters/textures/block/energy_channel.png.mcmeta",
+      "sha256": "b2d0e797914ac4c8e56ebadbee6190e907cdc00094e22c560ad50e6845d52430"
+    },
+    {
+      "source": "src/main/resources/assets/fieldemitters/textures/block/service_display.png",
+      "sha256": "8073d3ca07249b9a84f8bf78612e9be4b31006732b8ad3726c7e393621eb4fff"
+    },
+    {
+      "source": "src/main/resources/assets/fieldemitters/textures/block/service_display.png.mcmeta",
+      "sha256": "e4b5cce019fc5a41d76dd2a70b5ab4ee447468b92b699c211a2dc85ab5a94bce"
+    },
+    {
+      "source": "src/main/resources/assets/fieldemitters/textures/block/energy_off.png",
+      "sha256": "28f8980e9d5577ee7be7beb6d20b5d15bfad215b6e7bafbbd1e84b905e3ba51c"
+    },
+    {
+      "source": "src/main/resources/assets/fieldemitters/textures/item/tuner_display.png",
+      "sha256": "8073d3ca07249b9a84f8bf78612e9be4b31006732b8ad3726c7e393621eb4fff"
+    },
+    {
+      "source": "src/main/resources/assets/fieldemitters/textures/item/tuner_display.png.mcmeta",
+      "sha256": "61d9ed0268db7dffd14d04ad022ec2da66c2d5f52c3b3f689331ae53880f9e40"
+    },
+    {
+      "source": "docs/publishing/gallery/gallery-post-closeup.png",
+      "sha256": "79d8b5c1e7edb57e89b6712f3b9c05b2f16db0042cac1cdc49c858c17a3480e5",
+      "width": 1708,
+      "height": 960,
+      "caption": "Two linked emitter posts and the energy cube feeding them by day.",
+      "stage": "post-closeup"
+    },
+    {
+      "source": "docs/publishing/gallery/gallery-post-night.png",
+      "sha256": "13df9bb8f401a977e55b199b3194adf8754b429c27d0d7f2d19bb7153d84201a",
+      "width": 1708,
+      "height": 960,
+      "caption": "The same two posts after dark with the cyan field lit.",
+      "stage": "post-night"
+    },
+    {
+      "source": "docs/publishing/gallery/gallery-perimeter-day.png",
+      "sha256": "3df1f54e98d782f4272ce62f804e188d8a0aea75f24536a3f2617be7f8452265",
+      "width": 1708,
+      "height": 960,
+      "caption": "Four posts on a stepped hillside; the field follows the stairs.",
+      "stage": "perimeter-day"
+    },
+    {
+      "source": "docs/publishing/gallery/gallery-perimeter-night-close.png",
+      "sha256": "2ee197b914fdbc9759faba7d35ef18fbb04362bdd709cee08bdb266234522cb4",
+      "width": 1708,
+      "height": 960,
+      "caption": "The hillside perimeter at night in violet.",
+      "stage": "perimeter-night"
+    },
+    {
+      "source": "docs/publishing/gallery/gallery-impact-night-1.png",
+      "sha256": "24a538b946321c5e18372afb0ade8ddc8f8d6835dd32c4e3a364681bcaec02bd",
+      "width": 1708,
+      "height": 960,
+      "caption": "A zombie held inside the lit perimeter at midnight.",
+      "stage": "impact-night"
+    },
+    {
+      "source": "docs/publishing/gallery/gallery-rails-doorway.png",
+      "sha256": "20f1a7a6b1f817f0235018e46eaf0382e0b3a16596799b1c6c0df6a95269395a",
+      "width": 1708,
+      "height": 960,
+      "caption": "Rails sealing a doorway, a shaft and a walkway, with a redstone lamp on the detection output.",
+      "stage": "rails-doorway"
+    },
+    {
+      "source": "docs/publishing/gallery/gui-blocking.png",
+      "sha256": "872313033748b286675f29129222ece1fc18b2819a22ae02d897f407c1972673",
+      "width": 1708,
+      "height": 960,
+      "caption": "The Blocking tab of an emitter.",
+      "stage": "gui-blocking"
+    },
+    {
+      "source": "docs/publishing/gallery/gui-detection.png",
+      "sha256": "0ad18012611e375e353a4c47af19e4efdcf5b8702e9a7e78d27d0388c22bc9ec",
+      "width": 1708,
+      "height": 960,
+      "caption": "The Detection tab of an emitter.",
+      "stage": "gui-detection"
+    },
+    {
+      "source": "docs/publishing/gallery/gui-manager.png",
+      "sha256": "ca496a36c2a4c32de301c2ad8341078425e4620963192c42bf9c461297050762",
+      "width": 1708,
+      "height": 960,
+      "caption": "The Field Manager opened from the tuner.",
+      "stage": "gui-manager"
+    },
+    {
+      "source": "docs/publishing/gallery/craft-emitter.png",
+      "sha256": "8733060864c236edbdc8c8da8f437958995249acf38edb3ddc68310bfe8f2d9a",
+      "width": 1708,
+      "height": 960,
+      "caption": "The Field Emitter recipe in a crafting table.",
+      "stage": "craft-emitter"
+    }
+  ]
+}
