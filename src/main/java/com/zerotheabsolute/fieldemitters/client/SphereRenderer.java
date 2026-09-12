@@ -62,7 +62,8 @@ final class SphereRenderer {
           var a = point(radius, angle, elevation);
           var b = point(radius, angle, elevation + range / LATITUDES);
           quad(vertices, matrix, tip, a, b, tip, e.color, .10f);
-          quad(vertices, matrix, tip, a, a.add(0, .025, 0), tip, 0xDFFFFF, .65f);
+          if (band == 0 || band == LATITUDES / 2 || band == LATITUDES - 1)
+            quad(vertices, matrix, tip, a, a.add(0, .08, 0), tip, 0xDFFFFF, .65f);
           // Soft trailing sheet gives the broad translucent laser fan in the reference.
           var trail = point(radius, angle - .035, elevation);
           quad(vertices, matrix, tip, a, trail, tip, e.color, .14f);
