@@ -53,7 +53,7 @@ public final class ControlScreen extends FittedScreen {
     for (int i = 0; i < TABS.length; i++) {
       final int index = i;
       addRenderableWidget(
-          new ControlButton(
+          new FieldButton(
               left + i * 81,
               top + 20,
               79,
@@ -316,21 +316,23 @@ public final class ControlScreen extends FittedScreen {
       row += 8;
     }
     addRenderableWidget(
-            Button.builder(
-                    Component.literal("Emitters"),
-                    b -> {
-                      applyPending();
-                      RemoteScreen.openManager();
-                    })
-                .bounds(left + 242, top + 201, 72, 18)
-                .build())
+            new FieldButton(
+                left + 242,
+                top + 201,
+                72,
+                18,
+                Component.literal("Fields"),
+                b -> {
+                  applyPending();
+                  RemoteScreen.openManager();
+                },
+                false))
         .setTooltip(
             Tooltip.create(
                 Component.literal("Manage loaded emitters remotely. Hold a Field Tuner.")));
     addRenderableWidget(
-            Button.builder(Component.literal("Close"), b -> onClose())
-                .bounds(left + 320, top + 201, 72, 18)
-                .build())
+            new FieldButton(
+                left + 320, top + 201, 72, 18, Component.literal("Close"), b -> onClose(), false))
         .setTooltip(
             Tooltip.create(
                 Component.literal("Close this menu. Valid changes have already been applied.")));
@@ -444,7 +446,7 @@ public final class ControlScreen extends FittedScreen {
 
   private void small(String text, int x, int y, int w, Runnable action) {
     var button =
-        new ControlButton(
+        new FieldButton(
             x, y, w, 18, Component.literal(text), b -> action.run(), text.startsWith("✓"));
     String help = ControlHelp.button(text, tab);
     boolean fieldOnly =
@@ -465,45 +467,6 @@ public final class ControlScreen extends FittedScreen {
                         + " field."
                     : help)));
     addRenderableWidget(button);
-  }
-
-  private static final class ControlButton extends Button {
-    private final boolean selected;
-
-    ControlButton(int x, int y, int w, int h, Component title, OnPress action, boolean selected) {
-      super(x, y, w, h, title, action, DEFAULT_NARRATION);
-      this.selected = selected;
-    }
-
-    @Override
-    protected void renderWidget(GuiGraphics g, int mx, int my, float partial) {
-      int border =
-          !active
-              ? 0xFF243441
-              : isHoveredOrFocused() ? 0xFF87ECFF : selected ? 0xFF53BBCB : 0xFF354D63;
-      g.fill(getX(), getY(), getX() + width, getY() + height, border);
-      g.fill(
-          getX() + 1,
-          getY() + 1,
-          getX() + width - 1,
-          getY() + height - 1,
-          selected ? 0xFF214755 : isHoveredOrFocused() ? 0xFF263F53 : 0xFF1B2D3E);
-      var font = net.minecraft.client.Minecraft.getInstance().font;
-      String fullText = getMessage().getString();
-      // Direction labels need the whole button width; their selected state has a bright fill.
-      if (width == 61
-          && (fullText.contains("To ")
-              || fullText.contains("Upward")
-              || fullText.contains("Downward"))) fullText = fullText.replaceFirst("^[✓○] ", "");
-      String text = font.plainSubstrByWidth(fullText, width - 8);
-      g.drawString(
-          font,
-          text,
-          getX() + (width - font.width(text)) / 2,
-          getY() + (height - 8) / 2,
-          !active ? 0xFF708395 : selected ? 0xFFA0F5FF : 0xFFD8E6F3,
-          false);
-    }
   }
 
   private final List<Label> labels = new ArrayList<>();
@@ -572,6 +535,9 @@ public final class ControlScreen extends FittedScreen {
     my = fitMouse(my);
     g.fill(0, 0, width, height, 0xB0101723);
     g.fill(left, top, left + 404, top + 224, 0xFF111D2C);
+    g.fill(left + 1, top + 2, left + 403, top + 20, 0xFF1B2D3E);
+    g.fill(left + 8, top + 40, left + 396, top + 196, 0xFF0E1926);
+    g.fill(left + 8, top + 198, left + 396, top + 199, 0xFF354D63);
     g.fill(left, top, left + 404, top + 2, 0xFF000000 | color);
     g.drawString(
         font,
@@ -599,6 +565,13 @@ public final class ControlScreen extends FittedScreen {
           top + 56,
           0xCAD6E5,
           false);
+      int energyWidth =
+          (int)
+              (380L
+                  * emitter.energy.getEnergyStored()
+                  / Math.max(1, emitter.energy.getMaxEnergyStored()));
+      g.fill(left + 12, top + 93, left + 392, top + 96, 0xFF263F53);
+      g.fill(left + 12, top + 93, left + 12 + energyWidth, top + 96, 0xFF52E5FF);
       EmitterEntity detector = emitter;
       if (emitter.isRail()
           && emitter.getLevel().getBlockEntity(emitter.root) instanceof EmitterEntity source)
