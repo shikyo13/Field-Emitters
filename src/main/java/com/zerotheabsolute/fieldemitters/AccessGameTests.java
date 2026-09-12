@@ -262,6 +262,29 @@ public final class AccessGameTests {
     h.assertTrue(
         !SphereField.collision(tower, p, cell).isEmpty(),
         "Formed sphere must block selected players");
+    for (var interior :
+        java.util.List.of(
+            new BlockPos(2, 1, 2),
+            new BlockPos(-3, 2, 1),
+            new BlockPos(0, 4, 0),
+            new BlockPos(0, 0, 0))) {
+      h.assertTrue(
+          SphereField.collision(tower, p, tower.getBlockPos().offset(interior)).isEmpty(),
+          "Dome interior and floor must have no field collision");
+    }
+    h.assertTrue(
+        SphereField.collision(tower, p, tower.getBlockPos().below(8)).isEmpty(),
+        "Dome must not create a lower hemisphere or a floor cap");
+    h.assertTrue(
+        SphereField.shell(8, true).stream()
+            .allMatch(
+                offset ->
+                    Math.sqrt(
+                            offset.getX() * offset.getX()
+                                + Math.pow(offset.getY() + .5, 2)
+                                + offset.getZ() * offset.getZ())
+                        > 6),
+        "Field cells must be confined to the outer shell");
     h.assertTrue(
         SphereField.contactMargin(p, new Vec3(0, 0, 1)) > .55,
         "Scanner must reach a player stopped against the outer quarter-block collision cell");

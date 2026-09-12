@@ -109,7 +109,7 @@ public final class SphereField {
   }
 
   public static VoxelShape collision(EmitterEntity e, Entity entity, BlockPos p) {
-    if (!formed(e)) return Shapes.empty();
+    if (!formed(e) || e.controls.dome && p.getY() < e.getBlockPos().getY()) return Shapes.empty();
     var direction = movement(e, entity);
     if (!e.controls.blocks(entity, e.owner, direction)
         && !FieldCheckpoint.blocks(e, e.controls, entity, direction)) return Shapes.empty();

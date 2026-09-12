@@ -1,0 +1,35 @@
+{
+  "blocks": [
+    {
+      "x": 120,
+      "y": -58,
+      "z": 120,
+      "state": "fieldemitters:projection_tower[active=true,light=true,section=1]"
+    },
+    {
+      "x": 120,
+      "y": -57,
+      "z": 120,
+      "state": "fieldemitters:projection_tower[active=true,light=true,section=2]"
+    },
+    {
+      "x": 120,
+      "y": -56,
+      "z": 120,
+      "state": "fieldemitters:projection_tower[active=true,light=true,section=3]"
+    },
+    {
+      "x": 120,
+      "y": -55,
+      "z": 120,
+      "state": "fieldemitters:projection_tower[active=true,light=true,section=4]"
+    },
+    {
+      "x": 120,
+      "y": -54,
+      "z": 120,
+      "state": "fieldemitters:projection_tower[active=true,light=true,section=5]"
+    }
+  ],
+  "dimension": "minecraft:overworld"
+}
