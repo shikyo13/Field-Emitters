@@ -1,0 +1,99 @@
+{
+  "version": "1.0.0",
+  "recorded_at": "2026-09-11T23:43:41.717165+00:00",
+  "github": {
+    "repository": "https://github.com/shikyo13/Field-Emitters",
+    "visibility": "public",
+    "release_url": "https://github.com/shikyo13/Field-Emitters/releases/tag/v1.0.0",
+    "tag": "v1.0.0",
+    "commit": "c1b8112",
+    "status": "published"
+  },
+  "curseforge": {
+    "project_id": 1691807,
+    "slug": "field-emitters",
+    "project_url": "https://www.curseforge.com/minecraft/mc-mods/field-emitters",
+    "status": "under_review",
+    "status_evidence": "September 11 author dashboard: project created, file 8861156 Under Review.",
+    "class": "Mods",
+    "categories": [
+      "Technology",
+      "Redstone"
+    ],
+    "license": "Custom License (Field Emitters License 1.0 text)",
+    "third_party_distribution": "allowed",
+    "comments": "allowed",
+    "source_url": "https://github.com/shikyo13/Field-Emitters",
+    "issues_url": "https://github.com/shikyo13/Field-Emitters/issues",
+    "wiki_url": "https://github.com/shikyo13/Field-Emitters/tree/main/docs/wiki",
+    "social_links": {
+      "discord": "https://discord.gg/NrdXnbWzGC",
+      "buy_me_a_coffee": "https://buymeacoffee.com/zerotheabsolute",
+      "patreon": "https://www.patreon.com/cw/ZeroTheAbsolute/membership",
+      "github": "https://github.com/shikyo13/Field-Emitters"
+    },
+    "gallery_images": 17,
+    "featured_image": "gallery-post-closeup.png",
+    "gallery_videos": 1,
+    "icon": "docs/publishing/curseforge-icon.png"
+  },
+  "modrinth": {
+    "project_id": "C7knFbss",
+    "slug": "field-emitters",
+    "project_url": "https://modrinth.com/mod/field-emitters",
+    "status": "draft",
+    "status_evidence": "September 11 project settings: draft, not submitted for review; the owner writes the disclosure page and submits.",
+    "version_id": "fEcSFMaj",
+    "categories": [
+      "Mobs",
+      "Technology",
+      "Utility"
+    ],
+    "license": "Field Emitters License 1.0 (custom license text)",
+    "links": "docs/publishing/external-links.json",
+    "gallery_images": 17,
+    "featured_image": "gallery-post-closeup.png",
+    "icon": "docs/publishing/modrinth-icon.webp",
+    "description_embed": "https://youtu.be/HvTZJLOWlAM"
+  },
+  "external_links": "docs/publishing/external-links.json",
+  "gallery": "docs/publishing/gallery.json",
+  "builds": [
+    {
+      "file": "build/libs/field-emitters-1.0.0.jar",
+      "bytes": 197969,
+      "sha256": "029ba534a36c51c5cbe4d08769b4409fb156efba530ec3c46be149a6b9ff5fd9",
+      "loader": "neoforge",
+      "minecraft": "1.21.1",
+      "java": 21,
+      "source_commit": "c1b8112",
+      "source_tag": "v1.0.0",
+      "github_asset": "field-emitters-1.0.0.jar",
+      "curseforge_file_id": 8861156,
+      "curseforge_display_name": "Field Emitters 1.0.0",
+      "curseforge_status": "under_review",
+      "client": "required",
+      "server": "required",
+      "download_sha256_verified": [
+        "github"
+      ],
+      "sha1": "753e97f1efd2c61ecb1dea7da93823c3e9ba5899",
+      "sha512": "5194da18a62b361bb28af81180444597840ab03d3edc4c3c0cf3a1ca8380acdfbdc148018a9aa931964a994502bcbb4cf4eff0aca1741bd542150016d6dd3f23",
+      "modrinth_version_id": "fEcSFMaj",
+      "modrinth_version_status": "draft"
+    }
+  ],
+  "youtube": {
+    "video_id": "HvTZJLOWlAM",
+    "url": "https://youtu.be/HvTZJLOWlAM",
+    "channel_id": "UC782eP1kVlJoESZVWHNlgRA",
+    "visibility": "public",
+    "published_on": "2026-09-11",
+    "record": "docs/publishing/youtube-upload.md"
+  },
+  "media": {
+    "showcase": "docs/media/README.md",
+    "render_manifest": "docs/media/render-manifest.json",
+    "logo_manifest": "docs/publishing/logo-manifest.json"
+  }
+}

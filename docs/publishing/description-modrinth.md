@@ -1,5 +1,7 @@
 Field Emitters adds terrain-following forcefields. Place Field Emitter posts around an area and they link into a five-block-high perimeter that climbs and descends with the ground between them. Mount Field Rails on walls, floors and ceilings to seal doorways, pits and shafts. Every field decides what passes through it, reports what crossed it over redstone, and runs on Forge Energy from any energy mod.
 
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/HvTZJLOWlAM" title="Field Emitters showcase" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
 ## Getting started
 
 1. Craft a Field Emitter from copper, an amethyst shard, glass, a block of redstone and iron. Craft a Field Tuner from an amethyst shard, copper, a glass pane, iron and redstone.
