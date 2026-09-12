@@ -12,7 +12,7 @@
 
 ## Version and loader ports
 
-Ports follow the same order as Flux Pylons, based on the September 11, 2026 snapshot from [MC Mod Popularity](https://skilles.github.io/MCModPopularity/): Minecraft 1.20.1 on Forge first, then Fabric for 1.21.1 and 1.20.1, then Forge for 1.21.1. Each port keeps the `fieldemitters` registry and save IDs.
+Version 1.0.1 adds the four ports supported by Flux Pylons: Forge and Fabric for Minecraft 1.21.1 and 1.20.1. The NeoForge 1.21.1 build remains available. All builds keep the `fieldemitters` registry and save IDs.
 
 ## Later ideas
 

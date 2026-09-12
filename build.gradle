@@ -53,3 +53,6 @@ jar { includeEmptyDirs = false; exclude '.cache/**'; from('LICENSE') { into 'MET
 if (providers.gradleProperty('extraMods').isPresent()) {
  dependencies { runtimeOnly files(providers.gradleProperty('extraMods').get().split(',')) }
 }
+
+// Isolated localhost server validation; normal server launches retain their defaults.
+if (providers.gradleProperty('qaPort').isPresent()) { legacyForge.runs.server { programArguments.addAll '--port', providers.gradleProperty('qaPort').get() } }
