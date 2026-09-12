@@ -1,13 +1,13 @@
 package com.zerotheabsolute.fieldemitters.client;
 
 import com.zerotheabsolute.fieldemitters.*;
+import com.zerotheabsolute.fieldemitters.network.ForgePacketDistributor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import com.zerotheabsolute.fieldemitters.network.ForgePacketDistributor;
 
 /** Server-backed field directory, then the emitters in a selected field. */
 public final class RemoteScreen extends FittedScreen {
@@ -112,22 +112,25 @@ public final class RemoteScreen extends FittedScreen {
                   + (e.getBoolean("Powered") ? "Running" : "Idle");
       var button =
           addRenderableWidget(
-              Button.builder(
-                      Component.literal(label),
-                      b -> {
-                        if (selected == null) {
-                          selected = e;
-                          page = 0;
-                          status = "Edit the name, or open an emitter below.";
-                          rebuildWidgets();
-                        } else {
-                          rename();
-                          ForgePacketDistributor.sendToServer(
-                              new FieldControls.RemoteRequest(false, pos));
-                        }
-                      })
-                  .bounds(left + 12, top + 65 + (i % 5) * 22, 380, 20)
-                  .build());
+              new FieldButton(
+                  left + 12,
+                  top + 65 + (i % 5) * 22,
+                  380,
+                  20,
+                  Component.literal(label),
+                  b -> {
+                    if (selected == null) {
+                      selected = e;
+                      page = 0;
+                      status = "Edit the name, or open an emitter below.";
+                      rebuildWidgets();
+                    } else {
+                      rename();
+                      ForgePacketDistributor.sendToServer(
+                          new FieldControls.RemoteRequest(false, pos));
+                    }
+                  },
+                  false));
       button.setTooltip(
           Tooltip.create(
               Component.literal(
@@ -137,45 +140,53 @@ public final class RemoteScreen extends FittedScreen {
                           + ". Includes connected loaded emitters even when switched off. Click to"
                           + " rename or manage individual emitters."
                       : "Open this emitter's controls. Connections selects one span or your entire"
-                            + " connected field.")));
+                          + " connected field.")));
     }
     var prev =
         addRenderableWidget(
-            Button.builder(
-                    Component.literal("Previous"),
-                    b -> {
-                      rename();
-                      page--;
-                      rebuildWidgets();
-                    })
-                .bounds(left + 12, top + 201, 65, 18)
-                .build());
+            new FieldButton(
+                left + 12,
+                top + 201,
+                65,
+                18,
+                Component.literal("Previous"),
+                b -> {
+                  rename();
+                  page--;
+                  rebuildWidgets();
+                },
+                false));
     prev.active = page > 0;
     var next =
         addRenderableWidget(
-            Button.builder(
-                    Component.literal("Next"),
-                    b -> {
-                      rename();
-                      page++;
-                      rebuildWidgets();
-                    })
-                .bounds(left + 82, top + 201, 48, 18)
-                .build());
-    next.active = page + 1 < pages;
-    addRenderableWidget(
-        Button.builder(
-                Component.literal(selected == null ? "Refresh" : "All fields"),
+            new FieldButton(
+                left + 82,
+                top + 201,
+                48,
+                18,
+                Component.literal("Next"),
                 b -> {
                   rename();
-                  openManager();
-                })
-            .bounds(left + 242, top + 201, 72, 18)
-            .build());
+                  page++;
+                  rebuildWidgets();
+                },
+                false));
+    next.active = page + 1 < pages;
     addRenderableWidget(
-        Button.builder(Component.literal("Close"), b -> onClose())
-            .bounds(left + 320, top + 201, 72, 18)
-            .build());
+        new FieldButton(
+            left + 242,
+            top + 201,
+            72,
+            18,
+            Component.literal(selected == null ? "Refresh" : "All fields"),
+            b -> {
+              rename();
+              openManager();
+            },
+            false));
+    addRenderableWidget(
+        new FieldButton(
+            left + 320, top + 201, 72, 18, Component.literal("Close"), b -> onClose(), false));
   }
 
   @Override
@@ -193,6 +204,9 @@ public final class RemoteScreen extends FittedScreen {
     y = fitMouse(y);
     g.fill(0, 0, width, height, 0xB0101723);
     g.fill(left, top, left + 404, top + 224, 0xFF111D2C);
+    g.fill(left + 1, top + 2, left + 403, top + 20, 0xFF1B2D3E);
+    g.fill(left + 8, top + 40, left + 396, top + 196, 0xFF0E1926);
+    g.fill(left + 8, top + 198, left + 396, top + 199, 0xFF354D63);
     g.fill(left, top, left + 404, top + 2, 0xFF52E5FF);
     g.drawString(font, title, left + 12, top + 10, 0xDBF8FF, false);
     g.drawString(
