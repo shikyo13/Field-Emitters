@@ -13,6 +13,7 @@ public final class DemoCommands {
         .register(
             Commands.literal("fielddemo")
                 .requires(s -> s.hasPermission(2))
+                .then(Commands.literal("verifyenergy").executes(ctx -> EnergyVerification.run(ctx.getSource())))
                 .then(
                     Commands.literal("verifyrails")
                         .executes(ctx -> RailVerification.run(ctx.getSource())))
@@ -71,8 +72,10 @@ public final class DemoCommands {
                                           .defaultBlockState()
                                           .setValue(EmitterBlock.SECTION, i),
                                       3);
-                                if (l.getBlockEntity(p) instanceof EmitterEntity e
-                                    && s.getEntity() != null) e.owner = s.getEntity().getUUID();
+                                if (l.getBlockEntity(p) instanceof EmitterEntity e) {
+                                  e.controls.inputFace = net.minecraft.core.Direction.WEST;
+                                  if (s.getEntity() != null) e.owner = s.getEntity().getUUID();
+                                }
                               }
                               l.setBlock(
                                   origin.offset(-1, 1, 0),

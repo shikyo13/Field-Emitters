@@ -26,13 +26,12 @@ public final class NativeNetwork {
   public <T extends CustomPacketPayload> NativeNetwork playToClient(CustomPacketPayload.Type<T> type,
       StreamCodec<FriendlyByteBuf, T> codec, BiConsumer<T, Context> handler) {
     PayloadTypeRegistry.playS2C().register(type, codec);
-    CLIENT.add(() -> net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking.registerGlobalReceiver(type,
-        (payload, context) -> handler.accept(payload, new Context(context.player(), context.client()))));
+    CLIENT.add(() -> NativeClientNetwork.register(type, codec, handler));
     return this;
   }
   public static void initClient() { CLIENT.forEach(Runnable::run); CLIENT.clear(); }
   public static void sendToServer(CustomPacketPayload payload) {
-    net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking.send(payload);
+    NativeClientNetwork.send(payload);
   }
   public static void sendToPlayer(ServerPlayer player, CustomPacketPayload payload) { ServerPlayNetworking.send(player, payload); }
 }
