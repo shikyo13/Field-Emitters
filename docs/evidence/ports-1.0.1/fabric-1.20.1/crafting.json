@@ -1,0 +1,65 @@
+[
+  {
+    "recipe": "emitter",
+    "result": {
+      "item": "fieldemitters:field_emitter",
+      "count": 1,
+      "empty": false,
+      "maxStackSize": 64,
+      "displayName": "Field Emitter",
+      "slot": 0,
+      "containerSlot": 0,
+      "index": 0,
+      "x": 124,
+      "y": 35,
+      "hasItem": true,
+      "mayPickup": true,
+      "mayPlace": false,
+      "active": true
+    },
+    "ingredients_consumed": true,
+    "glass_variant": "blue stained glass where applicable"
+  },
+  {
+    "recipe": "rail",
+    "result": {
+      "item": "fieldemitters:field_rail",
+      "count": 4,
+      "empty": false,
+      "maxStackSize": 64,
+      "displayName": "Field Rail",
+      "slot": 0,
+      "containerSlot": 0,
+      "index": 0,
+      "x": 124,
+      "y": 35,
+      "hasItem": true,
+      "mayPickup": true,
+      "mayPlace": false,
+      "active": true
+    },
+    "ingredients_consumed": true,
+    "glass_variant": "blue stained glass where applicable"
+  },
+  {
+    "recipe": "tuner",
+    "result": {
+      "item": "fieldemitters:field_tuner",
+      "count": 1,
+      "empty": false,
+      "maxStackSize": 1,
+      "displayName": "Field Tuner",
+      "slot": 0,
+      "containerSlot": 0,
+      "index": 0,
+      "x": 124,
+      "y": 35,
+      "hasItem": true,
+      "mayPickup": true,
+      "mayPlace": false,
+      "active": true
+    },
+    "ingredients_consumed": true,
+    "glass_variant": "blue stained glass where applicable"
+  }
+]

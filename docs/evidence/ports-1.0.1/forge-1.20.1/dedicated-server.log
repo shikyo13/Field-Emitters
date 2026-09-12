@@ -1,0 +1,113 @@
+Picked up JAVA_TOOL_OPTIONS: -Dterminal.jline=false -Dterminal.ansi=false
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.12/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+> Task :createMinecraftArtifacts UP-TO-DATE
+> Task :compileJava UP-TO-DATE
+> Task :generateModMetadata UP-TO-DATE
+> Task :processResources UP-TO-DATE
+> Task :classes UP-TO-DATE
+> Task :jarJar NO-SOURCE
+> Task :jar UP-TO-DATE
+> Task :reobfJar UP-TO-DATE
+> Task :assemble UP-TO-DATE
+> Task :compileTestJava NO-SOURCE
+> Task :processTestResources NO-SOURCE
+> Task :testClasses UP-TO-DATE
+> Task :test NO-SOURCE
+> Task :check UP-TO-DATE
+> Task :build UP-TO-DATE
+> Task :downloadAssets UP-TO-DATE
+> Task :writeServerLegacyClasspath
+> Task :prepareServerRun
+
+> Task :runServer
+Picked up JAVA_TOOL_OPTIONS: -Dterminal.jline=false -Dterminal.ansi=false
+[07:07:44] [main/INFO] [cp.mo.mo.Launcher/MODLAUNCHER]: ModLauncher running: args [--launchTarget, forgeserveruserdev, --gameDir, ., --fml.forgeVersion, 47.4.10, --fml.mcVersion, 1.20.1, --fml.forgeGroup, net.minecraftforge, --fml.mcpVersion, 20230612.114412, --nogui, --port, 25573]
+[07:07:44] [main/INFO] [cp.mo.mo.Launcher/MODLAUNCHER]: ModLauncher 10.0.10+10.0.10+main.22f00f84 starting: java version 17.0.20.1 by Eclipse Adoptium; OS Mac OS X arch aarch64 version 26.6.2
+[07:07:44] [main/INFO] [ne.mi.fm.lo.ImmediateWindowHandler/]: ImmediateWindowProvider not loading because launch target is forgeserveruserdev
+[07:07:44] [main/INFO] [mixin/]: SpongePowered MIXIN Subsystem Version=0.8.5 Source=union:/Users/zero/.gradle/caches/modules-2/files-2.1/org.spongepowered/mixin/0.8.5/9d1c0c3a304ae6697ecd477218fa61b850bf57fc/mixin-0.8.5.jar%23141!/ Service=ModLauncher Env=SERVER
+[07:07:44] [main/WARN] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Mod file /Users/zero/.gradle/caches/modules-2/files-2.1/net.minecraftforge/fmlcore/1.20.1-47.4.10/94dae566be650566ea9115a1414ab76bfcf5a804/fmlcore-1.20.1-47.4.10.jar is missing mods.toml file
+[07:07:44] [main/WARN] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Mod file /Users/zero/.gradle/caches/modules-2/files-2.1/net.minecraftforge/javafmllanguage/1.20.1-47.4.10/ccc533c7dd67e0983217197d7549c8b49e7ab453/javafmllanguage-1.20.1-47.4.10.jar is missing mods.toml file
+[07:07:44] [main/WARN] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Mod file /Users/zero/.gradle/caches/modules-2/files-2.1/net.minecraftforge/lowcodelanguage/1.20.1-47.4.10/e9a2879fe3612ea34b9728ec2633304a1e67d480/lowcodelanguage-1.20.1-47.4.10.jar is missing mods.toml file
+[07:07:44] [main/WARN] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Mod file /Users/zero/.gradle/caches/modules-2/files-2.1/net.minecraftforge/mclanguage/1.20.1-47.4.10/ec5cefbbc65c67302b8fac317010faab85fa14b9/mclanguage-1.20.1-47.4.10.jar is missing mods.toml file
+[07:07:44] [main/INFO] [ne.mi.fm.lo.mo.JarInJarDependencyLocator/]: No dependencies to load found. Skipping!
+[07:07:45] [main/INFO] [cp.mo.mo.LaunchServiceHandler/MODLAUNCHER]: Launching target 'forgeserveruserdev' with arguments [--gameDir, ., --nogui, --port, 25573]
+2026-09-12 07:07:45,989 main WARN Error parsing URI /Users/zero/Documents/Dev/MC Mods/Field-Emitters-1.20.1-Forge/build/moddev/serverLog4j2.xml
+[07:07:46] [main/WARN] [os.ut.pl.ma.SysctlUtil/]: Failed sysctl call: hw.cpufrequency, Error code: 2
+[07:07:49] [modloading-worker-0/INFO] [ne.mi.co.ForgeMod/FORGEMOD]: Forge mod loading, version 47.4.10, for MC 1.20.1 with MCP 20230612.114412
+[07:07:49] [modloading-worker-0/INFO] [ne.mi.co.MinecraftForge/FORGE]: MinecraftForge v47.4.10 Initialized
+[07:07:49] [Forge Version Check/INFO] [ne.mi.fm.VersionChecker/]: [forge] Starting version check at https://files.minecraftforge.net/net/minecraftforge/forge/promotions_slim.json
+[07:07:49] [Forge Version Check/INFO] [ne.mi.fm.VersionChecker/]: [forge] Found status: UP_TO_DATE Current: 47.4.10 Target: null
+[07:07:49] [main/INFO] [mojang/YggdrasilAuthenticationService]: Environment: authHost='https://authserver.mojang.com', accountsHost='https://api.mojang.com', sessionHost='https://sessionserver.mojang.com', servicesHost='https://api.minecraftservices.com', name='PROD'
+[07:07:49] [main/WARN] [minecraft/VanillaPackResourcesBuilder]: Assets URL 'union:/Users/zero/Documents/Dev/MC%20Mods/Field-Emitters-1.20.1-Forge/build/moddev/artifacts/forge-1.20.1-47.4.10.jar%23143!/assets/.mcassetsroot' uses unexpected schema
+[07:07:49] [main/WARN] [minecraft/VanillaPackResourcesBuilder]: Assets URL 'union:/Users/zero/Documents/Dev/MC%20Mods/Field-Emitters-1.20.1-Forge/build/moddev/artifacts/forge-1.20.1-47.4.10.jar%23143!/data/.mcassetsroot' uses unexpected schema
+[07:07:50] [main/INFO] [minecraft/RecipeManager]: Loaded 7 recipes
+[07:07:50] [main/INFO] [minecraft/AdvancementList]: Loaded 1274 advancements
+[07:07:50] [Server thread/INFO] [minecraft/DedicatedServer]: Starting minecraft server version 1.20.1
+[07:07:50] [Server thread/INFO] [minecraft/DedicatedServer]: Loading properties
+[07:07:50] [Server thread/INFO] [minecraft/DedicatedServer]: Default game type: SURVIVAL
+[07:07:50] [Server thread/INFO] [minecraft/MinecraftServer]: Generating keypair
+[07:07:50] [Server thread/INFO] [minecraft/DedicatedServer]: Starting Minecraft server on 127.0.0.1:25573
+[07:07:50] [Server thread/INFO] [minecraft/ServerConnectionListener]: Using default channel type
+[07:07:50] [Server thread/INFO] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Loading default config file from path /Users/zero/Documents/Dev/MC Mods/Field-Emitters-1.20.1-Forge/run/defaultconfigs/fieldemitters-server.toml
+[07:07:50] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Configuration file ./world/serverconfig/fieldemitters-server.toml is not correct. Correcting
+[07:07:50] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Configuration file ./world/serverconfig/forge-server.toml is not correct. Correcting
+[07:07:50] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server was corrected from null to its default, SimpleCommentedConfig:{}. 
+[07:07:50] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.removeErroringBlockEntities was corrected from null to its default, false. 
+[07:07:50] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.removeErroringEntities was corrected from null to its default, false. 
+[07:07:50] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.fullBoundingBoxLadders was corrected from null to its default, false. 
+[07:07:50] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.zombieBaseSummonChance was corrected from null to its default, 0.1. 
+[07:07:50] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.zombieBabyChance was corrected from null to its default, 0.05. 
+[07:07:50] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.permissionHandler was corrected from null to its default, forge:default_handler. 
+[07:07:50] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.advertiseDedicatedServerToLan was corrected from null to its default, true. 
+[07:07:50] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.useItemWithDurationZero was corrected from null to its default, false. 
+[07:07:50] [Server thread/INFO] [minecraft/DedicatedServer]: Preparing level "world"
+[07:07:52] [Server thread/INFO] [minecraft/MinecraftServer]: Preparing start region for dimension minecraft:overworld
+[07:07:52] [Worker-Main-10/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 0%
+[07:07:52] [Worker-Main-5/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 0%
+[07:07:53] [Worker-Main-13/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 1%
+[07:07:53] [Worker-Main-8/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 5%
+[07:07:54] [Worker-Main-13/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 11%
+[07:07:54] [Worker-Main-6/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 15%
+[07:07:55] [Worker-Main-9/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 22%
+[07:07:55] [Worker-Main-8/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 27%
+[07:07:56] [Worker-Main-1/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 34%
+[07:07:56] [Worker-Main-15/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 40%
+[07:07:57] [Worker-Main-5/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 48%
+[07:07:57] [Worker-Main-4/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 56%
+[07:07:58] [Worker-Main-1/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 65%
+[07:07:58] [Worker-Main-7/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 74%
+[07:07:59] [Worker-Main-14/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 85%
+[07:07:59] [Worker-Main-13/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 93%
+[07:08:00] [Server thread/INFO] [minecraft/LoggerChunkProgressListener]: Time elapsed: 7795 ms
+[07:08:00] [Server thread/INFO] [minecraft/DedicatedServer]: Done (9.384s)! For help, type "help"
+[07:08:00] [LanServerPinger #1/WARN] [minecraft/LanServerPinger]: LanServerPinger: No route to host
+[07:08:00] [Server thread/INFO] [ne.mi.ga.ForgeGameTestHooks/]: Enabled Gametest Namespaces: []
+[07:08:00] [Server thread/INFO] [ne.mi.se.pe.PermissionAPI/]: Successfully initialized permission handler forge:default_handler
+[07:10:00] [Server thread/INFO] [minecraft/MinecraftServer]: Stopping server
+[07:10:00] [Server thread/INFO] [minecraft/MinecraftServer]: Saving players
+[07:10:00] [Server thread/INFO] [minecraft/MinecraftServer]: Saving worlds
+[07:10:00] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[world]'/minecraft:overworld
+[07:10:01] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[world]'/minecraft:the_nether
+[07:10:01] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[world]'/minecraft:the_end
+[07:10:01] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (world): All chunks are saved
+[07:10:01] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
+[07:10:01] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved
+[07:10:01] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage: All dimensions are saved
+
+> Task :runServer FAILED
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':runServer'.
+> Process 'command '/Users/zero/.gradle/jdks/eclipse_adoptium-17-aarch64-os_x.2/jdk-17.0.20.1+1/Contents/Home/bin/java'' finished with non-zero exit value 143
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 2m 22s
+10 actionable tasks: 3 executed, 7 up-to-date

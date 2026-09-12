@@ -1,0 +1,938 @@
+{
+  "field_rail": {
+    "inWorld": true,
+    "selected": 0,
+    "carried": {
+      "item": "minecraft:air",
+      "count": 0,
+      "empty": true,
+      "maxStackSize": 64,
+      "displayName": "Air"
+    },
+    "hotbar": [
+      {
+        "item": "minecraft:iron_pickaxe",
+        "count": 1,
+        "empty": false,
+        "maxStackSize": 1,
+        "displayName": "Iron Pickaxe",
+        "section": "hotbar",
+        "index": 0,
+        "slot": 0,
+        "playerInventoryIndex": 0
+      },
+      {
+        "item": "fieldemitters:field_rail",
+        "count": 1,
+        "empty": false,
+        "maxStackSize": 64,
+        "displayName": "Field Rail",
+        "section": "hotbar",
+        "index": 1,
+        "slot": 1,
+        "playerInventoryIndex": 1
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "hotbar",
+        "index": 2,
+        "slot": 2,
+        "playerInventoryIndex": 2
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "hotbar",
+        "index": 3,
+        "slot": 3,
+        "playerInventoryIndex": 3
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "hotbar",
+        "index": 4,
+        "slot": 4,
+        "playerInventoryIndex": 4
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "hotbar",
+        "index": 5,
+        "slot": 5,
+        "playerInventoryIndex": 5
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "hotbar",
+        "index": 6,
+        "slot": 6,
+        "playerInventoryIndex": 6
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "hotbar",
+        "index": 7,
+        "slot": 7,
+        "playerInventoryIndex": 7
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "hotbar",
+        "index": 8,
+        "slot": 8,
+        "playerInventoryIndex": 8
+      }
+    ],
+    "main": [
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "main",
+        "index": 0,
+        "slot": 9,
+        "playerInventoryIndex": 9
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "main",
+        "index": 1,
+        "slot": 10,
+        "playerInventoryIndex": 10
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "main",
+        "index": 2,
+        "slot": 11,
+        "playerInventoryIndex": 11
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "main",
+        "index": 3,
+        "slot": 12,
+        "playerInventoryIndex": 12
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "main",
+        "index": 4,
+        "slot": 13,
+        "playerInventoryIndex": 13
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "main",
+        "index": 5,
+        "slot": 14,
+        "playerInventoryIndex": 14
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "main",
+        "index": 6,
+        "slot": 15,
+        "playerInventoryIndex": 15
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "main",
+        "index": 7,
+        "slot": 16,
+        "playerInventoryIndex": 16
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "main",
+        "index": 8,
+        "slot": 17,
+        "playerInventoryIndex": 17
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "main",
+        "index": 9,
+        "slot": 18,
+        "playerInventoryIndex": 18
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "main",
+        "index": 10,
+        "slot": 19,
+        "playerInventoryIndex": 19
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "main",
+        "index": 11,
+        "slot": 20,
+        "playerInventoryIndex": 20
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "main",
+        "index": 12,
+        "slot": 21,
+        "playerInventoryIndex": 21
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "main",
+        "index": 13,
+        "slot": 22,
+        "playerInventoryIndex": 22
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "main",
+        "index": 14,
+        "slot": 23,
+        "playerInventoryIndex": 23
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "main",
+        "index": 15,
+        "slot": 24,
+        "playerInventoryIndex": 24
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "main",
+        "index": 16,
+        "slot": 25,
+        "playerInventoryIndex": 25
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "main",
+        "index": 17,
+        "slot": 26,
+        "playerInventoryIndex": 26
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "main",
+        "index": 18,
+        "slot": 27,
+        "playerInventoryIndex": 27
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "main",
+        "index": 19,
+        "slot": 28,
+        "playerInventoryIndex": 28
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "main",
+        "index": 20,
+        "slot": 29,
+        "playerInventoryIndex": 29
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "main",
+        "index": 21,
+        "slot": 30,
+        "playerInventoryIndex": 30
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "main",
+        "index": 22,
+        "slot": 31,
+        "playerInventoryIndex": 31
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "main",
+        "index": 23,
+        "slot": 32,
+        "playerInventoryIndex": 32
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "main",
+        "index": 24,
+        "slot": 33,
+        "playerInventoryIndex": 33
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "main",
+        "index": 25,
+        "slot": 34,
+        "playerInventoryIndex": 34
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "main",
+        "index": 26,
+        "slot": 35,
+        "playerInventoryIndex": 35
+      }
+    ],
+    "armor": [
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "armor",
+        "index": 0,
+        "slot": 36,
+        "playerInventoryIndex": 36
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "armor",
+        "index": 1,
+        "slot": 37,
+        "playerInventoryIndex": 37
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "armor",
+        "index": 2,
+        "slot": 38,
+        "playerInventoryIndex": 38
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "armor",
+        "index": 3,
+        "slot": 39,
+        "playerInventoryIndex": 39
+      }
+    ],
+    "offhand": [
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "offhand",
+        "index": 0,
+        "slot": 40,
+        "playerInventoryIndex": 40
+      }
+    ],
+    "slots": [
+      {
+        "item": "minecraft:iron_pickaxe",
+        "count": 1,
+        "empty": false,
+        "maxStackSize": 1,
+        "displayName": "Iron Pickaxe",
+        "section": "hotbar",
+        "index": 0,
+        "slot": 0,
+        "playerInventoryIndex": 0
+      },
+      {
+        "item": "fieldemitters:field_rail",
+        "count": 1,
+        "empty": false,
+        "maxStackSize": 64,
+        "displayName": "Field Rail",
+        "section": "hotbar",
+        "index": 1,
+        "slot": 1,
+        "playerInventoryIndex": 1
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "hotbar",
+        "index": 2,
+        "slot": 2,
+        "playerInventoryIndex": 2
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "hotbar",
+        "index": 3,
+        "slot": 3,
+        "playerInventoryIndex": 3
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "hotbar",
+        "index": 4,
+        "slot": 4,
+        "playerInventoryIndex": 4
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "hotbar",
+        "index": 5,
+        "slot": 5,
+        "playerInventoryIndex": 5
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "hotbar",
+        "index": 6,
+        "slot": 6,
+        "playerInventoryIndex": 6
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "hotbar",
+        "index": 7,
+        "slot": 7,
+        "playerInventoryIndex": 7
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "hotbar",
+        "index": 8,
+        "slot": 8,
+        "playerInventoryIndex": 8
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "main",
+        "index": 0,
+        "slot": 9,
+        "playerInventoryIndex": 9
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "main",
+        "index": 1,
+        "slot": 10,
+        "playerInventoryIndex": 10
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "main",
+        "index": 2,
+        "slot": 11,
+        "playerInventoryIndex": 11
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "main",
+        "index": 3,
+        "slot": 12,
+        "playerInventoryIndex": 12
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "main",
+        "index": 4,
+        "slot": 13,
+        "playerInventoryIndex": 13
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "main",
+        "index": 5,
+        "slot": 14,
+        "playerInventoryIndex": 14
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "main",
+        "index": 6,
+        "slot": 15,
+        "playerInventoryIndex": 15
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "main",
+        "index": 7,
+        "slot": 16,
+        "playerInventoryIndex": 16
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "main",
+        "index": 8,
+        "slot": 17,
+        "playerInventoryIndex": 17
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "main",
+        "index": 9,
+        "slot": 18,
+        "playerInventoryIndex": 18
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "main",
+        "index": 10,
+        "slot": 19,
+        "playerInventoryIndex": 19
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "main",
+        "index": 11,
+        "slot": 20,
+        "playerInventoryIndex": 20
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "main",
+        "index": 12,
+        "slot": 21,
+        "playerInventoryIndex": 21
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "main",
+        "index": 13,
+        "slot": 22,
+        "playerInventoryIndex": 22
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "main",
+        "index": 14,
+        "slot": 23,
+        "playerInventoryIndex": 23
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "main",
+        "index": 15,
+        "slot": 24,
+        "playerInventoryIndex": 24
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "main",
+        "index": 16,
+        "slot": 25,
+        "playerInventoryIndex": 25
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "main",
+        "index": 17,
+        "slot": 26,
+        "playerInventoryIndex": 26
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "main",
+        "index": 18,
+        "slot": 27,
+        "playerInventoryIndex": 27
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "main",
+        "index": 19,
+        "slot": 28,
+        "playerInventoryIndex": 28
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "main",
+        "index": 20,
+        "slot": 29,
+        "playerInventoryIndex": 29
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "main",
+        "index": 21,
+        "slot": 30,
+        "playerInventoryIndex": 30
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "main",
+        "index": 22,
+        "slot": 31,
+        "playerInventoryIndex": 31
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "main",
+        "index": 23,
+        "slot": 32,
+        "playerInventoryIndex": 32
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "main",
+        "index": 24,
+        "slot": 33,
+        "playerInventoryIndex": 33
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "main",
+        "index": 25,
+        "slot": 34,
+        "playerInventoryIndex": 34
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "main",
+        "index": 26,
+        "slot": 35,
+        "playerInventoryIndex": 35
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "armor",
+        "index": 0,
+        "slot": 36,
+        "playerInventoryIndex": 36
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "armor",
+        "index": 1,
+        "slot": 37,
+        "playerInventoryIndex": 37
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "armor",
+        "index": 2,
+        "slot": 38,
+        "playerInventoryIndex": 38
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "armor",
+        "index": 3,
+        "slot": 39,
+        "playerInventoryIndex": 39
+      },
+      {
+        "item": "minecraft:air",
+        "count": 0,
+        "empty": true,
+        "maxStackSize": 64,
+        "displayName": "Air",
+        "section": "offhand",
+        "index": 0,
+        "slot": 40,
+        "playerInventoryIndex": 40
+      }
+    ]
+  },
+  "remote_applied": {
+    "blocks": [
+      {
+        "x": 80,
+        "y": -49,
+        "z": 10,
+        "state": "fieldemitters:field_emitter[active=false,light=false,section=0]",
+        "nbt": "{Color:11570431,Controls:{Animation:1b,Barrier:{Age:0,Directions:63,Entity:\"\",Groups:1,Identity:\"\",Invert:0b,Item:\"\",OwnerExempt:1b,Tag:\"\"},CountItems:0b,InputFace:1,InputMode:0,Light:1b,OutputFace:0,PulseTicks:4,RailNormal:2,Sensor:{Age:0,Directions:63,Entity:\"\",Groups:31,Identity:\"\",Invert:0b,Item:\"\",OwnerExempt:0b,Tag:\"\"},SensorMode:0,Visible:1b},Crossings:0L,Demand:0,Enabled:1b,Energy:0,FieldName:\"\",ImpactTime:-1000L,ImpactX:0.0d,ImpactY:0.0d,ImpactZ:0.0d,LastDetection:\"None\",Links:[],Mask:1,OutputSignal:0,Overrides:[],PlacedAt:9223372036854775807L,Powered:0b,QueuedPulses:0,Root:27487790739407L,Transition:7655L,id:\"fieldemitters:emitter\",x:80,y:-49,z:10}"
+      }
+    ],
+    "dimension": "minecraft:overworld"
+  },
+  "passed": true
+}

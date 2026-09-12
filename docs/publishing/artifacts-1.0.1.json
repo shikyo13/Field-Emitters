@@ -1,0 +1,42 @@
+[
+  {
+    "minecraft": "1.21.1",
+    "loader": "NeoForge",
+    "java": 21,
+    "file": "field-emitters-neoforge-1.21.1-1.0.1.jar",
+    "sha256": "2022278a5db9e7fb8d9e34186457ba7b2874de8e508c5e7609e579b8d172a47a",
+    "bytes": 198250
+  },
+  {
+    "minecraft": "1.21.1",
+    "loader": "Forge",
+    "java": 21,
+    "file": "field-emitters-forge-1.21.1-1.0.1.jar",
+    "sha256": "51a5057aec9ee6e8e2cbeea19243289cb654cf560b59edfcbc37ffe1e7b953db",
+    "bytes": 206888
+  },
+  {
+    "minecraft": "1.21.1",
+    "loader": "Fabric",
+    "java": 21,
+    "file": "field-emitters-fabric-1.21.1-1.0.1.jar",
+    "sha256": "509aafe5de827bfbedfa2181b3fe9894a550ab944a1d983da3379936a2096295",
+    "bytes": 226237
+  },
+  {
+    "minecraft": "1.20.1",
+    "loader": "Forge",
+    "java": 17,
+    "file": "field-emitters-forge-1.20.1-1.0.1.jar",
+    "sha256": "6100f8b288ba156e735c88c6ad3011e76bc82846114b42667fbda0b1fa7cb580",
+    "bytes": 202232
+  },
+  {
+    "minecraft": "1.20.1",
+    "loader": "Fabric",
+    "java": 17,
+    "file": "field-emitters-fabric-1.20.1-1.0.1.jar",
+    "sha256": "3fc5c66efdf880157d2e2501dad901e72ca9c3ef5f06311f8c3caa80675e5af2",
+    "bytes": 229438
+  }
+]
