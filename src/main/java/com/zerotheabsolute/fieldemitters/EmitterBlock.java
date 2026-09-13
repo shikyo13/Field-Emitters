@@ -28,6 +28,7 @@ public final class EmitterBlock extends BaseEntityBlock {
   }
 
 
+
   protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> b) {
     b.add(SECTION, ACTIVE, LIGHT);
   }
@@ -61,6 +62,7 @@ public final class EmitterBlock extends BaseEntityBlock {
   }
 
   public static BlockPos base(BlockPos p, BlockState s) {
+    if(s.is(FieldEmitters.TOWER.get()))return TowerBlock.base(p,s);
     return s.hasProperty(SECTION) ? p.below(s.getValue(SECTION)) : p;
   }
 

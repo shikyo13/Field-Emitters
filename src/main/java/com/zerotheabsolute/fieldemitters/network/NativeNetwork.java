@@ -37,6 +37,9 @@ public final class NativeNetwork {
     var buffer = PacketByteBufs.create(); codec.encode(buffer, payload); return buffer;
   }
   public static void initClient() { CLIENT.forEach(Runnable::run); CLIENT.clear(); }
+  public static void sendToPlayersNear(net.minecraft.server.level.ServerLevel level, ServerPlayer excluded, double x, double y, double z, double radius, FieldPayload payload) {
+    for (var player : level.players()) if(player != excluded && player.distanceToSqr(x,y,z) <= radius*radius) sendToPlayer(player,payload);
+  }
   public static void sendToServer(FieldPayload payload) {
     NativeClientNetwork.send(payload);
   }

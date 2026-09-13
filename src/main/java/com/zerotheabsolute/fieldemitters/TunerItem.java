@@ -15,7 +15,7 @@ public final class TunerItem extends Item {
   public InteractionResult useOn(UseOnContext c) {
     var l = c.getLevel();
     var state = l.getBlockState(c.getClickedPos());
-    if (!state.is(FieldEmitters.EMITTER.get()) && !state.is(FieldEmitters.RAIL.get()))
+    if (!state.is(FieldEmitters.EMITTER.get()) && !state.is(FieldEmitters.RAIL.get()) && !state.is(FieldEmitters.TOWER.get()))
       return InteractionResult.PASS;
     if (l.isClientSide) {
       if (c.getPlayer() != null
@@ -27,7 +27,7 @@ public final class TunerItem extends Item {
     var p = c.getPlayer();
     if (p == null) return InteractionResult.PASS;
     if (l.getBlockEntity(EmitterBlock.base(c.getClickedPos(), state)) instanceof EmitterEntity e) {
-      if (e.owner != null && !e.owner.equals(p.getUUID()) && !p.hasPermissions(2)) {
+      if (!FieldControls.editable(e,p)) {
         p.displayClientMessage(
             Component.literal("This perimeter belongs to another player."), true);
         return InteractionResult.FAIL;
@@ -37,6 +37,7 @@ public final class TunerItem extends Item {
         for (int i = 0; i < COLORS.length; i++) if (COLORS[i] == e.color) index = i;
         int color = COLORS[(index + 1) % COLORS.length];
         for (var part : FieldNetwork.connected(e)) {
+          if (!FieldControls.editable(part,p)) continue;
           part.color = color;
           part.sync();
         }

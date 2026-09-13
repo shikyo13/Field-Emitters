@@ -10,18 +10,21 @@ public final class FieldEmitters implements net.fabricmc.api.ModInitializer {
   public static final String ID = "fieldemitters";
   public static final Registration<Block> BLOCKS = new Registration<>(net.minecraft.core.registries.BuiltInRegistries.BLOCK);
   public static final Registration<Item> ITEMS = new Registration<>(net.minecraft.core.registries.BuiltInRegistries.ITEM);
-  public static final Registration<BlockEntityType<?>> TYPES = new Registration<>(net.minecraft.core.registries.BuiltInRegistries.BLOCK_ENTITY_TYPE);
+  public static final Registration<BlockEntityType<?>> TYPES =
+      new Registration<>(net.minecraft.core.registries.BuiltInRegistries.BLOCK_ENTITY_TYPE);
   public static final java.util.function.Supplier<EmitterBlock> EMITTER =
       BLOCKS.register(
           "field_emitter",
           () ->
               new EmitterBlock(
                   BlockBehaviour.Properties.of()
-                      .strength(3.5f)
+                      .strength(3.5f, HardwareProtection.BLAST_RESISTANCE)
                       .requiresCorrectToolForDrops()
                       .sound(SoundType.NETHERITE_BLOCK)
                       .noOcclusion()
                       .lightLevel(s -> s.getValue(EmitterBlock.LIGHT) ? 12 : 0)));
+  public static final java.util.function.Supplier<TowerBlock> TOWER = BLOCKS.register("projection_tower", () -> new TowerBlock(BlockBehaviour.Properties.of().strength(3.5f,HardwareProtection.BLAST_RESISTANCE).requiresCorrectToolForDrops().sound(SoundType.NETHERITE_BLOCK).noOcclusion().lightLevel(s -> s.getValue(TowerBlock.LIGHT) ? 12 : 0)));
+  public static final java.util.function.Supplier<BlockItem> TOWER_ITEM = ITEMS.register("projection_tower", () -> new BlockItem(TOWER.get(), new Item.Properties()));
   public static final java.util.function.Supplier<FieldBlock> FIELD =
       BLOCKS.register(
           "forcefield",
@@ -39,13 +42,15 @@ public final class FieldEmitters implements net.fabricmc.api.ModInitializer {
           () ->
               new RailBlock(
                   BlockBehaviour.Properties.of()
-                      .strength(3.5f)
+                      .strength(3.5f, HardwareProtection.BLAST_RESISTANCE)
                       .requiresCorrectToolForDrops()
                       .sound(SoundType.NETHERITE_BLOCK)
                       .noOcclusion()
                       .lightLevel(s -> s.getValue(RailBlock.LIGHT) ? 8 : 0)));
   public static final java.util.function.Supplier<BlockItem> RAIL_ITEM = ITEMS.register("field_rail", () -> new BlockItem(RAIL.get(), new Item.Properties()));
   public static final java.util.function.Supplier<BlockItem> EMITTER_ITEM = ITEMS.register("field_emitter", () -> new BlockItem(EMITTER.get(), new Item.Properties()));
+  public static final java.util.function.Supplier<Item> BADGE = ITEMS.register("access_badge", () -> new Item(new Item.Properties().stacksTo(1)));
+  public static final java.util.function.Supplier<BadgeHolderItem> BADGE_HOLDER = ITEMS.register("badge_holder", () -> new BadgeHolderItem(new Item.Properties().stacksTo(1)));
   public static final java.util.function.Supplier<TunerItem> TUNER =
       ITEMS.register("field_tuner", () -> new TunerItem(new Item.Properties().stacksTo(1)));
   public static final java.util.function.Supplier<BlockEntityType<EmitterEntity>>
@@ -53,12 +58,13 @@ public final class FieldEmitters implements net.fabricmc.api.ModInitializer {
           TYPES.register(
               "emitter",
               () ->
-                  BlockEntityType.Builder.of(EmitterEntity::new, EMITTER.get(), RAIL.get())
+                  BlockEntityType.Builder.of(EmitterEntity::new, EMITTER.get(), RAIL.get(), TOWER.get())
                       .build(null));
   public static final java.util.function.Supplier<BlockEntityType<FieldCell>> CELL_BE =
       TYPES.register(
           "field_cell", () -> BlockEntityType.Builder.of(FieldCell::new, FIELD.get()).build(null));
-  public static final Registration<CreativeModeTab> TABS = new Registration<>(net.minecraft.core.registries.BuiltInRegistries.CREATIVE_MODE_TAB);
+  public static final Registration<CreativeModeTab> TABS =
+      new Registration<>(net.minecraft.core.registries.BuiltInRegistries.CREATIVE_MODE_TAB);
   public static final java.util.function.Supplier<CreativeModeTab> TAB =
       TABS.register(
           "field_emitters",
@@ -71,17 +77,23 @@ public final class FieldEmitters implements net.fabricmc.api.ModInitializer {
                         output.accept(EMITTER_ITEM.get());
                         output.accept(RAIL_ITEM.get());
                         output.accept(TUNER.get());
+                        output.accept(TOWER_ITEM.get());
+                        output.accept(BADGE.get()); output.accept(BADGE_HOLDER.get());
                       })
                   .build());
-
 
   @Override public void onInitialize() {
     BLOCKS.register(); ITEMS.register(); TYPES.register(); TABS.register();
     fuzs.forgeconfigapiport.api.config.v2.ForgeConfigRegistry.INSTANCE.register(ID, net.minecraftforge.fml.config.ModConfig.Type.SERVER, FieldConfig.SPEC);
     fuzs.forgeconfigapiport.api.config.v2.ForgeConfigRegistry.INSTANCE.register(ID, net.minecraftforge.fml.config.ModConfig.Type.CLIENT, FieldConfig.CLIENT_SPEC);
     team.reborn.energy.api.EnergyStorage.SIDED.registerForBlockEntity((be, side) -> be.energy, EMITTER_BE.get());
-    FieldControls.register(new com.zerotheabsolute.fieldemitters.network.NativeNetwork());
-    net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents.END_WORLD_TICK.register(FieldNetwork::tick);
+    var network = new com.zerotheabsolute.fieldemitters.network.NativeNetwork();
+    FieldControls.register(network); FizzleNotice.register(network); PlayerLookup.register(network);
+    AccessPackets.register(network); ManagementPackets.register(network);
+    net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents.END_WORLD_TICK.register(level -> {
+      FieldNetwork.tick(level);
+      for (var player : level.players()) AccessPackets.tick(player);
+    });
   }
   private static final class Registration<T> {
     private final net.minecraft.core.Registry<T> registry;

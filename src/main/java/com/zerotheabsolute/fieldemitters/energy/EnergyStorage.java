@@ -5,7 +5,7 @@ import net.fabricmc.fabric.api.transfer.v1.transaction.base.SnapshotParticipant;
 
 /** Native transactional Fabric energy storage with bounded internal withdrawals. */
 public class EnergyStorage extends SnapshotParticipant<Integer> implements team.reborn.energy.api.EnergyStorage {
-  private int amount;
+  protected int amount;
   private final int capacity, receive, extract;
   public EnergyStorage(int capacity, int receive, int extract) {
     this.capacity = capacity; this.receive = receive; this.extract = extract;

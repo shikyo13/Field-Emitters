@@ -16,11 +16,15 @@ public final class FieldCell extends BlockEntity {
   protected void saveAdditional(CompoundTag t) {
     super.saveAdditional(t);
     t.putLong("Source", source.asLong());
+    var offset = source.subtract(worldPosition);
+    t.putIntArray("SourceOffset", new int[] {offset.getX(), offset.getY(), offset.getZ()});
   }
 
   public void load(CompoundTag t) {
     super.load(t);
-    source = BlockPos.of(t.getLong("Source"));
+    int[] offset = t.getIntArray("SourceOffset");
+    source = offset.length == 3 ? worldPosition.offset(offset[0], offset[1], offset[2])
+        : BlockPos.of(t.getLong("Source"));
   }
 
   public CompoundTag getUpdateTag() {

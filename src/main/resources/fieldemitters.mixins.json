@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "package": "com.zerotheabsolute.fieldemitters.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "client": [
+    "LivingRendererMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "mixins": [
+    "EntityDataMixin",
+    "HardwareExplosionMixin",
+    "HardwareMobMixin"
+  ]
+}
