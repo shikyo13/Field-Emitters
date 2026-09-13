@@ -20,6 +20,12 @@
     ],
     "client": [
       "com.zerotheabsolute.fieldemitters.client.FieldClient"
+    ],
+    "emi": [
+      "com.zerotheabsolute.fieldemitters.client.emi.FieldEmiPlugin"
+    ],
+    "jei_mod_plugin": [
+      "com.zerotheabsolute.fieldemitters.client.jei.FieldJeiPlugin"
     ]
   },
   "depends": {
@@ -28,7 +34,8 @@
     "java": ">=21",
     "fabric-api": ">=0.116.0",
     "team_reborn_energy": ">=4.1.0 <4.2",
-    "forgeconfigapiport": ">=21.1.0 <21.2"
+    "forgeconfigapiport": ">=21.1.0 <21.2",
+    "zeromodscore": ">=0.1.0 <0.2.0"
   },
   "custom": {
     "modrinth": {
@@ -37,5 +44,8 @@
         "server": "required"
       }
     }
-  }
+  },
+  "mixins": [
+    "fieldemitters.mixins.json"
+  ]
 }

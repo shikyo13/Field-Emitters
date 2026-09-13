@@ -30,6 +30,9 @@ public final class NativeNetwork {
     return this;
   }
   public static void initClient() { CLIENT.forEach(Runnable::run); CLIENT.clear(); }
+  public static void sendToPlayersNear(net.minecraft.server.level.ServerLevel level, ServerPlayer excluded, double x, double y, double z, double radius, CustomPacketPayload payload) {
+    for (var player : level.players()) if(player != excluded && player.distanceToSqr(x,y,z) <= radius*radius) sendToPlayer(player,payload);
+  }
   public static void sendToServer(CustomPacketPayload payload) {
     NativeClientNetwork.send(payload);
   }
