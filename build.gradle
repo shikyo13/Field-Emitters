@@ -1,6 +1,5 @@
 plugins {
     id 'java-library'
-    id 'maven-publish'
     id 'idea'
     id 'net.minecraftforge.gradle' version '6.0.54'
 }
@@ -20,12 +19,10 @@ minecraft {
         configureEach {
             workingDirectory project.file('run')
             property 'forge.logging.console.level', 'info'
-            property 'forge.enabledGameTestNamespaces', mod_id
             mods { "${mod_id}" { source sourceSets.main } }
         }
         client {}
         server { args '--nogui' }
-        gameTestServer {}
         data {
             workingDirectory project.file('run-data')
             args '--mod', mod_id, '--all', '--output', file('src/generated/resources'), '--existing', file('src/main/resources')
@@ -75,9 +72,3 @@ sourceSets.main.resources.srcDir generateModMetadata
 
 tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }
 jar { includeEmptyDirs = false; exclude '.cache/**'; from('LICENSE') { into 'META-INF' } }
-if (providers.gradleProperty('extraMods').isPresent()) {
- dependencies { runtimeOnly files(providers.gradleProperty('extraMods').get().split(',')) }
-}
-
-// Isolated localhost server validation; normal server launches retain their defaults.
-if (providers.gradleProperty('qaPort').isPresent()) { minecraft.runs.server { args '--port', providers.gradleProperty('qaPort').get() } }

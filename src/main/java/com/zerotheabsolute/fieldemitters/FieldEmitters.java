@@ -102,6 +102,5 @@ public final class FieldEmitters {
           }
         });
     MinecraftForge.EVENT_BUS.addListener(FieldNetwork::tick);
-    MinecraftForge.EVENT_BUS.addListener(DemoCommands::register);
   }
 }

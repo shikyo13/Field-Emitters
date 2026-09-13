@@ -6,7 +6,6 @@ public final class FieldConfig {
   public static final ForgeConfigSpec SPEC;
   public static final ForgeConfigSpec CLIENT_SPEC;
   public static final ForgeConfigSpec.BooleanValue SHOW_GUIDES;
-  public static final ForgeConfigSpec.BooleanValue DEMO_POWER;
   public static final ForgeConfigSpec.IntValue ENERGY_PER_CELL;
   public static final ForgeConfigSpec.IntValue CAPACITY;
   public static final ForgeConfigSpec.IntValue TRANSFER;
@@ -28,10 +27,6 @@ public final class FieldConfig {
         b.comment("Maximum FE per tick an emitter or rail accepts from cables and generators.")
             .defineInRange("emitterTransferRate", DEFAULT_TRANSFER, 1, 1000000000);
     b.pop();
-    DEMO_POWER =
-        b.comment(
-                "Testing only: redstone input supplies unlimited energy. Normal worlds require FE.")
-            .define("demoRedstonePower", false);
     SPEC = b.build();
     var client = new ForgeConfigSpec.Builder();
     SHOW_GUIDES =
