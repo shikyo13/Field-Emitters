@@ -151,7 +151,7 @@ public final class FieldNetwork {
       FieldDamage.tick(l, e, now);
       FieldCheckpoint.tick(l,e,now);
       if (now % 20 == 0) e.sync();
-      if (e.powered && now - e.transition <= 42 && now % 2 == 0) updateLights(l, e, true);
+      if (e.powered && now - e.transition <= com.zeromods.core.animation.PlanarProjection.DURATION_TICKS + 2 && now % 2 == 0) updateLights(l, e, true);
     }
     if (now % 10 == 0)
       rebuild(
@@ -280,7 +280,7 @@ public final class FieldNetwork {
                       .get()
                       .defaultBlockState()
                       .setValue(FieldBlock.X_AXIS, link.dx() != 0)
-                      .setValue(FieldBlock.LIT, e.powered && e.controls.light),
+                      .setValue(FieldBlock.LIT, e.powered && e.controls.light && l.getGameTime()-e.transition >= e.controls.linkFormationTicks(i)),
                   3);
               if (l.getBlockEntity(p) instanceof FieldCell cell) {
                 cell.source = e.getBlockPos();
@@ -330,8 +330,9 @@ public final class FieldNetwork {
       if (state.is(FieldEmitters.FIELD.get())) {
         int distance =
             Math.abs(p.getX() - e.getBlockPos().getX())
-                + Math.abs(p.getZ() - e.getBlockPos().getZ());
-        boolean lit = active && e.controls.light && l.getGameTime() - e.transition >= (e.isTower()?SphereField.FORMATION_TICKS:distance * 2);
+                + Math.abs(p.getZ() - e.getBlockPos().getZ())
+                + (e.isRail() ? Math.abs(p.getY() - e.getBlockPos().getY()) : 0);
+        boolean lit = active && e.controls.light && l.getGameTime() - e.transition >= (e.isTower()?SphereField.FORMATION_TICKS:e.controls.linkFormationTicks(distance));
         l.setBlock(p, state.setValue(FieldBlock.LIT, lit), 3);
       }
     }
@@ -412,7 +413,7 @@ public final class FieldNetwork {
             (entity.getX() - p.getX() - .5) * link.dx()
                 + (entity.getZ() - p.getZ() - .5) * link.dz();
         int i = (int) Math.floor(u + .5);
-        if (i <= 0 || i >= link.length() || now - e.transition < i * 2) continue;
+        if (i <= 0 || i >= link.length() || now - e.transition < e.controls.linkFormationTicks(i)) continue;
         double normal =
             link.dx() != 0
                 ? Math.abs(entity.getZ() - p.getZ() - .5)

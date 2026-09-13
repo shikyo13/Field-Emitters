@@ -22,7 +22,11 @@ public final class FieldRenderer implements BlockEntityRenderer<EmitterEntity> {
   }
 
   public AABB getRenderBoundingBox(EmitterEntity e) {
-    return new AABB(e.getBlockPos()).inflate(e.isTower()?SphereField.MAX_RADIUS+1:21,e.isTower()?SphereField.MAX_RADIUS+1:14,e.isTower()?SphereField.MAX_RADIUS+1:21);
+    return new AABB(e.getBlockPos())
+        .inflate(
+            e.isTower() ? SphereField.MAX_RADIUS + 1 : 21,
+            e.isTower() ? SphereField.MAX_RADIUS + 1 : 14,
+            e.isTower() ? SphereField.MAX_RADIUS + 1 : 21);
   }
 
   public void render(
@@ -141,11 +145,17 @@ public final class FieldRenderer implements BlockEntityRenderer<EmitterEntity> {
         if (to <= from) continue;
         float floor = link.ground()[i] - e.getBlockPos().getY() + .035f, top = floor + 4.93f;
 
+        if (FieldPattern.projected(e)) {
+          projection(e, link, v, m, from, to, floor, top, time, partial, age);
+          continue;
+        }
         strip(v, m, link, from, top, to, top, .22f, color, .075f * FieldPattern.progress(e, age));
         strip(v, m, link, from, top, to, top, .075f, color, .22f * FieldPattern.progress(e, age));
         strip(v, m, link, from, top, to, top, .015f, color, .72f * FieldPattern.progress(e, age));
-        strip(v, m, link, from, floor, to, floor, .15f, color, .12f * FieldPattern.progress(e, age));
-        strip(v, m, link, from, floor, to, floor, .012f, color, .60f * FieldPattern.progress(e, age));
+        strip(
+            v, m, link, from, floor, to, floor, .15f, color, .12f * FieldPattern.progress(e, age));
+        strip(
+            v, m, link, from, floor, to, floor, .012f, color, .60f * FieldPattern.progress(e, age));
         if (i > 0 && i < link.length() && link.ground()[i] != link.ground()[i - 1])
           strip(
               v,
@@ -181,7 +191,9 @@ public final class FieldRenderer implements BlockEntityRenderer<EmitterEntity> {
             hit ? hitAge : -1,
             (float) (link.dx() != 0 ? e.impact.x : e.impact.z),
             (float) e.impact.y,
-            color, e.controls, FieldPattern.progress(e, age),
+            color,
+            e.controls,
+            FieldPattern.progress(e, age),
             (x1, y1, x2, y2, w, c, alpha) ->
                 clippedStrip(
                     v,
@@ -200,7 +212,17 @@ public final class FieldRenderer implements BlockEntityRenderer<EmitterEntity> {
                     top));
         if (e.controls.pattern == 0) {
           float sweep = floor + (time * .018f % 4.93f);
-          strip(v, m, link, from, sweep, to, sweep, .016f, color, .11f * FieldPattern.progress(e, age));
+          strip(
+              v,
+              m,
+              link,
+              from,
+              sweep,
+              to,
+              sweep,
+              .016f,
+              color,
+              .11f * FieldPattern.progress(e, age));
         }
         if (extent < link.length() && extent >= from && extent <= to) {
           strip(v, m, link, extent, floor, extent, top, .14f, color, .18f);
@@ -208,6 +230,85 @@ public final class FieldRenderer implements BlockEntityRenderer<EmitterEntity> {
         }
       }
     }
+  }
+
+  private static void projection(
+      EmitterEntity e,
+      EmitterEntity.Link link,
+      VertexConsumer v,
+      Matrix4f m,
+      float from,
+      float to,
+      float floor,
+      float top,
+      float time,
+      float partial,
+      float age) {
+    float originU = link.dx() != 0 ? e.getBlockPos().getX() + .5f : e.getBlockPos().getZ() + .5f;
+    float direction = link.dx() != 0 ? link.dx() : link.dz(), originY = e.getBlockPos().getY();
+    float left = originU + Math.min(from * direction, to * direction),
+        right = originU + Math.max(from * direction, to * direction);
+    var frame =
+        new com.zeromods.core.animation.PlanarProjection.Frame(
+            Math.min(originU, originU + link.length() * direction),
+            Math.max(originU, originU + link.length() * direction),
+            floor + originY,
+            top + originY,
+            originU,
+            top + originY - .25f,
+            false);
+    float hitAge = (float) (e.getLevel().getGameTime() - e.impactTime) + partial;
+    boolean hit =
+        Math.abs(
+                link.normalCoordinate(e.impact)
+                    - link.normalCoordinate(Vec3.atCenterOf(e.getBlockPos())))
+            < .15;
+    FieldPattern.project(
+        left,
+        right,
+        floor + originY,
+        top + originY,
+        time,
+        hit ? hitAge : -1,
+        (float) (link.dx() != 0 ? e.impact.x : e.impact.z),
+        (float) e.impact.y,
+        e.color,
+        e.controls,
+        FieldPattern.progress(e, age),
+        frame,
+        (x, y, X, Y, c, a, b, d, f) -> {
+          projectionVertex(v, m, link, (x - originU) * direction, y - originY, c, a);
+          projectionVertex(v, m, link, (X - originU) * direction, y - originY, c, b);
+          projectionVertex(v, m, link, (X - originU) * direction, Y - originY, c, d);
+          projectionVertex(v, m, link, (x - originU) * direction, Y - originY, c, f);
+        },
+        (x, y, X, Y, w, c, a) ->
+            clippedStrip(
+                v,
+                m,
+                link,
+                (x - originU) * direction,
+                y - originY,
+                (X - originU) * direction,
+                Y - originY,
+                w,
+                c,
+                a,
+                from,
+                to,
+                floor,
+                top));
+  }
+
+  private static void projectionVertex(
+      VertexConsumer v,
+      Matrix4f m,
+      EmitterEntity.Link link,
+      float x,
+      float y,
+      int color,
+      float alpha) {
+    vertex(v, m, .5f + x * link.dx(), y, .5f + x * link.dz(), color, alpha);
   }
 
   private static void clippedStrip(

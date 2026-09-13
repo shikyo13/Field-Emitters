@@ -70,7 +70,7 @@ public final class FieldBlock extends BaseEntityBlock {
           || p.getZ() != expected.getZ()
           || p.getY() < expected.getY()
           || p.getY() >= expected.getY() + link.height()) continue;
-      if (e.getLevel().getGameTime() - e.transition < index * 2) continue;
+      if (e.getLevel().getGameTime() - e.transition < e.controls.linkFormationTicks(index)) continue;
       double side =
           link.normalCoordinate(
                   entity

@@ -275,8 +275,8 @@ public final class ControlScreen extends FittedScreen {
       if (emitter.isTower()) button("Projection: " + draft.projection.label(), () -> {
         draft.projection = draft.projection.next(); redraw();
       });
-      else button("Formation: " + new String[]{"Sweep","Dissolve / reform","Fade"}[draft.formation],() -> {
-        draft.formation=(draft.formation+1)%3;redraw();
+      else button("Formation: " + com.zeromods.core.animation.PlanarProjection.label(draft.formation),() -> {
+        draft.formation=(draft.formation+1)%com.zeromods.core.animation.PlanarProjection.PRESET_COUNT;redraw();
       });
       button(
           "Light nearby blocks: " + (draft.light ? "Yes" : "No (for dark mob farms)"),

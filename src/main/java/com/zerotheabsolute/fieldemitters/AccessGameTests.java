@@ -31,6 +31,50 @@ public final class AccessGameTests {
   }
 
   @GameTest(template = "core_empty")
+  public static void planarProjectionsWaitForTheSurface(GameTestHelper h) {
+    var emitter = emitter(h, UUID.randomUUID());
+    var p = emitter.getBlockPos();
+    var player = h.makeMockPlayer(GameType.SURVIVAL);
+    emitter.controls.barrier.groups = 4;
+    emitter.controls.barrier.exemptOwner = false;
+    emitter.powered = true;
+    for (int mode = 3; mode < com.zeromods.core.animation.PlanarProjection.PRESET_COUNT; mode++) {
+      emitter.controls.formation = mode;
+      h.assertTrue(
+          ControlSettings.load(emitter.controls.save()).formation == mode,
+          "Planar preset must persist");
+      for (int geometry = 0; geometry < 4; geometry++) {
+        int dx = geometry == 1 ? 0 : 1, dz = geometry == 1 ? 1 : 0, dy = geometry == 3 ? 1 : 0;
+        if (dy != 0) dx = 0;
+        int[] ground = new int[5];
+        for (int j = 0; j < ground.length; j++) ground[j] = p.getY() + dy * j;
+        var normal =
+            geometry == 0 ? Direction.Axis.Y : geometry == 1 ? Direction.Axis.X : Direction.Axis.Z;
+        var link =
+            new EmitterEntity.Link(
+                p.offset(dx * 4, dy * 4, dz * 4), dx, dz, ground, dy, normal, true);
+        emitter.links = java.util.List.of(link);
+        var cell = link.cell(p, 2, 0);
+        player.setPos(cell.getX() + .5, cell.getY() + .5, cell.getZ() + .5);
+        emitter.transition = h.getLevel().getGameTime() - 79;
+        h.assertTrue(
+            FieldBlock.collision(emitter, player, cell).isEmpty(),
+            "No invisible wall or bridge before formation finishes");
+        emitter.transition--;
+        h.assertTrue(
+            !FieldBlock.collision(emitter, player, cell).isEmpty(),
+            "Completed surface must block selected players in every plane");
+      }
+    }
+    for (int legacy = 0; legacy < 3; legacy++) {
+      emitter.controls.formation = legacy;
+      h.assertTrue(
+          emitter.controls.linkFormationTicks(4) == 8, "Legacy activation timing stays unchanged");
+    }
+    h.succeed();
+  }
+
+  @GameTest(template = "core_empty")
   public static void projectionChoicesPersistIndependently(GameTestHelper h) {
     for (var projection : com.zeromods.core.animation.SphereFormation.values()) {
       for (int pattern = 0; pattern < 4; pattern++) {

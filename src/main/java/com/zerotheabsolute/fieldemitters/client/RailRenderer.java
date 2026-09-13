@@ -29,10 +29,32 @@ public final class RailRenderer {
                   .getNormal());
       var across = normal.cross(along);
 
-      if (!joined(e, l, across.scale(-1)))
-        line(v, m, along, across, -.5f, -.49f, end, -.49f, .012f, e.color, .75f * FieldPattern.progress(e, age));
-      if (!joined(e, l, across))
-        line(v, m, along, across, -.5f, .49f, end, .49f, .012f, e.color, .75f * FieldPattern.progress(e, age));
+      if (!FieldPattern.projected(e) && !joined(e, l, across.scale(-1)))
+        line(
+            v,
+            m,
+            along,
+            across,
+            -.5f,
+            -.49f,
+            end,
+            -.49f,
+            .012f,
+            e.color,
+            .75f * FieldPattern.progress(e, age));
+      if (!FieldPattern.projected(e) && !joined(e, l, across))
+        line(
+            v,
+            m,
+            along,
+            across,
+            -.5f,
+            .49f,
+            end,
+            .49f,
+            .012f,
+            e.color,
+            .75f * FieldPattern.progress(e, age));
       // The same world-space lattice and clock are used by every coplanar strip.
       float time = e.controls.animation ? e.getLevel().getGameTime() + partial : 0;
       var origin = Vec3.atCenterOf(e.getBlockPos());
@@ -51,16 +73,7 @@ public final class RailRenderer {
               && hitAge < 32
               && Math.abs(l.normalCoordinate(e.impact) - l.normalCoordinate(origin)) < .15;
       final float projectedEnd = end;
-      FieldPattern.render(
-          left,
-          right,
-          bottom,
-          top,
-          time,
-          hit ? hitAge : -1,
-          (float) e.impact.dot(uAxis),
-          (float) e.impact.dot(vAxis),
-          e.color, e.controls, FieldPattern.progress(e, age),
+      FieldPattern.Stroke stroke =
           (x1, y1, x2, y2, w, color, alpha) ->
               clippedLine(
                   v,
@@ -77,9 +90,109 @@ public final class RailRenderer {
                   -.5f,
                   projectedEnd,
                   -.5f,
-                  .5f));
-      line(v, m, along, across, end, -.5f, end, .5f, .025f, e.color, .9f * FieldPattern.progress(e, age));
+                  .5f);
+      if (FieldPattern.projected(e)) {
+        var frame = projectionFrame(e, l, across, uAxis, vAxis);
+        FieldPattern.project(
+            left,
+            right,
+            bottom,
+            top,
+            time,
+            hit ? hitAge : -1,
+            (float) e.impact.dot(uAxis),
+            (float) e.impact.dot(vAxis),
+            e.color,
+            e.controls,
+            FieldPattern.progress(e, age),
+            frame,
+            (x, y, X, Y, color, a, b, c, d) -> {
+              vertex(
+                  v,
+                  m,
+                  along,
+                  across,
+                  (x - u0) * au + (y - v0) * av,
+                  (x - u0) * bu + (y - v0) * bv,
+                  color,
+                  a);
+              vertex(
+                  v,
+                  m,
+                  along,
+                  across,
+                  (X - u0) * au + (y - v0) * av,
+                  (X - u0) * bu + (y - v0) * bv,
+                  color,
+                  b);
+              vertex(
+                  v,
+                  m,
+                  along,
+                  across,
+                  (X - u0) * au + (Y - v0) * av,
+                  (X - u0) * bu + (Y - v0) * bv,
+                  color,
+                  c);
+              vertex(
+                  v,
+                  m,
+                  along,
+                  across,
+                  (x - u0) * au + (Y - v0) * av,
+                  (x - u0) * bu + (Y - v0) * bv,
+                  color,
+                  d);
+            },
+            stroke);
+      } else
+        FieldPattern.render(
+            left,
+            right,
+            bottom,
+            top,
+            time,
+            hit ? hitAge : -1,
+            (float) e.impact.dot(uAxis),
+            (float) e.impact.dot(vAxis),
+            e.color,
+            e.controls,
+            FieldPattern.progress(e, age),
+            stroke);
+      if (!FieldPattern.projected(e))
+        line(
+            v,
+            m,
+            along,
+            across,
+            end,
+            -.5f,
+            end,
+            .5f,
+            .025f,
+            e.color,
+            .9f * FieldPattern.progress(e, age));
     }
+  }
+
+  private static com.zeromods.core.animation.PlanarProjection.Frame projectionFrame(
+      EmitterEntity e, EmitterEntity.Link link, Vec3 across, Vec3 uAxis, Vec3 vAxis) {
+    int low = 0, high = 0;
+    while (joined(e, link, across.scale(low - 1))) low--;
+    while (joined(e, link, across.scale(high + 1))) high++;
+    Vec3 origin = Vec3.atCenterOf(e.getBlockPos()),
+        along = new Vec3(link.dx(), link.dy(), link.dz());
+    Vec3 a = origin.add(along.scale(-.5)).add(across.scale(low - .5));
+    Vec3 b = origin.add(along.scale(link.length() + .5)).add(across.scale(high + .5));
+    Vec3 source = origin.add(along.scale(-.5)).add(across.scale((low + high) / 2.0));
+    return new com.zeromods.core.animation.PlanarProjection.Frame(
+        (float) Math.min(a.dot(uAxis), b.dot(uAxis)),
+        (float) Math.max(a.dot(uAxis), b.dot(uAxis)),
+        (float) Math.min(a.dot(vAxis), b.dot(vAxis)),
+        (float) Math.max(a.dot(vAxis), b.dot(vAxis)),
+        (float) source.dot(uAxis),
+        (float) source.dot(vAxis),
+        link.normal() == Direction.Axis.Y);
   }
 
   private static boolean joined(EmitterEntity e, EmitterEntity.Link link, Vec3 offset) {
@@ -88,11 +201,13 @@ public final class RailRenderer {
             (int) Math.round(offset.x), (int) Math.round(offset.y), (int) Math.round(offset.z));
     var pos = e.getBlockPos().offset(delta);
     return e.getLevel().getBlockEntity(pos) instanceof EmitterEntity other
-        && other.powered
+        && other.powered == e.powered
         && other.controls.visible
         && other.color == e.color
         && other.controls.pattern == e.controls.pattern
         && other.controls.formation == e.controls.formation
+        && other.controls.animation == e.controls.animation
+        && other.controls.particleColor == e.controls.particleColor
         && other.links.stream()
             .anyMatch(
                 l -> l.target().equals(link.target().offset(delta)) && l.normal() == link.normal());

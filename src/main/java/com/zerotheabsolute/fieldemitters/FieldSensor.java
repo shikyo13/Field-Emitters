@@ -13,7 +13,7 @@ public final class FieldSensor {
     var detected = new java.util.HashSet<String>();
     if (e.powered && monitoring && mode != 0) {
       for (var origin : e.isRail() ? FieldNetwork.members(e) : java.util.List.of(e)) {
-        if (origin.isRemoved()) continue;
+        if (origin.isRemoved() || !origin.powered) continue;
         var p = origin.getBlockPos();
         for (var link : origin.links) {
           var settings = origin.settings(link);
@@ -37,7 +37,7 @@ public final class FieldSensor {
             int i = (int) Math.floor(u + .5);
             if (i < (link.rail() ? 0 : 1)
                 || i > (link.rail() ? link.length() : link.length() - 1)
-                || now - e.transition < i * 2) continue;
+                || now - origin.transition < origin.controls.linkFormationTicks(i)) continue;
             if (!entity.getBoundingBox().intersects(link.box(p))) {
               // Keep observations on both sides, but only within the projected tile's other axes.
               var box = entity.getBoundingBox();

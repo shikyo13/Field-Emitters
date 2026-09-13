@@ -50,8 +50,26 @@ In **Visuals → Projection**, choose one of six four-second startup animations:
 - **Projected seed:** a focused beam seeds the crown, then the surface spreads downward.
 - **Plasma dissolve:** irregular openings close with luminous edges.
 
-Projection is independent of **Pattern**: every animation works with hex lattice, smooth glow, drifting pixels, or plasma. Plasma now uses a translucent surface with moving luminous contours, rather than filled grid patches. The particle color controls those contours. Existing towers default to Laser curtain; wall and rail formation settings are unchanged. Turning pattern animation off uses a simple fade without moving construction guides.
+Projection is independent of **Pattern**: every animation works with hex lattice, smooth glow, drifting pixels, or plasma. Plasma now uses a translucent surface with moving luminous contours, rather than filled grid patches. The particle color controls those contours. Existing towers default to Laser curtain. Existing posts and rails retain their saved Sweep, Dissolve, or Fade setting. Turning pattern animation off uses a simple fade without moving construction guides.
 
 Only the outer shell has collision; the interior and dome floor stay open. Projection beams are visual only. Collision starts when formation completes and stops immediately when power is lost; the visible shell fades out. All surface styles retain curved impact ripples. Mesh resolution and pattern coordinates are fixed to bound rendering work as the radius grows. Tower hardware currently reuses the existing emitter materials.
 
 The tower accepts FE through its block energy capability. At the default energy setting, cost is approximately two FE per square block of shell surface per tick: `2 × π × radius²` surface area for a dome, `4 × π × radius²` for a sphere. Stored FE can be consumed above the external cable transfer limit; the full cost is deducted. Redstone-only power remains an explicit testing configuration, disabled by default.
+
+
+## Post, wall, floor and ceiling formation
+
+Posts and surface rails offer the same six effects in **Visuals → Formation**, after the original Sweep, Dissolve / reform, and Fade choices. Surface pattern and colors remain independent.
+
+| Effect | Flat-field behavior |
+| --- | --- |
+| Laser curtain | A fan projects from the source edge and accelerates toward the other emitter. |
+| Scan line | The ring becomes a straight line: upward on walls, across floor and ceiling fields. |
+| Hex assembly | Cells spread from the emitting edge across the surface. |
+| Tracing ribs | Meridians become parallel lines tracing the panel before it fills in. |
+| Projected seed | A beam seeds the center; a luminous rectangle expands to the edges. |
+| Plasma dissolve | Smooth openings close across the plane with bright edges. |
+
+Post fields follow the terrain as they form. Coplanar adjacent rails with matching visuals use one shared animation frame, so a wide doorway or bridge is not treated as a stack of separate one-block animations. Textures and plasma contours remain anchored to the world plane.
+
+The six new effects take four seconds. Blocking, detection, contact damage and inventory checkpoints start when construction finishes; losing power disables them immediately. The three original choices retain their existing progressive activation. With animation disabled, a new formation uses a quiet fade. Invisible fields still follow their selected activation delay.

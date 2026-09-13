@@ -38,7 +38,7 @@ public final class FieldDamage {
             + (center.z - p.getZ() - .5) * link.dz();
         int i = (int) Math.floor(u + .5);
         if (i < (link.rail() ? 0 : 1) || i > (link.rail() ? link.length() : link.length() - 1)
-            || now - e.transition < i * 2) continue;
+            || now - e.transition < e.controls.linkFormationTicks(i)) continue;
         var cell = link.cell(p, i, 0);
         var slab = switch (link.normal()) {
           case X -> new AABB(p.getX()+.3, cell.getY(), cell.getZ(), p.getX()+.7, cell.getY()+link.height(), cell.getZ()+1);

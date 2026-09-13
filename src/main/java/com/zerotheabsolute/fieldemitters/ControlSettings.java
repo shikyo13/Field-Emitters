@@ -5,6 +5,10 @@ import net.minecraft.nbt.CompoundTag;
 
 public final class ControlSettings {
   public com.zeromods.core.animation.SphereFormation projection = com.zeromods.core.animation.SphereFormation.LASER_CURTAIN;
+  public int linkFormationTicks(int distance) {
+    return com.zeromods.core.animation.PlanarProjection.selected(formation)
+        ? com.zeromods.core.animation.PlanarProjection.DURATION_TICKS : distance * 2;
+  }
   public int sphereRadius = SphereField.DEFAULT_RADIUS;
   public boolean dome = true;
   public CheckpointSettings checkpoint = new CheckpointSettings();
@@ -101,7 +105,7 @@ public final class ControlSettings {
     s.damageInterval = t.contains("DamageInterval") ? Math.max(10, Math.min(200, t.getInt("DamageInterval"))) : 20;
     s.fizzleEffects = !t.contains("FizzleEffects") || t.getBoolean("FizzleEffects");
     s.pattern = Math.max(0, Math.min(3, t.getInt("Pattern")));
-    s.formation = Math.max(0, Math.min(2, t.getInt("Formation")));
+    s.formation = Math.max(0, Math.min(com.zeromods.core.animation.PlanarProjection.PRESET_COUNT - 1, t.getInt("Formation")));
     s.particleColor = t.contains("ParticleColor") ? t.getInt("ParticleColor") & 0xFFFFFF : 0xFF55DD;
     s.sounds = !t.contains("Sounds") || t.getBoolean("Sounds");
     s.powerSounds = !t.contains("PowerSounds") || t.getBoolean("PowerSounds");

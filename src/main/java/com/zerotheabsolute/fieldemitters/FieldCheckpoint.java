@@ -109,7 +109,7 @@ public final class FieldCheckpoint {
         int i = (int) Math.floor(u + .5);
         if (i < (link.rail() ? 0 : 1)
             || i > (link.rail() ? link.length() : link.length() - 1)
-            || now - e.transition < i * 2) continue;
+            || now - e.transition < e.controls.linkFormationTicks(i)) continue;
         var cell = link.cell(p, i, 0);
         if (!link.rail()
             && (player.getY() >= cell.getY() + 5 || player.getBoundingBox().maxY <= cell.getY()))
