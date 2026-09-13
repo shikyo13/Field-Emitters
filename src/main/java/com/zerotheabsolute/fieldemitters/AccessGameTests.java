@@ -81,11 +81,17 @@ public final class AccessGameTests {
         var settings = new ControlSettings();
         settings.projection = projection;
         settings.pattern = pattern;
-        settings.formation = 2;
-        var copy = ControlSettings.load(settings.save());
-        h.assertTrue(
-            copy.projection == projection && copy.pattern == pattern && copy.formation == 2,
-            "Tower projection, surface, and linked-field formation must persist independently");
+        for (int formation = 0;
+            formation < com.zeromods.core.animation.PlanarProjection.PRESET_COUNT;
+            formation++) {
+          settings.formation = formation;
+          var copy = ControlSettings.load(settings.save());
+          h.assertTrue(
+              copy.projection == projection
+                  && copy.pattern == pattern
+                  && copy.formation == formation,
+              "Tower projection, surface, and linked-field formation must persist independently");
+        }
       }
     }
     var legacy = new ControlSettings().save();

@@ -1,0 +1,98 @@
+[
+  {
+    "file": "bridge-hex.mp4",
+    "duration": "7.333333",
+    "streams": [
+      {
+        "type": "video",
+        "width": 960,
+        "height": 640,
+        "fps": "30/1"
+      }
+    ]
+  },
+  {
+    "file": "bridge-pixels.mp4",
+    "duration": "7.366667",
+    "streams": [
+      {
+        "type": "video",
+        "width": 960,
+        "height": 640,
+        "fps": "30/1"
+      }
+    ]
+  },
+  {
+    "file": "bridge-plasma.mp4",
+    "duration": "7.466667",
+    "streams": [
+      {
+        "type": "video",
+        "width": 960,
+        "height": 640,
+        "fps": "30/1"
+      }
+    ]
+  },
+  {
+    "file": "bridge-smooth.mp4",
+    "duration": "7.333333",
+    "streams": [
+      {
+        "type": "video",
+        "width": 960,
+        "height": 640,
+        "fps": "30/1"
+      }
+    ]
+  },
+  {
+    "file": "wall-hex.mp4",
+    "duration": "7.300000",
+    "streams": [
+      {
+        "type": "video",
+        "width": 960,
+        "height": 640,
+        "fps": "30/1"
+      }
+    ]
+  },
+  {
+    "file": "wall-pixels.mp4",
+    "duration": "7.333333",
+    "streams": [
+      {
+        "type": "video",
+        "width": 960,
+        "height": 640,
+        "fps": "30/1"
+      }
+    ]
+  },
+  {
+    "file": "wall-plasma.mp4",
+    "duration": "7.500000",
+    "streams": [
+      {
+        "type": "video",
+        "width": 960,
+        "height": 640,
+        "fps": "30/1"
+      }
+    ]
+  },
+  {
+    "file": "wall-smooth.mp4",
+    "duration": "7.333333",
+    "streams": [
+      {
+        "type": "video",
+        "width": 960,
+        "height": 640,
+        "fps": "30/1"
+      }
+    ]
+  }
+]
