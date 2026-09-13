@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "fieldemitters:field_tuner",
+    "fieldemitters:access_badge",
+    "fieldemitters:badge_holder"
+  ]
+}

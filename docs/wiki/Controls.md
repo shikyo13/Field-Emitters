@@ -28,3 +28,5 @@ On the Connections tab, **Editing** chooses the emitter's default rules or one o
 While you hold the tuner, arrows on the field show the movement directions: amber where blocking is enabled, green where entities may pass. The Appearance tab or the client config can hide the guides.
 
 Unloaded chunks are never loaded by the manager. A chain that is partly unloaded can appear as separate fields until its chunks load again.
+
+Effect color defaults to **Matches field**, so changing the field color also changes its effects. Choose **Custom accent** to reveal separate presets and a hex color box. The **Purple field / magenta effects** preset enables a contrasting accent intentionally.

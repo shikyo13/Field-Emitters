@@ -1,10 +1,102 @@
 package com.zerotheabsolute.fieldemitters.client;
 
-/** World-anchored hex lattice and impact rings shared by posts and surface rails. */
+import com.zeromods.core.animation.EnergySurface;
+import com.zeromods.core.animation.ImpactWaves;
+import net.minecraft.world.phys.Vec3;
+import java.util.ArrayList;
+import com.zeromods.core.animation.HexFieldPattern;
+import com.zeromods.core.animation.PlanarProjection;
+import com.zeromods.core.animation.PlasmaSurface;
+import com.zerotheabsolute.fieldemitters.ControlSettings;
+import com.zerotheabsolute.fieldemitters.EmitterEntity;
+
+/** Mod preset; Core owns the seamless pattern and impact animation. */
 final class FieldPattern {
-  @FunctionalInterface
-  interface Stroke {
-    void draw(float x1, float y1, float x2, float y2, float width, int color, float alpha);
+  interface Stroke extends HexFieldPattern.Stroke {}
+
+  static ImpactWaves waves(EmitterEntity emitter, EmitterEntity.Link link,
+      Vec3 uAxis, Vec3 vAxis, float partial) {
+    var result = new ArrayList<ImpactWaves.Wave>();
+    double plane = link.normalCoordinate(link.origin(emitter.getBlockPos()));
+    double now = emitter.getLevel().getGameTime() + partial;
+    for (var wave : emitter.impactWaves) {
+      float age = (float) (now - wave.time());
+      if (age < 0 || age >= 32 || Math.abs(link.normalCoordinate(wave.position()) - plane) >= .15) continue;
+      var local = wave.position().subtract(Vec3.atLowerCornerOf(emitter.root));
+      result.add(new ImpactWaves.Wave((float) local.dot(uAxis),
+          (float) local.dot(vAxis), age));
+    }
+    return result.isEmpty() ? ImpactWaves.NONE : new ImpactWaves(result);
+  }
+
+  static float progress(EmitterEntity e, float age) {
+    if (!e.powered) return com.zerotheabsolute.fieldemitters.FieldShutdown.remaining(age);
+    if (projected(e))
+      return Math.max(
+          0, Math.min(1, e.powered ? age / PlanarProjection.DURATION_TICKS : 1 - age / 25));
+    return e.controls.formation == 0
+        ? 1
+        : Math.max(0, Math.min(1, e.powered ? age / 40 : 1 - age / 40));
+  }
+
+  static boolean projected(EmitterEntity e) {
+    return PlanarProjection.selected(e.controls.formation);
+  }
+
+  static void project(
+      float left,
+      float right,
+      float bottom,
+      float top,
+      float time,
+      ImpactWaves waves,
+      int color,
+      ControlSettings settings,
+      float progress,
+      PlanarProjection.Frame frame,
+      PlanarProjection.Patch patch,
+      Stroke stroke) {
+    var style = PlanarProjection.style(settings.formation);
+    float reveal = settings.animation ? progress : 1, opacity = settings.animation ? 1 : progress;
+    PlanarProjection.fill(style, frame, left, right, bottom, top, reveal, opacity, color, patch);
+    if (settings.pattern == 3)
+      PlasmaSurface.glow(
+          left,
+          right,
+          bottom,
+          top,
+          time,
+          settings.accentColor(color),
+          (a, c, b, d, tint, ac, bc, bd, ad) ->
+              patch.draw(
+                  a,
+                  c,
+                  b,
+                  d,
+                  tint,
+                  ac * PlanarProjection.coverage(style, frame, a, c, reveal) * opacity,
+                  bc * PlanarProjection.coverage(style, frame, b, c, reveal) * opacity,
+                  bd * PlanarProjection.coverage(style, frame, b, d, reveal) * opacity,
+                  ad * PlanarProjection.coverage(style, frame, a, d, reveal) * opacity));
+    EnergySurface.render(
+        left,
+        right,
+        bottom,
+        top,
+        time,
+        waves,
+        color,
+        settings.accentColor(color),
+        settings.pattern,
+        0,
+        1,
+        false,
+        (x1, y1, x2, y2, w, c, a) -> {
+          float mask =
+              PlanarProjection.coverage(style, frame, (x1 + x2) / 2, (y1 + y2) / 2, reveal);
+          if (mask > 0) stroke.draw(x1, y1, x2, y2, w, c, a * mask * opacity);
+        });
+    if (settings.animation) PlanarProjection.guides(style, frame, progress, color, stroke);
   }
 
   static void render(
@@ -13,55 +105,24 @@ final class FieldPattern {
       float bottom,
       float top,
       float time,
-      float impactAge,
-      float impactU,
-      float impactV,
+      ImpactWaves waves,
       int color,
+      ControlSettings settings,
+      float progress,
       Stroke stroke) {
-    boolean hit = impactAge >= 0 && impactAge < 32;
-    float radius = impactAge * .115f, fade = 1 - impactAge / 32;
-    for (int col = (int) Math.floor(left / .45f) - 1; col <= Math.ceil(right / .45f) + 1; col++)
-      for (int row = (int) Math.floor(bottom / .5196f) - 1;
-          row <= Math.ceil(top / .5196f) + 1;
-          row++) {
-        float cx = col * .45f, cy = row * .5196f + Math.floorMod(col, 2) * .2598f;
-        float scan =
-            (float) Math.pow(Math.max(0, Math.cos(cx * .45f - time * .055f + cy * .32f)), 18);
-        float distance = (float) Math.hypot(cx - impactU, cy - impactV);
-        float wave = hit ? (float) Math.exp(-Math.pow((distance - radius) / .26f, 2)) * fade : 0;
-        for (int k = 0; k < 6; k++) {
-          double a = k * Math.PI / 3, b = (k + 1) * Math.PI / 3;
-          stroke.draw(
-              cx + (float) Math.cos(a) * .30f,
-              cy + (float) Math.sin(a) * .30f,
-              cx + (float) Math.cos(b) * .30f,
-              cy + (float) Math.sin(b) * .30f,
-              .008f + wave * .012f,
-              wave > .3 ? 0xD0F7FF : color,
-              .085f + .075f * scan + .72f * wave);
-        }
-        if (wave > .1f)
-          for (int k = 0; k < 3; k++) {
-            double a = k * Math.PI / 3, b = (k + 3) * Math.PI / 3;
-            stroke.draw(
-                cx + (float) Math.cos(a) * .27f,
-                cy + (float) Math.sin(a) * .27f,
-                cx + (float) Math.cos(b) * .27f,
-                cy + (float) Math.sin(b) * .27f,
-                .028f,
-                color,
-                wave * .13f);
-          }
-      }
-    if (hit)
-      for (int k = 0; k < 96; k++) {
-        double a = k * Math.PI * 2 / 96, b = (k + 1) * Math.PI * 2 / 96;
-        float x1 = impactU + (float) Math.cos(a) * radius,
-            y1 = impactV + (float) Math.sin(a) * radius;
-        float x2 = impactU + (float) Math.cos(b) * radius,
-            y2 = impactV + (float) Math.sin(b) * radius;
-        stroke.draw(x1, y1, x2, y2, .14f, color, fade * .12f);
-        stroke.draw(x1, y1, x2, y2, .020f, color, fade * .60f);
-      }
+    EnergySurface.render(
+        left,
+        right,
+        bottom,
+        top,
+        time,
+        waves,
+        color,
+        settings.accentColor(color),
+        settings.pattern,
+        settings.formation,
+        progress,
+        true,
+        stroke);
   }
 }

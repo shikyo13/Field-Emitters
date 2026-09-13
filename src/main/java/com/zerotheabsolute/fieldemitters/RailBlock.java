@@ -29,6 +29,8 @@ public final class RailBlock extends BaseEntityBlock {
             .setValue(LIGHT, false));
   }
 
+  @Override public boolean canEntityDestroy(BlockState state, BlockGetter level, BlockPos pos, net.minecraft.world.entity.Entity entity) { return entity instanceof Player; }
+
   protected MapCodec<? extends BaseEntityBlock> codec() {
     return simpleCodec(RailBlock::new);
   }
@@ -61,11 +63,12 @@ public final class RailBlock extends BaseEntityBlock {
     if (c instanceof EntityCollisionContext ec
         && ec.getEntity() != null
         && l.getBlockEntity(p) instanceof EmitterEntity e) {
-      var field = FieldBlock.collision(e, ec.getEntity(), p);
+      var center = c instanceof FieldCollisionContext local ? local.center : ec.getEntity().getBoundingBox().getCenter();
+      var field = FieldBlock.collision(e, ec.getEntity(), p, center);
       // The far endpoint can own no links; find its loaded source through its network.
       for (var part : FieldNetwork.members(e))
         if (part != e && !part.isRemoved())
-          field = Shapes.or(field, FieldBlock.collision(part, ec.getEntity(), p));
+          field = Shapes.or(field, FieldBlock.collision(part, ec.getEntity(), p, center));
       return Shapes.or(hardware, field);
     }
     return hardware;

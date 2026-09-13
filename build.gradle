@@ -11,6 +11,7 @@ tasks.withType(AbstractArchiveTask).configureEach {
     preserveFileTimestamps = false
     reproducibleFileOrder = true
 }
+jarJar.enable()
 minecraft {
     mappings channel: 'official', version: minecraft_version
     reobf = false
@@ -72,3 +73,27 @@ sourceSets.main.resources.srcDir generateModMetadata
 
 tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }
 jar { includeEmptyDirs = false; exclude '.cache/**'; from('LICENSE') { into 'META-INF' } }
+
+repositories {
+ maven { url = 'https://maven.blamejared.com/' }
+ maven { url = 'https://maven.terraformersmc.com/releases/' }
+}
+dependencies {
+ implementation 'com.zeromods:zeromods-core-forge-1.21.1:0.1.0'
+ compileOnly 'mezz.jei:jei-1.21.1-common-api:19.21.0.247'
+}
+
+dependencies {
+    jarJar('com.zeromods:zeromods-core-forge-1.21.1:[0.1.0,0.2.0)') {
+        jarJar.pin(it, '0.1.0')
+        transitive = false
+    }
+}
+tasks.named('jar') { archiveClassifier = 'slim' }
+tasks.named('jarJar') {
+    archiveClassifier = ''
+    includeEmptyDirs = false
+    exclude '.cache/**'
+    from('LICENSE') { into 'META-INF' }
+}
+tasks.named('build') { dependsOn tasks.named('jarJar') }

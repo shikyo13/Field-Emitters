@@ -10,11 +10,31 @@ import net.minecraftforge.client.event.EntityRenderersEvent;
 public final class FieldClient {
   @SubscribeEvent
   public static void setup(net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent event) {
+    event.enqueueWork(() -> FizzleNotice.receive = FizzleDeaths::receive);
+    event.enqueueWork(() -> PlayerLookup.receive = result -> { PlayerListScreen.receive(result); ManagementScreen.lookup(result); });
+    event.enqueueWork(() -> ManagementPackets.receive = ManagementScreen::receive);
+    event.enqueueWork(() -> AccessPackets.receive = AccessScreen::receive);
     event.enqueueWork(() -> FieldControls.remoteData = RemoteScreen::receive);
     event.enqueueWork(
         () ->
             FieldControls.open =
-                e -> net.minecraft.client.Minecraft.getInstance().setScreen(new ControlScreen(e)));
+                e -> {
+                  var mc = net.minecraft.client.Minecraft.getInstance();
+                  if (mc.player == null) return;
+                  if (FieldControls.editable(e, mc.player)) mc.setScreen(new ControlScreen(e));
+                  else mc.player.displayClientMessage(net.minecraft.network.chat.Component.literal(
+                      "This field is private. Ask its owner for management access."), true);
+                });
+  }
+
+  @SubscribeEvent
+  public static void keys(net.minecraftforge.client.event.RegisterKeyMappingsEvent event) { event.register(TunerKeys.OPEN); }
+
+  @SubscribeEvent
+  public static void shaders(net.minecraftforge.client.event.RegisterShadersEvent event) throws java.io.IOException {
+    event.registerShader(new net.minecraft.client.renderer.ShaderInstance(event.getResourceProvider(),
+        net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("zeromodscore", "energy_surface"), com.mojang.blaze3d.vertex.DefaultVertexFormat.NEW_ENTITY),
+        com.zeromods.core.client.EnergyRenderTypes::surfaceShader);
   }
 
   @SubscribeEvent
@@ -33,6 +53,7 @@ public final class FieldClient {
             return 0xFF000000 | emitter.color;
           return 0xFF52E5FF;
         },
+        FieldEmitters.TOWER.get(),
         FieldEmitters.EMITTER.get(),
         FieldEmitters.RAIL.get());
   }
@@ -47,6 +68,7 @@ public final class FieldClient {
           var tag = data == null ? new net.minecraft.nbt.CompoundTag() : data.copyTag();
           return 0xFF000000 | (tag.contains("FieldColor") ? tag.getInt("FieldColor") : 0x52E5FF);
         },
+        FieldEmitters.TOWER_ITEM.get(),
         FieldEmitters.TUNER.get(),
         FieldEmitters.EMITTER_ITEM.get(),
         FieldEmitters.RAIL_ITEM.get());

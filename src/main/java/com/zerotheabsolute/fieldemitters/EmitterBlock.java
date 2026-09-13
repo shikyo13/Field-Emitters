@@ -28,6 +28,8 @@ public final class EmitterBlock extends BaseEntityBlock {
         stateDefinition.any().setValue(SECTION, 0).setValue(ACTIVE, false).setValue(LIGHT, false));
   }
 
+  @Override public boolean canEntityDestroy(BlockState state, BlockGetter level, BlockPos pos, net.minecraft.world.entity.Entity entity) { return entity instanceof Player; }
+
   protected MapCodec<? extends BaseEntityBlock> codec() {
     return simpleCodec(EmitterBlock::new);
   }
@@ -65,6 +67,7 @@ public final class EmitterBlock extends BaseEntityBlock {
   }
 
   public static BlockPos base(BlockPos p, BlockState s) {
+    if(s.is(FieldEmitters.TOWER.get()))return TowerBlock.base(p,s);
     return s.hasProperty(SECTION) ? p.below(s.getValue(SECTION)) : p;
   }
 
