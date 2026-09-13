@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "fieldemitters:field_emitter",
+    "fieldemitters:field_rail",
+    "fieldemitters:projection_tower"
+  ]
+}

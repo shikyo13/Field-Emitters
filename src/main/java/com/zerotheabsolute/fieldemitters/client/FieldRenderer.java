@@ -29,6 +29,14 @@ public final class FieldRenderer implements BlockEntityRenderer<EmitterEntity> {
       int light,
       int overlay) {
     if (e.getLevel() == null) return;
+    if (e.isTower()) {
+      float time = e.getLevel().getGameTime() + partial;
+      float age = time - e.transition;
+      float charge = e.powered ? Mth.clamp(age / 12, 0, 1) : FieldShutdown.remaining(age);
+      HardwareRenderer.render(e, time, charge, pose, buffers, light);
+      SphereRenderer.render(e, partial, pose, buffers);
+      return;
+    }
     if (e.isRail()) {
       FieldGuide.render(e, pose, buffers);
       RailRenderer.render(e, partial, pose, buffers);
@@ -36,7 +44,7 @@ public final class FieldRenderer implements BlockEntityRenderer<EmitterEntity> {
     }
     float time = e.getLevel().getGameTime() + partial;
     float age = time - e.transition;
-    float charge = e.powered ? Mth.clamp(age / 12, 0, 1) : Mth.clamp(1 - age / 30, 0, 1);
+    float charge = e.powered ? Mth.clamp(age / 12, 0, 1) : FieldShutdown.remaining(age);
     HardwareRenderer.render(e, time, charge, pose, buffers, light);
     FieldGuide.render(e, pose, buffers);
     var v = buffers.getBuffer(FieldRenderType.ENERGY);
@@ -121,18 +129,25 @@ public final class FieldRenderer implements BlockEntityRenderer<EmitterEntity> {
     if (!e.controls.animation) time = 0;
     for (var link : e.links) {
       float extent =
-          e.powered ? Math.min(link.length(), age / 2) : Math.max(0, link.length() - age / 2);
-      if (extent <= .5f) continue;
+          e.powered ? Math.min(link.length(), age / 2) : link.length() * FieldShutdown.remaining(age);
+      if (e.controls.formation != 0) extent = link.length();
+      if (extent <= .5f || FieldPattern.progress(e, age) <= 0) continue;
       for (int i = 0; i <= link.length(); i++) {
         float from = Math.max(0, i - .5f), to = Math.min(Math.min(link.length(), i + .5f), extent);
         if (to <= from) continue;
         float floor = link.ground()[i] - e.getBlockPos().getY() + .035f, top = floor + 4.93f;
-        panel(v, m, link, from, floor, to, top, color, .17f);
-        strip(v, m, link, from, top, to, top, .22f, color, .075f);
-        strip(v, m, link, from, top, to, top, .075f, color, .22f);
-        strip(v, m, link, from, top, to, top, .015f, color, .72f);
-        strip(v, m, link, from, floor, to, floor, .15f, color, .12f);
-        strip(v, m, link, from, floor, to, floor, .012f, color, .60f);
+
+        if (FieldPattern.projected(e)) {
+          projection(e, link, v, m, from, to, floor, top, time, partial, age);
+          continue;
+        }
+        strip(v, m, link, from, top, to, top, .22f, color, .075f * FieldPattern.progress(e, age));
+        strip(v, m, link, from, top, to, top, .075f, color, .22f * FieldPattern.progress(e, age));
+        strip(v, m, link, from, top, to, top, .015f, color, .72f * FieldPattern.progress(e, age));
+        strip(
+            v, m, link, from, floor, to, floor, .15f, color, .12f * FieldPattern.progress(e, age));
+        strip(
+            v, m, link, from, floor, to, floor, .012f, color, .60f * FieldPattern.progress(e, age));
         if (i > 0 && i < link.length() && link.ground()[i] != link.ground()[i - 1])
           strip(
               v,
@@ -145,30 +160,22 @@ public final class FieldRenderer implements BlockEntityRenderer<EmitterEntity> {
               .014f,
               color,
               .60f);
-        float hitAge = (float) (e.getLevel().getGameTime() - e.impactTime) + partial;
         float originU =
-            link.dx() != 0 ? e.getBlockPos().getX() + .5f : e.getBlockPos().getZ() + .5f;
+            link.dx() != 0 ? (e.getBlockPos().getX() - e.root.getX()) + .5f : (e.getBlockPos().getZ() - e.root.getZ()) + .5f;
         float direction = link.dx() != 0 ? link.dx() : link.dz();
         float worldLeft = originU + Math.min(from * direction, to * direction);
         float worldRight = originU + Math.max(from * direction, to * direction);
-        float originY = e.getBlockPos().getY();
-        boolean hit =
-            hitAge >= 0
-                && hitAge < 32
-                && Math.abs(
-                        link.normalCoordinate(e.impact)
-                            - link.normalCoordinate(Vec3.atCenterOf(e.getBlockPos())))
-                    < .15;
+        float originY = e.getBlockPos().getY() - e.root.getY();
         FieldPattern.render(
             worldLeft,
             worldRight,
             floor + originY,
             top + originY,
             time,
-            hit ? hitAge : -1,
-            (float) (link.dx() != 0 ? e.impact.x : e.impact.z),
-            (float) e.impact.y,
+            FieldPattern.waves(e, link, link.dx() != 0 ? new Vec3(1, 0, 0) : new Vec3(0, 0, 1), new Vec3(0, 1, 0), partial),
             color,
+            e.controls,
+            FieldPattern.progress(e, age),
             (x1, y1, x2, y2, w, c, alpha) ->
                 clippedStrip(
                     v,
@@ -185,14 +192,97 @@ public final class FieldRenderer implements BlockEntityRenderer<EmitterEntity> {
                     to,
                     floor,
                     top));
-        float sweep = floor + (time * .018f % 4.93f);
-        strip(v, m, link, from, sweep, to, sweep, .016f, color, .11f);
+        if (e.controls.pattern == 0) {
+          float sweep = floor + (time * .018f % 4.93f);
+          strip(
+              v,
+              m,
+              link,
+              from,
+              sweep,
+              to,
+              sweep,
+              .016f,
+              color,
+              .11f * FieldPattern.progress(e, age));
+        }
         if (extent < link.length() && extent >= from && extent <= to) {
           strip(v, m, link, extent, floor, extent, top, .14f, color, .18f);
           strip(v, m, link, extent, floor, extent, top, .025f, 0xE4FCFF, .90f);
         }
       }
     }
+  }
+
+  private static void projection(
+      EmitterEntity e,
+      EmitterEntity.Link link,
+      VertexConsumer v,
+      Matrix4f m,
+      float from,
+      float to,
+      float floor,
+      float top,
+      float time,
+      float partial,
+      float age) {
+    float originU = link.dx() != 0 ? (e.getBlockPos().getX() - e.root.getX()) + .5f : (e.getBlockPos().getZ() - e.root.getZ()) + .5f;
+    float direction = link.dx() != 0 ? link.dx() : link.dz(), originY = e.getBlockPos().getY() - e.root.getY();
+    float left = originU + Math.min(from * direction, to * direction),
+        right = originU + Math.max(from * direction, to * direction);
+    var frame =
+        new com.zeromods.core.animation.PlanarProjection.Frame(
+            Math.min(originU, originU + link.length() * direction),
+            Math.max(originU, originU + link.length() * direction),
+            floor + originY,
+            top + originY,
+            originU,
+            top + originY - .25f,
+            false);
+    FieldPattern.project(
+        left,
+        right,
+        floor + originY,
+        top + originY,
+        time,
+        FieldPattern.waves(e, link, link.dx() != 0 ? new Vec3(1, 0, 0) : new Vec3(0, 0, 1), new Vec3(0, 1, 0), partial),
+        e.color,
+        e.controls,
+        FieldPattern.progress(e, age),
+        frame,
+        (x, y, X, Y, c, a, b, d, f) -> {
+          projectionVertex(v, m, link, (x - originU) * direction, y - originY, c, a);
+          projectionVertex(v, m, link, (X - originU) * direction, y - originY, c, b);
+          projectionVertex(v, m, link, (X - originU) * direction, Y - originY, c, d);
+          projectionVertex(v, m, link, (x - originU) * direction, Y - originY, c, f);
+        },
+        (x, y, X, Y, w, c, a) ->
+            clippedStrip(
+                v,
+                m,
+                link,
+                (x - originU) * direction,
+                y - originY,
+                (X - originU) * direction,
+                Y - originY,
+                w,
+                c,
+                a,
+                from,
+                to,
+                floor,
+                top));
+  }
+
+  private static void projectionVertex(
+      VertexConsumer v,
+      Matrix4f m,
+      EmitterEntity.Link link,
+      float x,
+      float y,
+      int color,
+      float alpha) {
+    vertex(v, m, .5f + x * link.dx(), y, .5f + x * link.dz(), color, alpha);
   }
 
   private static void clippedStrip(

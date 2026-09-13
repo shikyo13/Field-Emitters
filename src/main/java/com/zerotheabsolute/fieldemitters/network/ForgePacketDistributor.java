@@ -7,6 +7,9 @@ import net.minecraftforge.network.PacketDistributor;
 
 public final class ForgePacketDistributor {
     private ForgePacketDistributor() {}
+    public static void sendToPlayersNear(ServerLevel level, ServerPlayer excluded, double x, double y, double z, double radius, FieldPayload payload) {
+      for (var player : level.players()) if(player != excluded && player.distanceToSqr(x,y,z) <= radius*radius) sendToPlayer(player,payload);
+    }
     public static void sendToServer(FieldPayload payload) {
         ForgeNetworkRegistrar.CHANNEL.sendToServer(payload);
     }

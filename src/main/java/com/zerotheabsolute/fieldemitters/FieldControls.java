@@ -14,8 +14,7 @@ public final class FieldControls {
   public static Consumer<RemoteData> remoteData = data -> {};
 
   public static boolean hasTuner(net.minecraft.world.entity.player.Player player) {
-    return player.getMainHandItem().is(FieldEmitters.TUNER.get())
-        || player.getOffhandItem().is(FieldEmitters.TUNER.get());
+    return BadgeAccess.carried(player).stream().anyMatch(stack -> stack.is(FieldEmitters.TUNER.get()));
   }
 
   public record RemoteRequest(boolean list, BlockPos pos) implements FieldPayload {
@@ -81,11 +80,12 @@ public final class FieldControls {
   private static void remote(
       RemoteRequest request, net.minecraft.world.entity.player.Player player) {
     if (!hasTuner(player)) {
-      reply(player, 2, new CompoundTag(), "Hold a Field Tuner to manage emitters remotely.");
+      reply(player, 2, new CompoundTag(), "Carry or equip a Field Tuner to manage emitters remotely.");
       return;
     }
     var level = player.level();
     if (request.list) {
+      ManagedFields.refresh((net.minecraft.server.level.ServerLevel) level, FieldNetwork.loaded(level));
       var data = new CompoundTag();
       var entries = new net.minecraft.nbt.ListTag();
       var all =
@@ -107,12 +107,13 @@ public final class FieldControls {
                 .toList();
         var anchor = members.get(0);
         var entry = new CompoundTag();
+        if (anchor.managedNetwork != null) entry.putUUID("NetworkId", anchor.managedNetwork.id());
         entry.putLong("Pos", anchor.getBlockPos().asLong());
+        entry.putLong("Origin", (anchor.managedNetwork == null ? anchor.getBlockPos() : anchor.managedNetwork.anchor().orElse(anchor.getBlockPos())).asLong());
         entry.putString(
             "Name",
-            anchor.fieldName.isBlank()
-                ? "Field at " + anchor.getBlockPos().toShortString()
-                : anchor.fieldName);
+            anchor.managedNetwork != null ? anchor.managedNetwork.name() :
+                anchor.fieldName.isBlank() ? "Field at " + anchor.getBlockPos().toShortString() : anchor.fieldName);
         var parts = new net.minecraft.nbt.ListTag();
         int running = 0;
         for (var e : members) {
@@ -210,7 +211,7 @@ public final class FieldControls {
                             player,
                             2,
                             new CompoundTag(),
-                            "Cannot rename: hold a tuner and use an accessible loaded field.");
+                            "Cannot rename: carry or equip a tuner and use an accessible loaded field.");
                         return;
                       }
                       String name = p.name.strip();
@@ -220,6 +221,7 @@ public final class FieldControls {
                       }
                       for (var e : FieldNetwork.configurable(seed))
                         if (editable(e, player)) {
+                          ManagedFields.rename((net.minecraft.server.level.ServerLevel) level, e, name);
                           e.fieldName = name;
                           e.sync();
                         }
@@ -254,7 +256,7 @@ public final class FieldControls {
                             player,
                             2,
                             new CompoundTag(),
-                            "Emitter unavailable. Stay nearby or hold a Field Tuner.");
+                            "Emitter unavailable. Stay nearby or carry or equip a Field Tuner.");
                         return;
                       }
                       if (!editable(seed, player)) {
@@ -262,12 +264,11 @@ public final class FieldControls {
                             player,
                             2,
                             new CompoundTag(),
-                            "Access denied: this emitter belongs to another player.");
+                            "Access denied. Ask the field owner for management access.");
                         return;
                       }
                       var validated = ControlSettings.load(p.settings);
-                      String error = validate(validated.barrier);
-                      if (error == null) error = validate(validated.sensor);
+                      String error = validate(validated);
                       if (error != null) {
                         reply(player, 2, new CompoundTag(), error);
                         return;
@@ -290,6 +291,7 @@ public final class FieldControls {
                       for (var e :
                           p.network ? FieldNetwork.configurable(seed) : java.util.List.of(seed)) {
                         if (!editable(e, player)) continue;
+                        if(e.isTower() && (e.controls.sphereRadius!=validated.sphereRadius || e.controls.dome!=validated.dome)) e.transition=level.getGameTime();
                         e.controls = ControlSettings.load(p.settings);
                         e.color = p.color & 0xffffff;
                         e.enabled = p.enabled;
@@ -307,7 +309,24 @@ public final class FieldControls {
                     }));
   }
 
+  public static String validate(ControlSettings settings) {
+    if (!Float.isFinite(settings.damageAmount) || settings.damageAmount < 0 || settings.damageAmount > 1000)
+      return "Damage must be a number from 0 to 1000 HP (2 HP = 1 heart).";
+    for(var filter:settings.filters()) { String error=validate(filter);if(error!=null)return error; }
+    return null;
+  }
+
   public static String validate(EntityFilter f) {
+    if (f.mobMode < 0 || f.mobMode > 2 || f.itemMode < 0 || f.itemMode > 2
+        || f.mobList.size() > EntityFilter.MAX_TYPES || f.itemList.size() > EntityFilter.MAX_TYPES)
+      return "Mob and item lists support at most 64 entries each.";
+    for (String value : f.mobList) { String error = validateTypeEntry(value, false); if (error != null) return error; }
+    for (String value : f.itemList) { String error = validateTypeEntry(value, true); if (error != null) return error; }
+    if(f.accessGroups.size()>64 || f.accessGroups.stream().anyMatch(g->!BadgeAccess.validGroup(g))) return "Use up to 64 group names: lowercase letters, numbers, spaces, underscores or hyphens.";
+    if (f.playerMode < 0 || f.playerMode > 2 || f.playerList.size() > EntityFilter.MAX_PLAYERS)
+      return "Player lists support at most 64 entries.";
+    if (f.playerList.values().stream().anyMatch(name -> !name.isEmpty() && !name.matches("[A-Za-z0-9_]{1,16}")))
+      return "Player names must be Minecraft account names, not display nicknames.";
     for (String value : java.util.List.of(f.entityType, f.itemType))
       if (!value.isEmpty()
           && net.minecraft.resources.ResourceLocation.tryParse(
@@ -322,17 +341,29 @@ public final class FieldControls {
     if (!f.entityType.isEmpty()
         && !f.entityType.startsWith("#")
         && !net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.containsKey(
-            new net.minecraft.resources.ResourceLocation(f.entityType)))
+            net.minecraft.resources.ResourceLocation.parse(f.entityType)))
       return "Unknown entity ID: " + f.entityType;
     if (!f.itemType.isEmpty()
         && !f.itemType.startsWith("#")
         && !net.minecraft.core.registries.BuiltInRegistries.ITEM.containsKey(
-            new net.minecraft.resources.ResourceLocation(f.itemType)))
+            net.minecraft.resources.ResourceLocation.parse(f.itemType)))
       return "Unknown item ID: " + f.itemType;
     return null;
   }
 
+  public static String validateTypeEntry(String value, boolean item) {
+    boolean tag = value.startsWith("#");
+    var id = net.minecraft.resources.ResourceLocation.tryParse(tag ? value.substring(1) : value);
+    if (value.length() > 128 || id == null) return "Use a registry ID or #tag, such as minecraft:pig or #minecraft:logs.";
+    if (!tag && !(item ? net.minecraft.core.registries.BuiltInRegistries.ITEM.containsKey(id)
+        : net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.containsKey(id)))
+      return "Unknown " + (item ? "item" : "entity") + " ID: " + value;
+    if (!tag && !item && (id.toString().equals("minecraft:player")))
+      return "Use the player list for players. This list accepts mob types and entity-type tags.";
+    return null;
+  }
+
   public static boolean editable(EmitterEntity e, net.minecraft.world.entity.player.Player player) {
-    return e.owner == null || e.owner.equals(player.getUUID()) || player.hasPermissions(2);
+    return ManagementAccess.editable(e,player);
   }
 }

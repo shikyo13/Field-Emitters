@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.1.0
+
+- Projection towers create hollow spherical fields or domes. Domes reach four blocks below their base to meet nearby terrain. Surface rails form bridges level with adjacent full blocks.
+- Multiple contacts produce simultaneous impact ripples. Intersections brighten on walls and bridges.
+- Six field formation animations, including plasma dissolve, work independently of the selected field texture. Added visual styles, color presets and sound controls.
+- Adjustable contact damage with directional filtering and fizzle effects.
+- Separate directional rules and allow/block lists for players, mobs and items. Compatible recipe browsers can drag items and spawn eggs into filters.
+- Private networks by default, invited managers and optional public management. Passage badges and access groups remain separate from management permissions.
+- Access badges, a badge holder and a tuner keybind, with optional wearable-slot integration where supported.
+- Inventory checkpoints can detect contraband, deny passage, drop matching items on the entry side, or transfer them into adjacent storage. Overflow dropping is optional.
+- Reorganized tuner controls with immediate updates, clearer filter explanations and scaling for smaller windows. Revoked managers lose access to open controls immediately.
+- ZeroMods Core is bundled. No separate Core download is needed.
+
 ## 1.0.0
 
 First release for Minecraft 1.21.1 on NeoForge.

@@ -14,6 +14,10 @@ The showcase combines studio views of the shipped models with gameplay captures.
 |---|---|
 | ![Four posts around a stepped hillside](docs/images/perimeter-day.png) | ![Rails sealing a doorway, a shaft and a walkway](docs/images/rails-doorway.png) |
 
+## New in 1.1.0
+
+Projection towers add hollow spheres and domes, and horizontal rails make walkable bridges. Choose the formation animation separately from the field texture, configure contact damage, issue passage badges, invite network managers, or set up an inventory checkpoint that drops or stores contraband. The tuner groups these controls into dedicated pages and applies changes immediately.
+
 ## Features
 
 - Emitter posts link to other posts up to 20 blocks away in the four cardinal directions and project a field that climbs and descends with the terrain.
@@ -50,7 +54,7 @@ With default settings a running field consumes 2 FE per projected block each tic
 | 1.20.1 | Forge 47.4.10 or later in the 47 series | 17 |
 | 1.20.1 | Fabric Loader 0.16.14 or later | 17 |
 
-Install the mod on both the server and clients. An energy source from another mod is needed; Field Emitters does not generate power or keep chunks loaded. Use the matching Minecraft and loader file. Fabric requires Fabric API and Forge Config API Port; Team Reborn Energy is bundled.
+Install Field Emitters on both the server and clients. **ZeroMods Core is bundled; no separate Core download is needed.** An energy source from another mod is needed; Field Emitters does not generate power or keep chunks loaded. Use the matching Minecraft and loader file. Fabric requires Fabric API and Forge Config API Port; Team Reborn Energy is bundled.
 
 ## Build
 
@@ -60,7 +64,7 @@ Use JDK 21 for 1.21.1 or JDK 17 for 1.20.1, and the included Gradle wrapper:
 ./gradlew build
 ```
 
-The JAR is written to `build/libs/`. The NeoForge source is on `main`; ports use `mc/1.21.1-forge`, `mc/1.21.1-fabric`, `mc/1.20.1-forge` and `mc/1.20.1-fabric`. Recipes, loot tables and tags are committed under `src/generated/resources`. The 1.21.1 Forge/NeoForge branches regenerate them with `./gradlew runData`; other branches retain their version-specific converted data.
+The source build expects a sibling `ZeroMods-Core` checkout. For Fabric, first build its matching adapter from that checkout with `./gradlew :fabric-1.21.1:build` or `./gradlew :fabric-1.20.1:build`, then build Field Emitters. The JAR is written to `build/libs/`. The NeoForge source is on `main`; ports use `mc/1.21.1-forge`, `mc/1.21.1-fabric`, `mc/1.20.1-forge` and `mc/1.20.1-fabric`. Recipes, loot tables and tags are committed under `src/generated/resources`. The 1.21.1 Forge/NeoForge branches regenerate them with `./gradlew runData`; other branches retain their version-specific converted data.
 
 ## Contributing and license
 

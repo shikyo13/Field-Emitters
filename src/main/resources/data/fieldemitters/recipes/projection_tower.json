@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " E ",
+    "ERE",
+    " N "
+  ],
+  "key": {
+    "E": {
+      "item": "fieldemitters:field_emitter"
+    },
+    "R": {
+      "item": "minecraft:redstone_block"
+    },
+    "N": {
+      "item": "minecraft:netherite_ingot"
+    }
+  },
+  "result": {
+    "count": 1,
+    "item": "fieldemitters:projection_tower"
+  }
+}

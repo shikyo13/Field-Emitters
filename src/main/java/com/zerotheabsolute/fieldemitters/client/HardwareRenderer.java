@@ -25,7 +25,7 @@ final class HardwareRenderer {
     float open = charge * charge * (3 - 2 * charge);
     for (int side = 0; side < 4; side++) {
       pose.pushPose();
-      pose.translate(.5, 4.55, .5);
+      pose.translate(.5, e.isTower() ? com.zerotheabsolute.fieldemitters.TowerBlock.HEIGHT - .45 : 4.55, .5);
       pose.mulPose(Axis.YP.rotationDegrees(side * 90));
       pose.translate(0, 0, .13 + open * .09);
       pose.mulPose(Axis.XP.rotationDegrees(-open * 24));

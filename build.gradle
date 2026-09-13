@@ -49,3 +49,27 @@ sourceSets.main.resources.srcDir generateModMetadata
 
 tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }
 jar { includeEmptyDirs = false; exclude '.cache/**'; from('LICENSE') { into 'META-INF' } }
+
+repositories { maven { url = 'https://maven.blamejared.com/' } }
+dependencies {
+ implementation 'com.zeromods:zeromods-core-forge-1.20.1:0.1.0'
+ jarJar('com.zeromods:zeromods-core-forge-1.20.1') {
+    version {
+        strictly '[0.1.0,0.2.0)'
+        prefer '0.1.0'
+    }
+}
+ compileOnly 'mezz.jei:jei-1.20.1-common-api:15.20.0.129'
+}
+
+repositories { maven { url = 'https://maven.theillusivec4.top/' } }
+dependencies { compileOnly 'top.theillusivec4.curios:curios-forge:5.14.1+1.20.1:api' }
+
+repositories { maven { url = 'https://maven.terraformersmc.com/releases/' } }
+dependencies { compileOnly 'dev.emi:emi-forge:1.1.24+1.20.1' }
+
+// Nested mods must use production SRG mappings, not the development classpath.
+configurations.jarJar.attributes {
+    attribute(net.neoforged.moddevgradle.legacyforge.internal.MinecraftMappings.ATTRIBUTE,
+            objects.named(net.neoforged.moddevgradle.legacyforge.internal.MinecraftMappings, 'srg'))
+}
