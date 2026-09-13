@@ -163,14 +163,12 @@ public final class FieldNetwork {
       if (seen.contains(seed.getBlockPos())) continue;
       var network = connected(seed);
       network.forEach(e -> seen.add(e.getBlockPos()));
-      boolean redstone = network.stream().anyMatch(e -> e.enabled && input(l, e));
       long demand = network.stream().mapToLong(e -> e.demand).sum();
       long stored =
           network.stream()
               .filter(e -> e.enabled)
               .mapToLong(e -> e.energy.extractEnergy(Integer.MAX_VALUE, true))
               .sum();
-      boolean demo = FieldConfig.DEMO_POWER.get() && redstone;
       boolean allowed =
           network.stream()
               .allMatch(
@@ -182,8 +180,8 @@ public final class FieldNetwork {
                   e ->
                       e.enabled
                           && e.links.stream().anyMatch(link -> link.rail() || link.length() > 1));
-      boolean on = hasField && allowed && (demo || stored >= demand);
-      if (on && !demo) {
+      boolean on = hasField && allowed && stored >= demand;
+      if (on) {
         long remaining = demand;
         for (var e : network)
           if (e.enabled) {

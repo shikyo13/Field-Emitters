@@ -551,7 +551,6 @@ public final class ControlScreen extends FittedScreen {
           emitter.powered
               ? "Field running"
               : emitter.enabled ? "Waiting for energy or redstone input" : "Field switched off";
-      if (FieldConfig.DEMO_POWER.get()) status += " (demo power enabled)";
       g.drawString(
           font, font.plainSubstrByWidth(status, 380), left + 12, top + 44, 0x77FFBD, false);
       g.drawString(

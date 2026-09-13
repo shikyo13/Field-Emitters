@@ -1,6 +1,5 @@
 plugins {
     id 'java-library'
-    id 'maven-publish'
     id 'idea'
     id 'net.neoforged.moddev.legacyforge' version '2.0.141'
 }
@@ -50,9 +49,3 @@ sourceSets.main.resources.srcDir generateModMetadata
 
 tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }
 jar { includeEmptyDirs = false; exclude '.cache/**'; from('LICENSE') { into 'META-INF' } }
-if (providers.gradleProperty('extraMods').isPresent()) {
- dependencies { runtimeOnly files(providers.gradleProperty('extraMods').get().split(',')) }
-}
-
-// Isolated localhost server validation; normal server launches retain their defaults.
-if (providers.gradleProperty('qaPort').isPresent()) { legacyForge.runs.server { programArguments.addAll '--port', providers.gradleProperty('qaPort').get() } }
