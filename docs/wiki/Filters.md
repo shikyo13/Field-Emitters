@@ -34,3 +34,7 @@ The direction checkboxes choose the movement directions the field blocks. *To So
 ## Per-link rules
 
 A perimeter can use different rules on different sides. Select a link on the Connections tab and change its Blocking and Detection filters; the defaults still apply to the other links. See [Controls and the tuner](Controls.md).
+
+## Development build: multiple types
+
+The unreleased build adds independent mob and item whitelist/blacklist screens with inventory and JEI/EMI drag-and-drop boxes. See [Mob and item lists](Type-lists.md) for their interaction with age, direction and existing filters.

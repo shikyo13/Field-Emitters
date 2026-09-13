@@ -56,8 +56,8 @@ final class SpherePlasma {
     if (mask <= 0) return;
     start = raised(start);
     end = raised(end);
-    SphereRenderer.ray(v, m, start, end, e.controls.particleColor, .065f, .08f * opacity * mask);
-    SphereRenderer.ray(v, m, start, end, e.controls.particleColor, .014f, .5f * opacity * mask);
+    SphereRenderer.ray(v, m, start, end, e.controls.accentColor(e.color), .065f, .08f * opacity * mask);
+    SphereRenderer.ray(v, m, start, end, e.controls.accentColor(e.color), .014f, .5f * opacity * mask);
   }
 
   private static float noise(Vec3 p, float time) {

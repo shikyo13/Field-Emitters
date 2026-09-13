@@ -1,6 +1,9 @@
 package com.zerotheabsolute.fieldemitters.client;
 
 import com.zeromods.core.animation.EnergySurface;
+import com.zeromods.core.animation.ImpactWaves;
+import net.minecraft.world.phys.Vec3;
+import java.util.ArrayList;
 import com.zeromods.core.animation.HexFieldPattern;
 import com.zeromods.core.animation.PlanarProjection;
 import com.zeromods.core.animation.PlasmaSurface;
@@ -11,7 +14,23 @@ import com.zerotheabsolute.fieldemitters.EmitterEntity;
 final class FieldPattern {
   interface Stroke extends HexFieldPattern.Stroke {}
 
+  static ImpactWaves waves(EmitterEntity emitter, EmitterEntity.Link link,
+      Vec3 uAxis, Vec3 vAxis, float partial) {
+    var result = new ArrayList<ImpactWaves.Wave>();
+    double plane = link.normalCoordinate(link.origin(emitter.getBlockPos()));
+    double now = emitter.getLevel().getGameTime() + partial;
+    for (var wave : emitter.impactWaves) {
+      float age = (float) (now - wave.time());
+      if (age < 0 || age >= 32 || Math.abs(link.normalCoordinate(wave.position()) - plane) >= .15) continue;
+      var local = wave.position().subtract(Vec3.atLowerCornerOf(emitter.root));
+      result.add(new ImpactWaves.Wave((float) local.dot(uAxis),
+          (float) local.dot(vAxis), age));
+    }
+    return result.isEmpty() ? ImpactWaves.NONE : new ImpactWaves(result);
+  }
+
   static float progress(EmitterEntity e, float age) {
+    if (!e.powered) return com.zerotheabsolute.fieldemitters.FieldShutdown.remaining(age);
     if (projected(e))
       return Math.max(
           0, Math.min(1, e.powered ? age / PlanarProjection.DURATION_TICKS : 1 - age / 25));
@@ -30,9 +49,7 @@ final class FieldPattern {
       float bottom,
       float top,
       float time,
-      float impactAge,
-      float hitU,
-      float hitV,
+      ImpactWaves waves,
       int color,
       ControlSettings settings,
       float progress,
@@ -49,7 +66,7 @@ final class FieldPattern {
           bottom,
           top,
           time,
-          settings.particleColor,
+          settings.accentColor(color),
           (a, c, b, d, tint, ac, bc, bd, ad) ->
               patch.draw(
                   a,
@@ -67,11 +84,9 @@ final class FieldPattern {
         bottom,
         top,
         time,
-        impactAge,
-        hitU,
-        hitV,
+        waves,
         color,
-        settings.particleColor,
+        settings.accentColor(color),
         settings.pattern,
         0,
         1,
@@ -90,9 +105,7 @@ final class FieldPattern {
       float bottom,
       float top,
       float time,
-      float impactAge,
-      float impactU,
-      float impactV,
+      ImpactWaves waves,
       int color,
       ControlSettings settings,
       float progress,
@@ -103,14 +116,13 @@ final class FieldPattern {
         bottom,
         top,
         time,
-        impactAge,
-        impactU,
-        impactV,
+        waves,
         color,
-        settings.particleColor,
+        settings.accentColor(color),
         settings.pattern,
         settings.formation,
         progress,
+        true,
         stroke);
   }
 }

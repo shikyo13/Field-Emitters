@@ -21,8 +21,9 @@ public final class ControlScreen extends FittedScreen {
   private String notice = "Changes apply automatically.";
   private long textDue;
   private String lastSent = "";
+  private static final int CONTENT_WIDTH = 404, NAV_WIDTH = 106, PANEL_HEIGHT = 306;
   private static final String[] TABS = {
-    "Power", "Block", "Detect", "Damage", "Visuals", "Sounds", "Links"
+    "Overview", "Blocking", "Sensor", "Damage", "Appearance", "Sounds", "Connections", "Access"
   };
 
   public ControlScreen(EmitterEntity e) {
@@ -46,21 +47,25 @@ public final class ControlScreen extends FittedScreen {
     rebuildWidgets();
   }
 
+  private int panelHeight() {
+    return PANEL_HEIGHT + (tab == 4 && draft.customAccent ? 57 : 0);
+  }
+
   protected void init() {
-    fit(404, 306);
+    fit(CONTENT_WIDTH + NAV_WIDTH, panelHeight());
     if (selectedLink >= emitter.links.size()) selectedLink = -1;
-    left = (width - 404) / 2;
-    top = (height - 306) / 2;
+    left = (width - CONTENT_WIDTH - NAV_WIDTH) / 2 + NAV_WIDTH;
+    top = (height - panelHeight()) / 2;
     row = top + 44;
     filterEditable = true;
     for (int i = 0; i < TABS.length; i++) {
       final int index = i;
       addRenderableWidget(
           new FieldButton(
-              left + i * 58,
-              top + 20,
-              56,
-              18,
+              left - NAV_WIDTH + 8,
+              top + 44 + i * 27,
+              NAV_WIDTH - 16,
+              23,
               Component.literal(TABS[i]),
               b -> {
                 applyPending();
@@ -93,20 +98,12 @@ public final class ControlScreen extends FittedScreen {
             draft.inputFace = nextFace(draft.inputFace, draft.outputFace);
             redraw();
           });
-      button("Network management access", () -> { applyPending(); minecraft.setScreen(new ManagementScreen(this,emitter.getBlockPos())); });
-      button("Access badges", () -> { applyPending(); minecraft.setScreen(new AccessScreen(this,emitter.getBlockPos(),null,this::applyChanges)); });
-      button("Inventory checkpoint", () -> { applyPending(); minecraft.setScreen(new CheckpointScreen(this,emitter.getBlockPos(),draft.checkpoint,this::applyChanges)); });
-      button(
-          "Reset crossing count now",
-          () -> {
-            reset = true;
-            applyChanges();
-          });
+
     }
     if (tab >= 1 && tab <= 3) {
       var shared = tab == 1 ? draft.barrier : tab == 2 ? draft.sensor : draft.damage;
       var rules = tab == 1 ? draft.barrierDirections : tab == 2 ? draft.sensorDirections : draft.damageDirections;
-      small("Rules for: " + (filterDirection == null ? "Both directions" : travelName(filterDirection)),
+      small("Rules for: " + (filterDirection == null ? "All directions" : travelName(filterDirection)),
           left + 12,row,220,() -> {
             applyPending();
             filterDirection = filterDirection == null ? Direction.DOWN : filterDirection == Direction.EAST ? null : Direction.values()[filterDirection.ordinal()+1];
@@ -242,6 +239,19 @@ public final class ControlScreen extends FittedScreen {
         applyPending();
         minecraft.setScreen(new PlayerListScreen(this, emitter.getBlockPos(), f, tab, this::applyChanges));
       });
+      if (tab == 2) {
+        row += 24;
+        small("Output side: " + sideName(draft.outputFace), left + 12, row, 185, () -> {
+          draft.outputFace = nextFace(draft.outputFace, draft.inputFace); redraw();
+        });
+        small("Pulse length: " + String.format(Locale.ROOT, "%.1f seconds", draft.pulseTicks / 20.0),
+            left + 207, row, 185, () -> {
+              draft.pulseTicks = draft.pulseTicks >= 20 ? 2 : draft.pulseTicks + 2; redraw();
+            });
+        row += 20;
+        button("Reset crossing count now", () -> { reset = true; applyChanges(); });
+      }
+
     }
     if (tab == 4) {
       colorPresets("Field color presets", color, c -> color = c);
@@ -260,15 +270,20 @@ public final class ControlScreen extends FittedScreen {
           row,
           380);
       row += 29;
-      colorPresets("Particle color presets", draft.particleColor, c -> draft.particleColor = c);
-      field("Particle color (6-digit hex)",String.format("%06X",draft.particleColor),v -> {
-        if (v.matches("#?[0-9a-fA-F]{6}")) draft.particleColor=Integer.parseInt(v.replace("#",""),16);
-        else notice="Invalid particle color; previous color retained.";
-      },left+12,row,185);
-      small("Purple / magenta preset",left+207,row+8,185,() -> {
-        color=0x9933FF;draft.particleColor=0xFF33CC;draft.pattern=2;redraw();
+      button("Effect color: " + (draft.customAccent ? "Custom accent" : "Matches field"), () -> {
+        draft.customAccent = !draft.customAccent; redraw();
       });
-      row+=29;
+      if (draft.customAccent) {
+        colorPresets("Effect color presets", draft.particleColor, c -> draft.particleColor = c);
+        field("Effect color (6-digit hex)",String.format("%06X",draft.particleColor),v -> {
+          if (v.matches("#?[0-9a-fA-F]{6}")) draft.particleColor=Integer.parseInt(v.replace("#",""),16);
+          else notice="Invalid effect color; previous color retained.";
+        },left+12,row,380);
+        row+=29;
+      }
+      button("Preset: Purple field / magenta effects", () -> {
+        color=0x9933FF;draft.particleColor=0xFF33CC;draft.customAccent=true;draft.pattern=2;redraw();
+      });
       button("Pattern: " + new String[]{"Hex lattice","Smooth glow","Drifting pixels","Plasma"}[draft.pattern],() -> {
         draft.pattern=(draft.pattern+1)%4;redraw();
       });
@@ -351,19 +366,6 @@ public final class ControlScreen extends FittedScreen {
             network = !network;
             rebuildWidgets();
           });
-      button(
-          "Send redstone signal from: " + sideName(draft.outputFace),
-          () -> {
-            draft.outputFace = nextFace(draft.outputFace, draft.inputFace);
-            redraw();
-          });
-      button(
-          "Signal pulse length: "
-              + String.format(Locale.ROOT, "%.1f seconds", draft.pulseTicks / 20.0),
-          () -> {
-            draft.pulseTicks = draft.pulseTicks >= 20 ? 2 : draft.pulseTicks + 2;
-            redraw();
-          });
       if (emitter.isRail())
         button(
             "Field shape: " + planeName(),
@@ -381,10 +383,29 @@ public final class ControlScreen extends FittedScreen {
         });
       row += 8;
     }
+    if (tab == 7) {
+      labels.add(new Label("Who can change network settings?", left + 12, row));
+      row += 18;
+      button("Managers and public access", () -> {
+        applyPending(); minecraft.setScreen(new ManagementScreen(this, emitter.getBlockPos()));
+      });
+      row += 24;
+      labels.add(new Label("Who can pass using an access badge?", left + 12, row));
+      row += 18;
+      button("Issue and revoke badges", () -> {
+        applyPending(); minecraft.setScreen(new AccessScreen(this, emitter.getBlockPos(), null, this::applyChanges));
+      });
+      row += 24;
+      labels.add(new Label("Inspect items carried through the field", left + 12, row));
+      row += 18;
+      button("Inventory checkpoint", () -> {
+        applyPending(); minecraft.setScreen(new CheckpointScreen(this, emitter.getBlockPos(), draft.checkpoint, this::applyChanges));
+      });
+    }
     addRenderableWidget(
             new FieldButton(
                 left + 242,
-                top + 283,
+                top + panelHeight() - 23,
                 72,
                 18,
                 Component.literal("Fields"),
@@ -398,7 +419,7 @@ public final class ControlScreen extends FittedScreen {
                 Component.literal("Manage loaded emitters remotely. Hold a Field Tuner.")));
     addRenderableWidget(
             new FieldButton(
-                left + 320, top + 283, 72, 18, Component.literal("Close"), b -> onClose(), false))
+                left + 320, top + panelHeight() - 23, 72, 18, Component.literal("Close"), b -> onClose(), false))
         .setTooltip(
             Tooltip.create(
                 Component.literal("Close this menu. Valid changes have already been applied.")));
@@ -406,6 +427,11 @@ public final class ControlScreen extends FittedScreen {
 
   @Override
   public void tick() {
+    if (!canConfigure()) {
+      textDue = 0;
+      minecraft.setScreen(null);
+      return;
+    }
     if (textDue != 0 && System.currentTimeMillis() >= textDue) applyPending();
   }
 
@@ -421,8 +447,14 @@ public final class ControlScreen extends FittedScreen {
     super.onClose();
   }
 
+  boolean canConfigure() {
+    return minecraft.player != null && !emitter.isRemoved()
+        && FieldControls.editable(emitter, minecraft.player);
+  }
+
   private void applyChanges() {
     textDue = 0;
+    if (!canConfigure()) return;
     String error = FieldControls.validate(draft);
     if (error != null) {
       notice = error;
@@ -534,6 +566,12 @@ public final class ControlScreen extends FittedScreen {
     row += 20;
   }
 
+  private static boolean sensorSetting(String text) {
+    return text.startsWith("Signal:") || text.startsWith("Items:")
+        || text.startsWith("Output side:") || text.startsWith("Pulse length:")
+        || text.startsWith("Reset crossing");
+  }
+
   private void small(String text, int x, int y, int w, Runnable action) {
     var button =
         new FieldButton(
@@ -548,9 +586,10 @@ public final class ControlScreen extends FittedScreen {
                 || tab == 5
                 || tab == 6
                 || tab == 3 && text.startsWith("Fizzle particles:")
-                || tab == 2 && (text.startsWith("Signal:") || text.startsWith("Items:")));
+                || tab == 7 && text.equals("Inventory checkpoint")
+                || tab == 2 && sensorSetting(text));
     boolean inherited = !filterEditable && (tab >= 1 && tab <= 3)
-        && !text.startsWith("Signal:") && !text.startsWith("Items:") && !text.startsWith("Damage:")
+        && !sensorSetting(text) && !text.startsWith("Damage:")
         && !text.startsWith("Hit interval:") && !text.startsWith("Fizzle particles:");
     button.active = !fieldOnly && !inherited;
     button.setTooltip(
@@ -642,11 +681,13 @@ public final class ControlScreen extends FittedScreen {
     mx = fitMouse(mx);
     my = fitMouse(my);
     g.fill(0, 0, width, height, 0xB0101723);
-    g.fill(left, top, left + 404, top + 306, 0xFF111D2C);
+    g.fill(left - NAV_WIDTH, top, left + CONTENT_WIDTH, top + panelHeight(), 0xFF111D2C);
+    g.fill(left - NAV_WIDTH + 4, top + 40, left - 4, top + panelHeight() - 28, 0xFF0E1926);
+    g.drawString(font, "Controls", left - NAV_WIDTH + 12, top + 26, 0x92A9BE, false);
     g.fill(left + 1, top + 2, left + 403, top + 20, 0xFF1B2D3E);
-    g.fill(left + 8, top + 40, left + 396, top + 278, 0xFF0E1926);
-    g.fill(left + 8, top + 280, left + 396, top + 281, 0xFF354D63);
-    g.fill(left, top, left + 404, top + 2, 0xFF000000 | color);
+    g.fill(left + 8, top + 40, left + 396, top + panelHeight() - 28, 0xFF0E1926);
+    g.fill(left + 8, top + panelHeight() - 26, left + 396, top + panelHeight() - 25, 0xFF354D63);
+    g.fill(left - NAV_WIDTH, top, left + 404, top + 2, 0xFF000000 | color);
     g.drawString(
         font,
         selectedLink < 0 ? title : Component.literal("EDITING ONE FIELD: BLOCK / DETECT / DAMAGE"),
@@ -654,6 +695,10 @@ public final class ControlScreen extends FittedScreen {
         top + 7,
         0xDBF8FF,
         false);
+    String scope = tab == 7 ? "Badge access does not grant management access" : selectedLink >= 0
+        ? "This connection only: " + emitter.links.get(selectedLink).target().toShortString()
+        : network ? "Changes affect your connected emitters" : "Changes affect this emitter only";
+    g.drawString(font, scope, left + 12, top + 26, 0x92A9BE, false);
     if (tab == 0) {
       String status =
           emitter.powered
@@ -732,7 +777,7 @@ public final class ControlScreen extends FittedScreen {
     }
     for (var l : labels) g.drawString(font, l.text, l.x, l.y, 0x92A9BE, false);
 
-    g.drawString(font, font.plainSubstrByWidth(notice, 218), left + 12, top + 288, 0x92A9BE, false);
+    g.drawString(font, font.plainSubstrByWidth(notice, 218), left + 12, top + panelHeight() - 18, 0x92A9BE, false);
     super.render(g, mx, my, partial);
     g.pose().popPose();
   }

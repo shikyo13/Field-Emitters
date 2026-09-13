@@ -30,8 +30,8 @@ final class ControlHelp {
               + " ignore custom labels.";
       case "Damage per hit (HP; 2 = 1 heart)" ->
           "Enter 0 to 1000 health points per successful hit. 2 HP equals one heart. Damage is off by default. Vanilla invulnerability, damage immunity and protection mods still apply. Nonliving entities respond only if Minecraft gives them damage behavior; this never forcibly deletes an entity.";
-      case "Particle color (6-digit hex)" ->
-          "Color of drifting pixels, impact rings and fizzle bursts, independent of the field color. Enter six hex digits, such as FF33CC for magenta.";
+      case "Effect color (6-digit hex)" ->
+          "Custom color for impact effects, drifting pixels, plasma veins and fizzle bursts. Used only while Effect color is set to Custom accent. Enter six hex digits, such as FF33CC for magenta.";
       case "Custom color (6-digit hex code)" ->
           "Enter a six-digit color code, for example 52E5FF for cyan. You can also choose a color"
               + " preset above. Valid color changes apply automatically.";
@@ -41,6 +41,13 @@ final class ControlHelp {
 
   static String button(String raw, int tab) {
     String text = raw.replaceFirst("^[✓○] ", "");
+    if (text.startsWith("Effect color:")) return "Matches field keeps impacts, pixels, plasma veins and fizzle effects in the field's color. Custom accent lets you choose their color separately below. Formation beams keep the field color.";
+    if (text.equals("Preset: Purple field / magenta effects")) return "Sets a purple field with drifting pixels and explicitly enables a magenta custom accent.";
+    if (text.equals("Managers and public access")) return "Choose who can change this connected network's settings. Management permission is separate from permission to pass through the field.";
+    if (text.equals("Issue and revoke badges")) return "Issue badges for access groups and revoke them when needed. Add an access group to a player filter to use its badges. A badge does not grant management permission.";
+    if (text.equals("Inventory checkpoint")) return "Inspect carried inventory using a separate player and item filter. Detect contraband, deny passage, drop it, or transfer it to adjacent storage. Badge and management permissions remain separate.";
+    if (text.startsWith("Output side:")) return "Emitter face that sends the sensor's redstone signal. The input face is excluded. This is a physical block face, not an entity's travel direction.";
+    if (text.startsWith("Pulse length:")) return "How long each crossing pulse stays on. A short off interval separates queued pulses so counters can distinguish them. Used with Pulse on crossing.";
     if (text.startsWith("Mob list")) return "Manage up to 64 mob IDs or entity-type tags using whitelist/blacklist modes. Drag spawn eggs into the boxes or type IDs. Age, individual UUID and custom label narrow the listed selection. Players and dropped items have separate lists. Rules belong to the selected travel direction.";
     if (text.startsWith("Item list")) return "Manage up to 64 dropped-item IDs or item tags. Drag item icons from your inventory, JEI or EMI into the boxes without consuming anything. Whitelist allows listed drops; blacklist blocks listed drops. Detection and damage have their own lists. Item lists ignore mob age and general inversion.";
     if (text.startsWith("Player list")) return "Manage up to 64 players by Minecraft account name or UUID. Choose a whitelist or blacklist for blocking, or listed/unlisted players for detection and damage. A list changes players only, respects this direction and Skip owner, and replaces the other filter details for players.";
@@ -57,8 +64,8 @@ final class ControlHelp {
     if (text.startsWith("All field sounds:")) return "Master switch for this emitter's activation, deactivation, impact and fizzle sounds. Minecraft's Blocks volume also controls these effects. No looping background hum.";
     if (text.startsWith("Power on / off sounds:") || text.startsWith("Impact sounds:") || text.startsWith("Damage sounds:")) return "Toggle this sound category independently. The master All field sounds switch must also be on.";
     if (text.startsWith("Sound palette:")) return "Choose short vanilla sound effects: Soft sizzle, Crystal or Electric. No new music or continuous sound loop is added.";
-    if (text.startsWith("Rules for:")) return "Choose the travel direction to edit. North → South means entering from the north and leaving to the south. Both directions edits the shared fallback; custom directional rules take priority. Blocking, detection and damage are independent.";
-    if (text.startsWith("Rule source:")) return "Shared uses the Both directions filter. Click to create a Custom copy for this travel direction, then edit it below. Click again to remove the override and use Shared. Changing shared rules does not change custom copies.";
+    if (text.startsWith("Rules for:")) return "Choose the travel direction to edit. North → South means entering from the north and leaving to the south. All directions edits the shared fallback; custom directional rules take priority. Blocking, detection and damage are independent.";
+    if (text.startsWith("Rule source:")) return "Shared uses the All directions filter. Click to create a Custom copy for this travel direction, then edit it below. Click again to remove the override and use Shared. Changing shared rules does not change custom copies.";
     if (text.equals("Hostile"))
       return FILTER
           + "Hostile selects entities Minecraft classifies as monsters, such as zombies and"
@@ -152,7 +159,7 @@ final class ControlHelp {
           + " off.";
     if (text.startsWith("Show forcefield:"))
       return "No hides the forcefield graphics only. Blocking, detection and damage continue while powered."
-          + " Use Field: Off on the Power tab to stop operation.";
+          + " Use Field: Off on the Overview tab to stop operation.";
     if (text.startsWith("Animate field pattern:"))
       return "Toggle the moving pattern on the field surface. This does not disable"
           + " projection/retraction or hardware animations.";

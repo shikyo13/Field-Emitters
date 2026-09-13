@@ -149,7 +149,7 @@ public final class TypeListScreen extends FittedScreen {
     int x=fitMouse(mx),y=fitMouse(my);beginFit(g);
     g.fill(left,top,left+404,top+306,0xFF0D1D2B);g.fill(left,top,left+404,top+2,0xFF53BBCB);
     g.drawString(font,(items?"ITEM":"MOB")+" LIST / "+new String[]{"","BLOCK","DETECT","DAMAGE","CONTRABAND"}[tab],left+12,top+12,0xFFE0F3FF,false);
-    g.drawString(font,items?"Dropped items only; players and mobs keep their own rules.":"Mobs only; age, UUID and label narrow the listed selection.",left+12,top+54,0xFFADBED0,false);
+    g.drawString(font,items?(tab==4?"Matching items carried by selected players are contraband.":"Dropped items only; players and mobs keep their own rules."):"Mobs only; age, UUID and label narrow the listed selection.",left+12,top+54,0xFFADBED0,false);
     g.drawString(font,"General filter: single type or #tag",left+12,top+66,0xFFADBED0,false);
     g.drawString(font,"Add "+(items?"item":"mob")+" ID or #tag",left+12,top+96,0xFFADBED0,false);
     var list=new ArrayList<>(entries());String hovered=null;

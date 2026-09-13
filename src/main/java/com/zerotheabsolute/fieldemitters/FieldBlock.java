@@ -51,12 +51,17 @@ public final class FieldBlock extends BaseEntityBlock {
         || !(l.getBlockEntity(cell.source) instanceof EmitterEntity e)
         || !e.powered
         || ec.getEntity() == null) return Shapes.empty();
-    return collision(e, ec.getEntity(), p);
+    return collision(e, ec.getEntity(), p, c instanceof FieldCollisionContext local
+        ? local.center : ec.getEntity().getBoundingBox().getCenter());
   }
 
   public static VoxelShape collision(EmitterEntity e, Entity entity, BlockPos p) {
+    return entity == null ? Shapes.empty() : collision(e, entity, p, entity.getBoundingBox().getCenter());
+  }
+
+  public static VoxelShape collision(EmitterEntity e, Entity entity, BlockPos p, net.minecraft.world.phys.Vec3 center) {
     if (!e.powered || entity == null) return Shapes.empty();
-    if(e.isTower())return SphereField.collision(e,entity,p);
+    if(e.isTower())return SphereField.collision(e,entity,p,center);
     for (var link : e.links) {
       var settings = e.settings(link);
       int index =
@@ -71,22 +76,12 @@ public final class FieldBlock extends BaseEntityBlock {
           || p.getY() < expected.getY()
           || p.getY() >= expected.getY() + link.height()) continue;
       if (e.getLevel().getGameTime() - e.transition < e.controls.linkFormationTicks(index)) continue;
-      double side =
-          link.normalCoordinate(
-                  entity
-                      .position()
-                      .add(
-                          0,
-                          link.normal() == net.minecraft.core.Direction.Axis.Y
-                              ? entity.getBbHeight() / 2
-                              : 0,
-                          0))
-              - link.normalCoordinate(net.minecraft.world.phys.Vec3.atCenterOf(p));
-      if (!settings.blocks(entity, e.owner, link.movement(side < 0))
-          && !FieldCheckpoint.blocks(e,settings,entity,link.movement(side < 0))) continue;
+      var movement = FieldContact.movement(e, link, entity, center);
+      if (!settings.blocks(entity, e.owner, movement)
+          && !FieldCheckpoint.blocks(e, settings, entity, movement)) continue;
       return switch (link.normal()) {
         case X -> Block.box(6.5, 0, 0, 9.5, 16, 16);
-        case Y -> Block.box(0, 7, 0, 16, 8, 16);
+        case Y -> Block.box(0, 15, 0, 16, 16, 16);
         case Z -> Block.box(0, 0, 6.5, 16, 16, 9.5);
       };
     }

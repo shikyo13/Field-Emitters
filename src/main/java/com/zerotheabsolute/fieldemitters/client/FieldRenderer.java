@@ -22,11 +22,7 @@ public final class FieldRenderer implements BlockEntityRenderer<EmitterEntity> {
   }
 
   public AABB getRenderBoundingBox(EmitterEntity e) {
-    return new AABB(e.getBlockPos())
-        .inflate(
-            e.isTower() ? SphereField.MAX_RADIUS + 1 : 21,
-            e.isTower() ? SphereField.MAX_RADIUS + 1 : 14,
-            e.isTower() ? SphereField.MAX_RADIUS + 1 : 21);
+    return e.renderBounds();
   }
 
   public void render(
@@ -40,7 +36,7 @@ public final class FieldRenderer implements BlockEntityRenderer<EmitterEntity> {
     if (e.isTower()) {
       float time = e.getLevel().getGameTime() + partial;
       float age = time - e.transition;
-      float charge = e.powered ? Mth.clamp(age / 12, 0, 1) : Mth.clamp(1 - age / 30, 0, 1);
+      float charge = e.powered ? Mth.clamp(age / 12, 0, 1) : FieldShutdown.remaining(age);
       HardwareRenderer.render(e, time, charge, pose, buffers, light);
       SphereRenderer.render(e, partial, pose, buffers);
       return;
@@ -52,7 +48,7 @@ public final class FieldRenderer implements BlockEntityRenderer<EmitterEntity> {
     }
     float time = e.getLevel().getGameTime() + partial;
     float age = time - e.transition;
-    float charge = e.powered ? Mth.clamp(age / 12, 0, 1) : Mth.clamp(1 - age / 30, 0, 1);
+    float charge = e.powered ? Mth.clamp(age / 12, 0, 1) : FieldShutdown.remaining(age);
     HardwareRenderer.render(e, time, charge, pose, buffers, light);
     FieldGuide.render(e, pose, buffers);
     var v = buffers.getBuffer(FieldRenderType.ENERGY);
@@ -137,7 +133,7 @@ public final class FieldRenderer implements BlockEntityRenderer<EmitterEntity> {
     if (!e.controls.animation) time = 0;
     for (var link : e.links) {
       float extent =
-          e.powered ? Math.min(link.length(), age / 2) : Math.max(0, link.length() - age / 2);
+          e.powered ? Math.min(link.length(), age / 2) : link.length() * FieldShutdown.remaining(age);
       if (e.controls.formation != 0) extent = link.length();
       if (extent <= .5f || FieldPattern.progress(e, age) <= 0) continue;
       for (int i = 0; i <= link.length(); i++) {
@@ -168,29 +164,19 @@ public final class FieldRenderer implements BlockEntityRenderer<EmitterEntity> {
               .014f,
               color,
               .60f);
-        float hitAge = (float) (e.getLevel().getGameTime() - e.impactTime) + partial;
         float originU =
-            link.dx() != 0 ? e.getBlockPos().getX() + .5f : e.getBlockPos().getZ() + .5f;
+            link.dx() != 0 ? (e.getBlockPos().getX() - e.root.getX()) + .5f : (e.getBlockPos().getZ() - e.root.getZ()) + .5f;
         float direction = link.dx() != 0 ? link.dx() : link.dz();
         float worldLeft = originU + Math.min(from * direction, to * direction);
         float worldRight = originU + Math.max(from * direction, to * direction);
-        float originY = e.getBlockPos().getY();
-        boolean hit =
-            hitAge >= 0
-                && hitAge < 32
-                && Math.abs(
-                        link.normalCoordinate(e.impact)
-                            - link.normalCoordinate(Vec3.atCenterOf(e.getBlockPos())))
-                    < .15;
+        float originY = e.getBlockPos().getY() - e.root.getY();
         FieldPattern.render(
             worldLeft,
             worldRight,
             floor + originY,
             top + originY,
             time,
-            hit ? hitAge : -1,
-            (float) (link.dx() != 0 ? e.impact.x : e.impact.z),
-            (float) e.impact.y,
+            FieldPattern.waves(e, link, link.dx() != 0 ? new Vec3(1, 0, 0) : new Vec3(0, 0, 1), new Vec3(0, 1, 0), partial),
             color,
             e.controls,
             FieldPattern.progress(e, age),
@@ -244,8 +230,8 @@ public final class FieldRenderer implements BlockEntityRenderer<EmitterEntity> {
       float time,
       float partial,
       float age) {
-    float originU = link.dx() != 0 ? e.getBlockPos().getX() + .5f : e.getBlockPos().getZ() + .5f;
-    float direction = link.dx() != 0 ? link.dx() : link.dz(), originY = e.getBlockPos().getY();
+    float originU = link.dx() != 0 ? (e.getBlockPos().getX() - e.root.getX()) + .5f : (e.getBlockPos().getZ() - e.root.getZ()) + .5f;
+    float direction = link.dx() != 0 ? link.dx() : link.dz(), originY = e.getBlockPos().getY() - e.root.getY();
     float left = originU + Math.min(from * direction, to * direction),
         right = originU + Math.max(from * direction, to * direction);
     var frame =
@@ -257,21 +243,13 @@ public final class FieldRenderer implements BlockEntityRenderer<EmitterEntity> {
             originU,
             top + originY - .25f,
             false);
-    float hitAge = (float) (e.getLevel().getGameTime() - e.impactTime) + partial;
-    boolean hit =
-        Math.abs(
-                link.normalCoordinate(e.impact)
-                    - link.normalCoordinate(Vec3.atCenterOf(e.getBlockPos())))
-            < .15;
     FieldPattern.project(
         left,
         right,
         floor + originY,
         top + originY,
         time,
-        hit ? hitAge : -1,
-        (float) (link.dx() != 0 ? e.impact.x : e.impact.z),
-        (float) e.impact.y,
+        FieldPattern.waves(e, link, link.dx() != 0 ? new Vec3(1, 0, 0) : new Vec3(0, 0, 1), new Vec3(0, 1, 0), partial),
         e.color,
         e.controls,
         FieldPattern.progress(e, age),

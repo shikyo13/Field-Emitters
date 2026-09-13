@@ -18,6 +18,7 @@ public final class FieldDamage {
 
   public static void tick(ServerLevel level, EmitterEntity e, long now) {
     if (!e.powered) return;
+    var space = FieldSpace.at(e);
     for (var link : e.links) {
       var settings = e.settings(link);
       if (!settings.damageEnabled || settings.damageAmount <= 0) continue;
@@ -32,7 +33,7 @@ public final class FieldDamage {
           a -> a.isAlive() && !a.isSpectator())) {
         long due = entity.getPersistentData().getLong(NEXT_HIT);
         if (due > now && due - now <= 200) continue;
-        var center = entity.getBoundingBox().getCenter();
+        var center = space.local(entity.getBoundingBox().getCenter());
         double u = (center.x - p.getX() - .5) * link.dx()
             + (center.y - p.getY() - .5) * link.dy()
             + (center.z - p.getZ() - .5) * link.dz();
@@ -42,16 +43,11 @@ public final class FieldDamage {
         var cell = link.cell(p, i, 0);
         var slab = switch (link.normal()) {
           case X -> new AABB(p.getX()+.3, cell.getY(), cell.getZ(), p.getX()+.7, cell.getY()+link.height(), cell.getZ()+1);
-          case Y -> new AABB(cell.getX(), p.getY()+.3, cell.getZ(), cell.getX()+1, p.getY()+.7, cell.getZ()+1);
+          case Y -> new AABB(cell.getX(), link.origin(p).y-.2, cell.getZ(), cell.getX()+1, link.origin(p).y+.2, cell.getZ()+1);
           case Z -> new AABB(cell.getX(), cell.getY(), p.getZ()+.3, cell.getX()+1, cell.getY()+link.height(), p.getZ()+.7);
         };
-        if (!slab.intersects(entity.getBoundingBox())) continue;
-        // Use the previous side when a moving entity has just crossed the plane.
-        var previous = center.add(entity.xo-entity.getX(), entity.yo-entity.getY(), entity.zo-entity.getZ());
-        double oldSide = link.normalCoordinate(previous) - link.normalCoordinate(Vec3.atCenterOf(p));
-        double side = Math.abs(oldSide) > .001 ? oldSide
-            : link.normalCoordinate(center) - link.normalCoordinate(Vec3.atCenterOf(p));
-        Direction direction = link.movement(side < 0);
+        if (!slab.intersects(space.local(entity.getBoundingBox()))) continue;
+        Direction direction = FieldContact.movement(e, link, entity, center);
         if (!settings.damages(entity, e.owner, direction)) continue;
         if (entity.hurt(level.damageSources().magic(), settings.damageAmount)) {
           entity.getPersistentData().putLong(NEXT_HIT, now + settings.damageInterval);
@@ -83,7 +79,7 @@ public final class FieldDamage {
     if (!e.controls.fizzleEffects) return;
     if (destroyed && entity instanceof LivingEntity)
       net.neoforged.neoforge.network.PacketDistributor.sendToPlayersNear(level,null,center.x,center.y,center.z,32,new FizzleNotice(entity.getId()));
-    int c = e.controls.particleColor;
+    int c = e.controls.accentColor(e.color);
     var dust = new DustParticleOptions(new Vector3f((c>>16&255)/255f,(c>>8&255)/255f,(c&255)/255f), .65f);
     // Three small bands trace the body on a lethal hit. At most 24 normal-distance particles per burst.
     int bands = destroyed ? 3 : 1;

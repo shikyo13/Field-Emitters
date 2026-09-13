@@ -20,6 +20,7 @@ public final class FieldSounds {
           : event == 2 ? SoundEvents.AMETHYST_BLOCK_RESONATE
           : event == 0 ? SoundEvents.BEACON_ACTIVATE : SoundEvents.BEACON_DEACTIVATE;
     };
+    if (event != 3) pos = FieldSpace.at(e).world(pos);
     level.playSound(null, pos.x, pos.y, pos.z, sound, SoundSource.BLOCKS,
         event == 3 ? .16f : .20f, event == 1 ? .85f : 1.6f);
   }

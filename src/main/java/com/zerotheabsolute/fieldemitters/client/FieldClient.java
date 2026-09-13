@@ -31,6 +31,13 @@ public final class FieldClient {
   public static void keys(net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent event) { event.register(TunerKeys.OPEN); }
 
   @SubscribeEvent
+  public static void shaders(net.neoforged.neoforge.client.event.RegisterShadersEvent event) throws java.io.IOException {
+    event.registerShader(new net.minecraft.client.renderer.ShaderInstance(event.getResourceProvider(),
+        net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("zeromodscore", "energy_surface"), com.mojang.blaze3d.vertex.DefaultVertexFormat.NEW_ENTITY),
+        com.zeromods.core.client.EnergyRenderTypes::surfaceShader);
+  }
+
+  @SubscribeEvent
   public static void renderers(EntityRenderersEvent.RegisterRenderers e) {
     e.registerBlockEntityRenderer(FieldEmitters.EMITTER_BE.get(), FieldRenderer::new);
   }

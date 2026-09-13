@@ -20,6 +20,8 @@ public final class ControlSettings {
   public float damageAmount = 2;
   public int damageInterval = 20;
   public int pattern = 0, formation = 0, particleColor = 0xFF55DD;
+  public boolean customAccent = false;
+  public int accentColor(int fieldColor) { return customAccent ? particleColor : fieldColor; }
   public boolean sounds = true, powerSounds = true, impactSounds = true, damageSounds = true;
   public int soundStyle = 0;
   public EntityFilter damage(Direction movement) { return damageDirections.resolve(movement, damage); }
@@ -65,7 +67,7 @@ public final class ControlSettings {
     t.putFloat("DamageAmount", damageAmount);
     t.putInt("DamageInterval", damageInterval);
     t.putBoolean("FizzleEffects", fizzleEffects);
-    t.putInt("Pattern", pattern); t.putInt("Formation", formation); t.putInt("ParticleColor", particleColor);
+    t.putInt("Pattern", pattern); t.putInt("Formation", formation); t.putInt("ParticleColor", particleColor); t.putBoolean("CustomAccent", customAccent);
     t.putBoolean("Sounds", sounds); t.putBoolean("PowerSounds", powerSounds);
     t.putBoolean("ImpactSounds", impactSounds); t.putBoolean("DamageSounds", damageSounds);
     t.putInt("SoundStyle", soundStyle);
@@ -106,6 +108,7 @@ public final class ControlSettings {
     s.fizzleEffects = !t.contains("FizzleEffects") || t.getBoolean("FizzleEffects");
     s.pattern = Math.max(0, Math.min(3, t.getInt("Pattern")));
     s.formation = Math.max(0, Math.min(com.zeromods.core.animation.PlanarProjection.PRESET_COUNT - 1, t.getInt("Formation")));
+    s.customAccent = t.getBoolean("CustomAccent");
     s.particleColor = t.contains("ParticleColor") ? t.getInt("ParticleColor") & 0xFFFFFF : 0xFF55DD;
     s.sounds = !t.contains("Sounds") || t.getBoolean("Sounds");
     s.powerSounds = !t.contains("PowerSounds") || t.getBoolean("PowerSounds");

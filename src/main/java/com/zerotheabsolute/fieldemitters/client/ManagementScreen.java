@@ -154,6 +154,10 @@ final class ManagementScreen extends FittedScreen {
   }
 
   public void tick() {
+    if (!parent.canConfigure()) {
+      minecraft.setScreen(null);
+      return;
+    }
     if (pending >= 0 && net.minecraft.Util.getMillis() - lookupStarted > 10000) {
       pending = -1;
       notice = "Lookup timed out. Try again or enter a UUID.";

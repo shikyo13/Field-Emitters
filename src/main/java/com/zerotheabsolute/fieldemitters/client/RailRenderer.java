@@ -19,7 +19,7 @@ public final class RailRenderer {
       float end =
           e.powered
               ? Math.min(l.length() + .5f, age / 2)
-              : Math.max(-.5f, l.length() + .5f - age / 2);
+              : -.5f + (l.length() + 1) * FieldShutdown.remaining(age);
       if (e.controls.formation != 0) end = l.length() + .5f;
       if (end <= -.5 || FieldPattern.progress(e, age) <= 0) continue;
       var along = new Vec3(l.dx(), l.dy(), l.dz());
@@ -57,7 +57,7 @@ public final class RailRenderer {
             .75f * FieldPattern.progress(e, age));
       // The same world-space lattice and clock are used by every coplanar strip.
       float time = e.controls.animation ? e.getLevel().getGameTime() + partial : 0;
-      var origin = Vec3.atCenterOf(e.getBlockPos());
+      var origin = l.origin(e.getBlockPos()).subtract(Vec3.atLowerCornerOf(e.root));
       var uAxis = l.normal() == Direction.Axis.X ? new Vec3(0, 0, 1) : new Vec3(1, 0, 0);
       var vAxis = l.normal() == Direction.Axis.Y ? new Vec3(0, 0, 1) : new Vec3(0, 1, 0);
       float u0 = (float) origin.dot(uAxis), v0 = (float) origin.dot(vAxis);
@@ -67,11 +67,6 @@ public final class RailRenderer {
       float right = u0 + Math.max(-.5f * au, end * au) + .5f * Math.abs(bu);
       float bottom = v0 + Math.min(-.5f * av, end * av) - .5f * Math.abs(bv);
       float top = v0 + Math.max(-.5f * av, end * av) + .5f * Math.abs(bv);
-      float hitAge = (float) (e.getLevel().getGameTime() - e.impactTime) + partial;
-      boolean hit =
-          hitAge >= 0
-              && hitAge < 32
-              && Math.abs(l.normalCoordinate(e.impact) - l.normalCoordinate(origin)) < .15;
       final float projectedEnd = end;
       FieldPattern.Stroke stroke =
           (x1, y1, x2, y2, w, color, alpha) ->
@@ -99,9 +94,7 @@ public final class RailRenderer {
             bottom,
             top,
             time,
-            hit ? hitAge : -1,
-            (float) e.impact.dot(uAxis),
-            (float) e.impact.dot(vAxis),
+            FieldPattern.waves(e, l, uAxis, vAxis, partial),
             e.color,
             e.controls,
             FieldPattern.progress(e, age),
@@ -152,9 +145,7 @@ public final class RailRenderer {
             bottom,
             top,
             time,
-            hit ? hitAge : -1,
-            (float) e.impact.dot(uAxis),
-            (float) e.impact.dot(vAxis),
+            FieldPattern.waves(e, l, uAxis, vAxis, partial),
             e.color,
             e.controls,
             FieldPattern.progress(e, age),
@@ -180,7 +171,7 @@ public final class RailRenderer {
     int low = 0, high = 0;
     while (joined(e, link, across.scale(low - 1))) low--;
     while (joined(e, link, across.scale(high + 1))) high++;
-    Vec3 origin = Vec3.atCenterOf(e.getBlockPos()),
+    Vec3 origin = link.origin(e.getBlockPos()).subtract(Vec3.atLowerCornerOf(e.root)),
         along = new Vec3(link.dx(), link.dy(), link.dz());
     Vec3 a = origin.add(along.scale(-.5)).add(across.scale(low - .5));
     Vec3 b = origin.add(along.scale(link.length() + .5)).add(across.scale(high + .5));
@@ -207,7 +198,7 @@ public final class RailRenderer {
         && other.controls.pattern == e.controls.pattern
         && other.controls.formation == e.controls.formation
         && other.controls.animation == e.controls.animation
-        && other.controls.particleColor == e.controls.particleColor
+        && other.controls.accentColor(other.color) == e.controls.accentColor(e.color)
         && other.links.stream()
             .anyMatch(
                 l -> l.target().equals(link.target().offset(delta)) && l.normal() == link.normal());
@@ -288,7 +279,7 @@ public final class RailRenderer {
 
   private static void vertex(
       VertexConsumer v, Matrix4f m, Vec3 a, Vec3 b, float x, float y, int c, float alpha) {
-    var p = a.scale(x).add(b.scale(y)).add(.5, .5, .5);
+    var p = a.scale(x).add(b.scale(y)).add(.5, a.y == 0 && b.y == 0 ? 1 : .5, .5);
     v.addVertex(m, (float) p.x, (float) p.y, (float) p.z)
         .setColor((c >> 16 & 255) / 255f, (c >> 8 & 255) / 255f, (c & 255) / 255f, alpha)
         .setUv(.5f, .5f)

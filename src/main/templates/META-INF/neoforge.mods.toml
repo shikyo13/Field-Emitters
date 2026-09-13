@@ -45,3 +45,6 @@ type="optional"
 versionRange="[9.5.1,)"
 ordering="AFTER"
 side="BOTH"
+
+[[mixins]]
+config="fieldemitters.mixins.json"

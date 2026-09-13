@@ -15,6 +15,7 @@ public final class FieldSensor {
       for (var origin : e.isRail() ? FieldNetwork.members(e) : java.util.List.of(e)) {
         if (origin.isRemoved() || !origin.powered) continue;
         var p = origin.getBlockPos();
+        var space = FieldSpace.at(origin);
         for (var link : origin.links) {
           var settings = origin.settings(link);
           var t = link.target();
@@ -26,21 +27,20 @@ public final class FieldSensor {
                   a ->
                       settings.detects(a, e.owner, link.movement(true))
                           || settings.detects(a, e.owner, link.movement(false)))) {
-            var position =
-                entity
-                    .position()
-                    .add(0, link.normal() == Direction.Axis.Y ? entity.getBbHeight() / 2 : 0, 0);
+            var feet = space.local(entity.position());
+            var localBox = space.local(entity.getBoundingBox());
+            var position = link.normal() == Direction.Axis.Y ? localBox.getCenter() : feet;
             double u =
-                (entity.getX() - p.getX() - .5) * link.dx()
-                    + (entity.getZ() - p.getZ() - .5) * link.dz()
-                    + (entity.getY() - p.getY() - .5) * link.dy();
+                (feet.x - p.getX() - .5) * link.dx()
+                    + (feet.z - p.getZ() - .5) * link.dz()
+                    + (feet.y - p.getY() - .5) * link.dy();
             int i = (int) Math.floor(u + .5);
             if (i < (link.rail() ? 0 : 1)
                 || i > (link.rail() ? link.length() : link.length() - 1)
                 || now - origin.transition < origin.controls.linkFormationTicks(i)) continue;
-            if (!entity.getBoundingBox().intersects(link.box(p))) {
+            if (!localBox.intersects(link.box(p))) {
               // Keep observations on both sides, but only within the projected tile's other axes.
-              var box = entity.getBoundingBox();
+              var box = localBox;
               var tile = link.box(p);
               if (link.normal() != Direction.Axis.X
                       && (box.maxX <= tile.minX || box.minX >= tile.maxX)
@@ -50,11 +50,11 @@ public final class FieldSensor {
                       && (box.maxZ <= tile.minZ || box.minZ >= tile.maxZ)) continue;
             }
             if (!link.rail()
-                && (entity.getY() >= link.ground()[i] + 5
-                    || entity.getY() + entity.getBbHeight() <= link.ground()[i])) continue;
+                && (feet.y >= link.ground()[i] + 5
+                    || feet.y + entity.getBbHeight() <= link.ground()[i])) continue;
             double normal =
                 link.normalCoordinate(position)
-                    - link.normalCoordinate(net.minecraft.world.phys.Vec3.atCenterOf(p));
+                    - link.normalCoordinate(link.origin(p));
             double margin =
                 (link.normal() == Direction.Axis.Y ? entity.getBbHeight() : entity.getBbWidth()) / 2
                     + .1;
@@ -78,7 +78,7 @@ public final class FieldSensor {
               // Reject shortcuts around an end or across a terrain discontinuity.
               double previousNormal =
                   link.normalCoordinate(old.position())
-                      - link.normalCoordinate(net.minecraft.world.phys.Vec3.atCenterOf(p));
+                      - link.normalCoordinate(link.origin(p));
               double fraction = -previousNormal / (normal - previousNormal);
               var intersection = old.position().lerp(position, fraction);
               double crossingU =
@@ -97,7 +97,7 @@ public final class FieldSensor {
                           + ":"
                           + link.normal()
                           + ":"
-                          + link.normalCoordinate(net.minecraft.world.phys.Vec3.atCenterOf(p))
+                          + link.normalCoordinate(link.origin(p))
                           + ":"
                           + direction)) {
                 int count =

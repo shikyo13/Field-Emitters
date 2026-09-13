@@ -95,13 +95,15 @@ public final class FieldCheckpoint {
 
   public static void tick(ServerLevel level, EmitterEntity e, long now) {
     if (!e.powered) return;
+    var space = FieldSpace.at(e);
     for (var link : e.links) {
       var settings = e.settings(link);
       if (!settings.checkpoint.enabled) continue;
       var p = e.getBlockPos();
       for (var player :
           level.getEntitiesOfClass(Player.class, link.box(p).inflate(.8), a -> !a.isSpectator())) {
-        var center = player.getBoundingBox().getCenter();
+        var box = space.local(player.getBoundingBox());
+        var center = box.getCenter();
         double u =
             (center.x - p.getX() - .5) * link.dx()
                 + (center.z - p.getZ() - .5) * link.dz()
@@ -112,22 +114,21 @@ public final class FieldCheckpoint {
             || now - e.transition < e.controls.linkFormationTicks(i)) continue;
         var cell = link.cell(p, i, 0);
         if (!link.rail()
-            && (player.getY() >= cell.getY() + 5 || player.getBoundingBox().maxY <= cell.getY()))
+            && (box.minY >= cell.getY() + 5 || box.maxY <= cell.getY()))
           continue;
-        double side = link.normalCoordinate(center) - link.normalCoordinate(Vec3.atCenterOf(p));
+        double side = link.normalCoordinate(center) - link.normalCoordinate(link.origin(p));
         double reach =
             (link.normal() == Direction.Axis.Y ? player.getBbHeight() : player.getBbWidth()) * .5
                 + .3;
         if (Math.abs(side) > reach) continue;
-        var previous =
-            center.add(
-                player.xo - player.getX(), player.yo - player.getY(), player.zo - player.getZ());
+        var previous = space.local(player.getBoundingBox().getCenter().add(
+            player.xo - player.getX(), player.yo - player.getY(), player.zo - player.getZ()));
         double previousSide =
-            link.normalCoordinate(previous) - link.normalCoordinate(Vec3.atCenterOf(p));
+            link.normalCoordinate(previous) - link.normalCoordinate(link.origin(p));
         Direction movement =
             link.movement((Math.abs(previousSide) > .001 ? previousSide : side) < 0);
         var away = Vec3.atLowerCornerOf(movement.getOpposite().getNormal());
-        var entry = player.position().add(away.scale(reach + .5));
+        var entry = space.world(space.local(player.position()).add(away.scale(reach + .5)));
         process(level, e, settings, player, movement, entry, now);
       }
     }

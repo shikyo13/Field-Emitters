@@ -141,6 +141,7 @@ public final class FieldNetwork {
     }
     long now = l.getGameTime();
     for (var e : all) {
+      e.impactWaves.removeIf(wave -> now - wave.time() >= FieldImpacts.LIFETIME);
       e.spherePresent=false;
       if(e.isTower())SphereField.tick(l,e,now);
       if (e.powered && !e.isTower()) {
@@ -250,6 +251,9 @@ public final class FieldNetwork {
             if (link != null) links.add(link);
           }
         }
+      // Keep the outgoing geometry until its shutdown has reached zero.
+      if (!e.enabled && (e.powered || now - e.transition < FieldShutdown.DURATION_TICKS))
+        links = new ArrayList<>(e.links);
       String before = signature(e.links);
       e.links = links;
       e.demand =
@@ -337,61 +341,74 @@ public final class FieldNetwork {
   }
 
   private static void railImpacts(ServerLevel level, EmitterEntity emitter, long now) {
-    if (now - emitter.impactTime < 8) return;
-    emitter.contacts.entrySet().removeIf(entry -> now - entry.getValue() > 60);
+    if (now - emitter.impactTime < ImpactSelection.EFFECT_INTERVAL) return;
+    record Hit(net.minecraft.world.phys.Vec3 position, Direction.Axis normal) {}
+    var selection = new ImpactSelection<Hit>(emitter.contacts, now);
     var origin = net.minecraft.world.phys.Vec3.atCenterOf(emitter.getBlockPos());
-    for (var link : emitter.links) {
-      var bounds = link.box(emitter.getBlockPos());
-      for (var entity :
-          level.getEntities((net.minecraft.world.entity.Entity) null, bounds.inflate(.2))) {
-        if (now - emitter.contacts.getOrDefault(entity.getUUID(), -1000L) < 25) continue;
-        var center = entity.getBoundingBox().getCenter();
-        double u =
-            center
-                .subtract(origin)
-                .dot(new net.minecraft.world.phys.Vec3(link.dx(), link.dy(), link.dz()));
-        int index = Math.max(0, Math.min(link.length(), (int) Math.floor(u + .5)));
-        var cell = link.cell(emitter.getBlockPos(), index, 0);
-        var shape = FieldBlock.collision(emitter, entity, cell);
-        if (shape.isEmpty()
-            || !shape.bounds().move(cell).inflate(.06).intersects(entity.getBoundingBox()))
+    for (var source : members(emitter)) {
+      if (source.isRemoved() || !source.powered || !source.isRail()) continue;
+      var space = FieldSpace.at(source);
+      var sourceOrigin = net.minecraft.world.phys.Vec3.atCenterOf(source.getBlockPos());
+      for (var link : source.links) {
+        if (emitter.links.stream().noneMatch(other -> other.normal() == link.normal())
+            || Math.abs(sourceOrigin.get(link.normal()) - origin.get(link.normal())) > .01)
           continue;
-        var impact =
-            new net.minecraft.world.phys.Vec3(
-                Math.max(bounds.minX, Math.min(bounds.maxX, center.x)),
-                Math.max(bounds.minY, Math.min(bounds.maxY, center.y)),
-                Math.max(bounds.minZ, Math.min(bounds.maxZ, center.z)));
-        impact =
-            switch (link.normal()) {
-              case X -> new net.minecraft.world.phys.Vec3(origin.x, impact.y, impact.z);
-              case Y -> new net.minecraft.world.phys.Vec3(impact.x, origin.y, impact.z);
-              case Z -> new net.minecraft.world.phys.Vec3(impact.x, impact.y, origin.z);
-            };
-        // One timestamp and hit location for the connected surface, not one hit per rail.
-        for (var part : members(emitter)) {
-          if (part.isRemoved() || !part.powered || !part.isRail()) continue;
-          if (Math.abs(
-                  link.normalCoordinate(
-                          net.minecraft.world.phys.Vec3.atCenterOf(part.getBlockPos()))
-                      - link.normalCoordinate(origin))
-              > .01) continue;
-          if (!part.links.isEmpty()
-              && part.links.stream().noneMatch(other -> other.normal() == link.normal())) continue;
-          part.impact = impact;
-          part.impactTime = now;
-          part.contacts.put(entity.getUUID(), now);
-          part.sync();
+        var bounds = link.box(source.getBlockPos());
+        for (var entity :
+            level.getEntities((net.minecraft.world.entity.Entity) null, bounds.inflate(.2))) {
+          var center = space.local(entity.getBoundingBox().getCenter());
+          double u =
+              center
+                  .subtract(sourceOrigin)
+                  .dot(new net.minecraft.world.phys.Vec3(link.dx(), link.dy(), link.dz()));
+          int index = Math.max(0, Math.min(link.length(), (int) Math.floor(u + .5)));
+          var cell = link.cell(source.getBlockPos(), index, 0);
+          var shape = FieldBlock.collision(source, entity, cell, center);
+          if (shape.isEmpty()
+              || !shape.bounds().move(cell).inflate(.06).intersects(space.local(entity.getBoundingBox())))
+            continue;
+          var impact =
+              new net.minecraft.world.phys.Vec3(
+                  Math.max(bounds.minX, Math.min(bounds.maxX, center.x)),
+                  Math.max(bounds.minY, Math.min(bounds.maxY, center.y)),
+                  Math.max(bounds.minZ, Math.min(bounds.maxZ, center.z)));
+          impact =
+              switch (link.normal()) {
+                case X -> new net.minecraft.world.phys.Vec3(origin.x, impact.y, impact.z);
+                case Y -> new net.minecraft.world.phys.Vec3(impact.x, link.origin(emitter.getBlockPos()).y, impact.z);
+                case Z -> new net.minecraft.world.phys.Vec3(impact.x, impact.y, origin.z);
+              };
+          selection.consider(entity.getUUID(), new Hit(impact, link.normal()));
         }
-        FieldSounds.play(level, emitter, impact, 2);
-        return;
       }
     }
+    var hits = selection.finish();
+    if (hits.isEmpty()) return;
+    // Publish one batch per connected plane, keeping waves continuous across rail seams.
+    for (var part : members(emitter)) {
+      if (part.isRemoved() || !part.powered || !part.isRail()) continue;
+      var partOrigin = net.minecraft.world.phys.Vec3.atCenterOf(part.getBlockPos());
+      var positions = new ArrayList<net.minecraft.world.phys.Vec3>();
+      for (var choice : hits) {
+        var hit = choice.value();
+        if (Math.abs(partOrigin.get(hit.normal()) - origin.get(hit.normal())) > .01) continue;
+        if (!part.links.isEmpty()
+            && part.links.stream().noneMatch(other -> other.normal() == hit.normal())) continue;
+        positions.add(hit.position());
+        part.contacts.put(choice.id(), now);
+      }
+      if (positions.isEmpty()) continue;
+      FieldImpacts.add(part, positions, now);
+      part.sync();
+    }
+    FieldSounds.play(level, emitter, hits.get(0).value().position(), 2);
   }
 
   private static void impacts(ServerLevel l, EmitterEntity e, long now) {
-    if (now - e.impactTime < 8) return;
-    e.contacts.entrySet().removeIf(entry -> now - entry.getValue() > 60);
+    if (now - e.impactTime < ImpactSelection.EFFECT_INTERVAL) return;
+    var selection = new ImpactSelection<net.minecraft.world.phys.Vec3>(e.contacts, now);
     var p = e.getBlockPos();
+    var space = FieldSpace.at(e);
     for (var link : e.links) {
       var t = link.target();
       var area =
@@ -407,34 +424,35 @@ public final class FieldNetwork {
               net.minecraft.world.entity.LivingEntity.class,
               area,
               entity -> true)) {
+        var feet = space.local(entity.position());
         double u =
-            (entity.getX() - p.getX() - .5) * link.dx()
-                + (entity.getZ() - p.getZ() - .5) * link.dz();
+            (feet.x - p.getX() - .5) * link.dx()
+                + (feet.z - p.getZ() - .5) * link.dz();
         int i = (int) Math.floor(u + .5);
         if (i <= 0 || i >= link.length() || now - e.transition < e.controls.linkFormationTicks(i)) continue;
         double normal =
             link.dx() != 0
-                ? Math.abs(entity.getZ() - p.getZ() - .5)
-                : Math.abs(entity.getX() - p.getX() - .5);
-        if (FieldBlock.collision(e, entity, link.cell(p, i, 0)).isEmpty()) continue;
+                ? Math.abs(feet.z - p.getZ() - .5)
+                : Math.abs(feet.x - p.getX() - .5);
+        if (FieldBlock.collision(e, entity, link.cell(p, i, 0), space.local(entity.getBoundingBox().getCenter())).isEmpty()) continue;
         if (normal > entity.getBbWidth() / 2 + .15
-            || entity.getY() + entity.getBbHeight() < link.ground()[i]
-            || entity.getY() > link.ground()[i] + 5
-            || now - e.contacts.getOrDefault(entity.getUUID(), -1000L) < 25) continue;
-        e.impact =
+            || feet.y + entity.getBbHeight() < link.ground()[i]
+            || feet.y > link.ground()[i] + 5) continue;
+        var impact =
             new net.minecraft.world.phys.Vec3(
                 p.getX() + .5 + u * link.dx(),
                 Math.max(
                     link.ground()[i] + .15,
-                    Math.min(link.ground()[i] + 4.85, entity.getY() + entity.getBbHeight() * .55)),
+                    Math.min(link.ground()[i] + 4.85, feet.y + entity.getBbHeight() * .55)),
                 p.getZ() + .5 + u * link.dz());
-        e.impactTime = now;
-        e.contacts.put(entity.getUUID(), now);
-        e.sync();
-        FieldSounds.play(l, e, e.impact, 2);
-        return;
+        selection.consider(entity.getUUID(), impact);
       }
     }
+    var hits = selection.finish();
+    if (hits.isEmpty()) return;
+    FieldImpacts.add(e, hits.stream().map(ImpactSelection.Choice::value).toList(), now);
+    e.sync();
+    FieldSounds.play(l, e, e.impact, 2);
   }
 
   private static List<EmitterEntity> railNeighbors(

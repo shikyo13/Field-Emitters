@@ -11,6 +11,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 
 /** Server-backed field directory, then the emitters in a selected field. */
 public final class RemoteScreen extends FittedScreen {
+  private static final int ROWS_PER_PAGE = 4, ROW_HEIGHT = 30;
   private final CompoundTag data;
   private CompoundTag selected;
   private int page, left, top;
@@ -75,7 +76,7 @@ public final class RemoteScreen extends FittedScreen {
     left = (width - 404) / 2;
     top = (height - 224) / 2;
     var entries = selected == null ? data.getList("Entries", 10) : selected.getList("Members", 10);
-    int pages = Math.max(1, (entries.size() + 4) / 5);
+    int pages = Math.max(1, (entries.size() + ROWS_PER_PAGE - 1) / ROWS_PER_PAGE);
     page = Math.min(page, pages - 1);
     if (selected != null) {
       nameBox = new EditBox(font, left + 48, top + 39, 344, 18, Component.literal("Field name"));
@@ -94,29 +95,22 @@ public final class RemoteScreen extends FittedScreen {
           });
       addRenderableWidget(nameBox);
     }
-    for (int i = page * 5; i < Math.min(entries.size(), page * 5 + 5); i++) {
+    for (int i = page * ROWS_PER_PAGE; i < Math.min(entries.size(), (page + 1) * ROWS_PER_PAGE); i++) {
       var e = entries.getCompound(i);
       var pos = BlockPos.of(e.getLong("Pos"));
-      String label =
-          selected == null
-              ? e.getString("Name")
-                  + " • "
-                  + e.getList("Members", 10).size()
-                  + " emitters • "
-                  + e.getInt("Running")
-                  + " running"
-              : (e.getBoolean("Rail") ? "Surface rail" : "Emitter")
-                  + " at "
-                  + pos.toShortString()
-                  + " • "
-                  + (e.getBoolean("Powered") ? "Running" : "Idle");
+      String label = selected == null ? e.getString("Name")
+          : (e.getBoolean("Rail") ? "Surface rail" : "Emitter") + " at " + pos.toShortString();
+      String detail = selected == null
+          ? e.getList("Members", 10).size() + " emitters | " + e.getInt("Running") + " running | "
+              + BlockPos.of(e.getLong(e.contains("Origin") ? "Origin" : "Pos")).toShortString()
+          : e.getBoolean("Powered") ? "Field running" : "Idle — open to view power and settings";
       var button =
           addRenderableWidget(
               new FieldButton(
                   left + 12,
-                  top + 65 + (i % 5) * 22,
+                  top + 65 + (i % ROWS_PER_PAGE) * ROW_HEIGHT,
                   380,
-                  20,
+                  ROW_HEIGHT - 2,
                   Component.literal(label),
                   b -> {
                     if (selected == null) {
@@ -129,7 +123,7 @@ public final class RemoteScreen extends FittedScreen {
                       PacketDistributor.sendToServer(new FieldControls.RemoteRequest(false, pos));
                     }
                   },
-                  false));
+                  false).detail(detail));
       button.setTooltip(
           Tooltip.create(
               Component.literal(
@@ -138,7 +132,7 @@ public final class RemoteScreen extends FittedScreen {
                           + pos.toShortString()
                           + ". Includes connected loaded emitters even when switched off. Click to"
                           + " rename or manage individual emitters."
-                      : "Open this emitter's controls. Connections selects one span or your entire"
+                      : "Open this emitter's controls. Connections selects one connection or your entire"
                           + " connected field.")));
     }
     var prev =
@@ -219,7 +213,7 @@ public final class RemoteScreen extends FittedScreen {
         false);
     g.drawString(
         font,
-        selected == null ? "One connected chain = one field. Hold your tuner." : "Name:",
+        selected == null ? "Choose a field to rename it or manage its emitters." : "Name:",
         left + 12,
         top + 43,
         0x92A9BE,

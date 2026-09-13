@@ -22,6 +22,7 @@ public final class EmitterEntity extends BlockEntity {
   public int queuedPulses = 0, outputSignal = 0;
   public long pulseUntil = 0, gapUntil = 0;
   public String lastDetection = "None";
+  final FieldContact.Contacts contactDirections = new FieldContact.Contacts();
   public final Map<String, Passage> passages = new HashMap<>();
 
   public record Passage(int side, net.minecraft.world.phys.Vec3 position, long time) {}
@@ -39,6 +40,7 @@ public final class EmitterEntity extends BlockEntity {
   public BlockPos root = BlockPos.ZERO;
   public net.minecraft.world.phys.Vec3 impact = net.minecraft.world.phys.Vec3.ZERO;
   public long impactTime = -1000;
+  public final List<FieldImpacts.Wave> impactWaves = new ArrayList<>();
   public long lastFizzle = -1000;
   public final Map<UUID, Long> contacts = new HashMap<>();
   public List<Link> links = new ArrayList<>();
@@ -55,6 +57,20 @@ public final class EmitterEntity extends BlockEntity {
 
   public boolean isRail() {
     return getBlockState().is(FieldEmitters.RAIL.get());
+  }
+
+  public net.minecraft.world.phys.AABB renderBounds() {
+    if (isTower()) return new net.minecraft.world.phys.AABB(worldPosition).inflate(controls.sphereRadius + 1);
+    var box = new net.minecraft.world.phys.AABB(worldPosition);
+    int low = worldPosition.getY(), high = worldPosition.getY() + 5;
+    for (var link : links) {
+      box = box.minmax(link.box(worldPosition));
+      for (int y : link.ground()) {
+        low = Math.min(low, y);
+        high = Math.max(high, y + link.height());
+      }
+    }
+    return new net.minecraft.world.phys.AABB(box.minX, low, box.minZ, box.maxX, high, box.maxZ).inflate(1);
   }
 
   public record Link(
@@ -87,6 +103,11 @@ public final class EmitterEntity extends BlockEntity {
           Math.max(a.x, b.x) + 1,
           Math.max(a.y, b.y) + height(),
           Math.max(a.z, b.z) + 1);
+    }
+
+    public net.minecraft.world.phys.Vec3 origin(BlockPos source) {
+      return net.minecraft.world.phys.Vec3.atCenterOf(source)
+          .add(0, rail && normal == Direction.Axis.Y ? .5 : 0, 0);
     }
 
     public double normalCoordinate(net.minecraft.world.phys.Vec3 v) {
@@ -140,6 +161,8 @@ public final class EmitterEntity extends BlockEntity {
         (pos, settings) -> {
           var entry = new CompoundTag();
           entry.putLong("Target", pos.asLong());
+          var offset = pos.subtract(worldPosition);
+          entry.putIntArray("TargetOffset", new int[] {offset.getX(), offset.getY(), offset.getZ()});
           entry.put("Settings", settings.save());
           overrideTags.add(entry);
         });
@@ -149,10 +172,13 @@ public final class EmitterEntity extends BlockEntity {
     t.putInt("QueuedPulses", queuedPulses);
     t.putInt("OutputSignal", outputSignal);
     t.putLong("ImpactTime", impactTime);
+    FieldImpacts.save(this, t);
     t.putDouble("ImpactX", impact.x);
     t.putDouble("ImpactY", impact.y);
     t.putDouble("ImpactZ", impact.z);
     t.putLong("Root", root.asLong());
+    var rootOffset = root.subtract(worldPosition);
+    t.putIntArray("RootOffset", new int[] {rootOffset.getX(), rootOffset.getY(), rootOffset.getZ()});
     t.putInt("Color", color);
     t.putInt("Mask", mask);
     t.putBoolean("Enabled", enabled);
@@ -165,6 +191,9 @@ public final class EmitterEntity extends BlockEntity {
     for (Link link : links) {
       CompoundTag n = new CompoundTag();
       n.putLong("Target", link.target.asLong());
+      var targetOffset = link.target.subtract(worldPosition);
+      n.putIntArray("TargetOffset", new int[] {targetOffset.getX(), targetOffset.getY(), targetOffset.getZ()});
+      n.putIntArray("GroundOffset", java.util.Arrays.stream(link.ground).map(y -> y - worldPosition.getY()).toArray());
       n.putInt("DX", link.dx);
       n.putInt("DZ", link.dz);
       n.putInt("DY", link.dy);
@@ -186,7 +215,10 @@ public final class EmitterEntity extends BlockEntity {
     impact =
         new net.minecraft.world.phys.Vec3(
             t.getDouble("ImpactX"), t.getDouble("ImpactY"), t.getDouble("ImpactZ"));
-    root = BlockPos.of(t.getLong("Root"));
+    FieldImpacts.load(this, t);
+    int[] rootOffset = t.getIntArray("RootOffset");
+    root = rootOffset.length == 3 ? worldPosition.offset(rootOffset[0], rootOffset[1], rootOffset[2])
+        : BlockPos.of(t.getLong("Root"));
     color = t.contains("Color") ? t.getInt("Color") : 0x52E5FF;
     mask = t.contains("Mask") ? t.getInt("Mask") : 1;
     if (t.contains("Controls")) controls = ControlSettings.load(t.getCompound("Controls"));
@@ -199,7 +231,7 @@ public final class EmitterEntity extends BlockEntity {
       var entry = (CompoundTag) tag;
       if (overrides.size() < 64)
         overrides.put(
-            BlockPos.of(entry.getLong("Target")),
+            relativePosition(entry, "TargetOffset", "Target"),
             ControlSettings.load(entry.getCompound("Settings")));
     }
     crossings = t.getLong("Crossings");
@@ -218,11 +250,13 @@ public final class EmitterEntity extends BlockEntity {
     links = new ArrayList<>();
     for (Tag tag : t.getList("Links", Tag.TAG_COMPOUND)) {
       CompoundTag n = (CompoundTag) tag;
-      int[] ground = n.getIntArray("Ground");
+      int[] ground = n.contains("GroundOffset")
+          ? java.util.Arrays.stream(n.getIntArray("GroundOffset")).map(y -> y + worldPosition.getY()).toArray()
+          : n.getIntArray("Ground");
       if (ground.length > 1 && ground.length <= 21)
         links.add(
             new Link(
-                BlockPos.of(n.getLong("Target")),
+                relativePosition(n, "TargetOffset", "Target"),
                 n.getInt("DX"),
                 n.getInt("DZ"),
                 ground,
@@ -241,6 +275,12 @@ public final class EmitterEntity extends BlockEntity {
         level.sendBlockUpdated(part, state, state, 3);
       }
     }
+  }
+
+  private BlockPos relativePosition(CompoundTag tag, String offsetKey, String legacyKey) {
+    int[] offset = tag.getIntArray(offsetKey);
+    return offset.length == 3 ? worldPosition.offset(offset[0], offset[1], offset[2])
+        : BlockPos.of(tag.getLong(legacyKey));
   }
 
   public CompoundTag getUpdateTag(HolderLookup.Provider r) {
