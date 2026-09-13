@@ -21,10 +21,6 @@ public final class FieldRenderer implements BlockEntityRenderer<EmitterEntity> {
     return 128;
   }
 
-  public AABB getRenderBoundingBox(EmitterEntity e) {
-    return new AABB(e.getBlockPos()).inflate(21, 14, 21);
-  }
-
   public void render(
       EmitterEntity e,
       float partial,

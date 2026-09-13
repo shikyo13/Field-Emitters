@@ -88,6 +88,26 @@ public final class EmitterEntity extends BlockEntity {
     return getBlockState().is(FieldEmitters.RAIL.get());
   }
 
+  /**
+   * Forge culls block entity renderers against this box. It holds the five-block emitter and every
+   * span drawn from it, terrain peaks included, so a field stays visible while its emitter is
+   * off-screen.
+   */
+  @Override
+  public net.minecraft.world.phys.AABB getRenderBoundingBox() {
+    var box = new net.minecraft.world.phys.AABB(worldPosition);
+    int low = worldPosition.getY(), high = worldPosition.getY() + 5;
+    for (var link : links) {
+      box = box.minmax(link.box(worldPosition));
+      for (int y : link.ground()) {
+        low = Math.min(low, y);
+        high = Math.max(high, y + link.height());
+      }
+    }
+    return new net.minecraft.world.phys.AABB(box.minX, low, box.minZ, box.maxX, high, box.maxZ)
+        .inflate(1);
+  }
+
   public record Link(
       BlockPos target,
       int dx,
