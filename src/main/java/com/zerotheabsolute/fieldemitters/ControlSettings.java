@@ -4,6 +4,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 
 public final class ControlSettings {
+  public com.zeromods.core.animation.SphereFormation projection = com.zeromods.core.animation.SphereFormation.LASER_CURTAIN;
   public int sphereRadius = SphereField.DEFAULT_RADIUS;
   public boolean dome = true;
   public CheckpointSettings checkpoint = new CheckpointSettings();
@@ -47,6 +48,7 @@ public final class ControlSettings {
 
   public CompoundTag save() {
     var t = new CompoundTag();
+    t.putString("Projection", projection.name());
     t.putInt("SphereRadius",sphereRadius); t.putBoolean("Dome",dome);
     t.put("Checkpoint",checkpoint.save());
     t.put("Barrier", barrier.save());
@@ -82,6 +84,7 @@ public final class ControlSettings {
 
   public static ControlSettings load(CompoundTag t) {
     var s = new ControlSettings();
+    s.projection = com.zeromods.core.animation.SphereFormation.fromId(t.getString("Projection"));
     s.sphereRadius=t.contains("SphereRadius")?Math.max(SphereField.MIN_RADIUS,Math.min(SphereField.MAX_RADIUS,t.getInt("SphereRadius"))):SphereField.DEFAULT_RADIUS;
     s.dome=!t.contains("Dome")||t.getBoolean("Dome");
     if(t.contains("Checkpoint"))s.checkpoint=CheckpointSettings.load(t.getCompound("Checkpoint"));

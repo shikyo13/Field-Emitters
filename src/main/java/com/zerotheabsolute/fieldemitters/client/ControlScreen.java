@@ -272,7 +272,10 @@ public final class ControlScreen extends FittedScreen {
       button("Pattern: " + new String[]{"Hex lattice","Smooth glow","Drifting pixels","Plasma"}[draft.pattern],() -> {
         draft.pattern=(draft.pattern+1)%4;redraw();
       });
-      button("Formation: " + new String[]{"Sweep","Dissolve / reform","Fade"}[draft.formation],() -> {
+      if (emitter.isTower()) button("Projection: " + draft.projection.label(), () -> {
+        draft.projection = draft.projection.next(); redraw();
+      });
+      else button("Formation: " + new String[]{"Sweep","Dissolve / reform","Fade"}[draft.formation],() -> {
         draft.formation=(draft.formation+1)%3;redraw();
       });
       button(

@@ -9,15 +9,11 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 
 final class SphereRenderer {
-  private static final int LONGITUDES = 64, LATITUDES = 24, BEAMS = 4;
+  private static final int LONGITUDES = 96, LATITUDES = 48;
   private static final float IDLE_ALPHA = .11f, SHUTDOWN_TICKS = 25;
   // Fixed pattern coordinates bound detail work even on the largest sphere.
   private static final float PATTERN_RADIUS = 8;
   private static final double DETAIL_OFFSET = .015;
-  private static final int TRAIL_SAMPLES = 6;
-  private static final float TRAIL_SECONDS = .09f;
-  private static final float BEAM_WIDTH = .045f;
-  private static final double TAU = Math.PI * 2;
 
   private SphereRenderer() {}
 
@@ -33,6 +29,7 @@ final class SphereRenderer {
     double minLatitude = e.controls.dome ? 0 : -Math.PI / 2;
     double range = Math.PI / 2 - minLatitude;
     var hit = e.impact.subtract(SphereField.center(e)).normalize();
+    float time = e.controls.animation ? (e.getLevel().getGameTime() + partial) / 20 : 0;
     double waveAge = (e.getLevel().getGameTime() + partial - e.impactTime) / 20.0;
     for (int longitude = 0; longitude < LONGITUDES; longitude++) {
       double azimuth = longitude * Math.PI * 2 / LONGITUDES;
@@ -42,84 +39,65 @@ final class SphereRenderer {
             b = point(radius, azimuth + Math.PI * 2 / LONGITUDES, elevation),
             c = point(radius, azimuth + Math.PI * 2 / LONGITUDES, elevation + range / LATITUDES),
             d = point(radius, azimuth, elevation + range / LATITUDES);
-        var normal = a.subtract(.5, 0, .5).normalize();
-        double arc = Math.acos(Mth.clamp(normal.dot(hit), -1, 1)) * radius;
-        float ripple =
-            waveAge >= 0 && waveAge < 2
-                ? (float) Math.exp(-Math.pow((arc - waveAge * 9) / .6, 2))
-                    * (float) (1 - waveAge / 2)
-                : 0;
-        float reveal = progress * progress;
-        float alpha =
-            ((e.controls.pattern == 3 ? 0 : IDLE_ALPHA * reveal) + ripple * .45f) * opacity;
-        quad(vertices, matrix, a, b, c, d, e.color, alpha);
+        shellVertex(e, vertices, matrix, a, hit, waveAge, progress, opacity, minLatitude);
+        shellVertex(e, vertices, matrix, b, hit, waveAge, progress, opacity, minLatitude);
+        shellVertex(e, vertices, matrix, c, hit, waveAge, progress, opacity, minLatitude);
+        shellVertex(e, vertices, matrix, d, hit, waveAge, progress, opacity, minLatitude);
+        if (e.controls.pattern == 3) {
+          SpherePlasma.triangle(e, vertices, matrix, a, b, c, time, progress, opacity, minLatitude);
+          SpherePlasma.triangle(e, vertices, matrix, a, c, d, time, progress, opacity, minLatitude);
+        }
       }
     }
     renderPattern(e, vertices, matrix, partial, progress, opacity, minLatitude);
     if (e.powered && progress < 1 && e.controls.animation)
-      renderProjectors(vertices, matrix, radius, minLatitude, age / 20, progress, e.color);
+      SphereProjection.render(
+          e.controls.projection, vertices, matrix, radius, minLatitude, progress, e.color);
   }
 
-  /** Accelerating mirror sweeps: each beam has its own phase, direction and elevation. */
-  private static Vec3 scanTarget(double radius, double minimum, float seconds, int beam) {
-    double t = Math.max(0, seconds);
-    double phase = TAU * (.18 * t + .38 * t * t);
-    double offset = beam * TAU / BEAMS;
-    double direction = (beam & 1) == 0 ? 1 : -1;
-    double azimuth =
-        offset
-            + direction * phase * (1 + beam * .17)
-            + .55 * Math.sin(phase * (1.3 + beam * .19) + offset);
-    double height =
-        .5
-            + .43 * Math.sin(phase * (.61 + beam * .13) + offset)
-            + .06 * Math.sin(phase * 2.3 - offset);
-    return point(radius, azimuth, minimum + (Math.PI / 2 - minimum) * height);
-  }
-
-  private static void renderProjectors(
+  private static void shellVertex(
+      EmitterEntity e,
       VertexConsumer vertices,
       Matrix4f matrix,
-      int radius,
-      double minimum,
-      float seconds,
+      Vec3 point,
+      Vec3 hit,
+      double waveAge,
       float progress,
-      int color) {
-    var tip = new Vec3(.5, TowerBlock.HEIGHT - .25, .5);
-    float fade = Mth.clamp((1 - progress) * 8, 0, 1);
-    for (int beam = 0; beam < BEAMS; beam++) {
-      var target = scanTarget(radius, minimum, seconds, beam);
-      for (int sample = 1; sample <= TRAIL_SAMPLES; sample++) {
-        float delay = TRAIL_SECONDS * sample / TRAIL_SAMPLES;
-        var previous = scanTarget(radius, minimum, seconds - delay, beam);
-        float strength = 1 - sample / (float) (TRAIL_SAMPLES + 1);
-        // A short curved trail gives the moving ray a soft laser-projector fan.
-        quad(vertices, matrix, tip, target, previous, tip, color, .10f * strength * fade);
-        ray(vertices, matrix, tip, previous, color, BEAM_WIDTH * 2, .06f * strength * fade);
-        target = previous;
-      }
-      target = scanTarget(radius, minimum, seconds, beam);
-      ray(vertices, matrix, tip, target, color, BEAM_WIDTH * 4, .08f * fade);
-      ray(vertices, matrix, tip, target, 0xE8FFFF, BEAM_WIDTH, .8f * fade);
-      var normal = target.subtract(.5, 0, .5).normalize();
-      var tangent = normal.cross(new Vec3(0, 1, 0));
-      if (tangent.lengthSqr() < .001) tangent = normal.cross(new Vec3(1, 0, 0));
-      tangent = tangent.normalize().scale(.14);
-      var up = normal.cross(tangent).normalize().scale(.14);
-      var spot = target.add(normal.scale(DETAIL_OFFSET));
-      quad(
-          vertices,
-          matrix,
-          spot.subtract(tangent).subtract(up),
-          spot.add(tangent).subtract(up),
-          spot.add(tangent).add(up),
-          spot.subtract(tangent).add(up),
-          0xE8FFFF,
-          .8f * fade);
+      float opacity,
+      double minimum) {
+    if (progress >= 1 && (waveAge < 0 || waveAge >= 2)) {
+      vertex(vertices, matrix, point, e.color, IDLE_ALPHA * opacity);
+      return;
     }
+    Vec3 normal = point.subtract(.5, 0, .5).normalize();
+    double arc = Math.acos(Mth.clamp(normal.dot(hit), -1, 1)) * e.controls.sphereRadius;
+    float ripple =
+        waveAge >= 0 && waveAge < 2
+            ? (float) Math.exp(-Math.pow((arc - waveAge * 9) / .6, 2)) * (float) (1 - waveAge / 2)
+            : 0;
+    double azimuth = Math.atan2(normal.z, normal.x);
+    double height = (Math.asin(Mth.clamp(normal.y, -1, 1)) - minimum) / (Math.PI / 2 - minimum);
+    float noise = shellNoise(normal, 0);
+    float reveal =
+        e.controls.animation
+            ? e.controls.projection.coverage(azimuth, height, noise, progress)
+            : progress;
+    float edge =
+        e.controls.animation ? e.controls.projection.edge(azimuth, height, noise, progress) : 0;
+    vertex(
+        vertices,
+        matrix,
+        point,
+        e.color,
+        ((IDLE_ALPHA * reveal) + edge * .38f + ripple * .45f) * opacity);
   }
 
-  private static void ray(
+  static float shellNoise(Vec3 normal, float seconds) {
+    return com.zeromods.core.animation.PlasmaSurface.noise(
+        normal.x * 3, normal.y * 3, normal.z * 3, seconds);
+  }
+
+  static void ray(
       VertexConsumer vertices,
       Matrix4f matrix,
       Vec3 start,
@@ -152,16 +130,14 @@ final class SphereRenderer {
         alpha);
   }
 
-  private static float coverage(double azimuth, double elevation, double minimum, float progress) {
+  static float coverage(
+      EmitterEntity e, double azimuth, double elevation, double minimum, float progress) {
     if (progress >= 1) return 1;
-    int column = (int) Math.floor(azimuth / TAU * LONGITUDES);
-    int row = (int) Math.floor((elevation - minimum) / (Math.PI / 2 - minimum) * LATITUDES);
-    // Stable tile ordering lets repeated scans build up a persistent hologram, without a frame
-    // cache.
-    double seed = Math.sin(column * 12.9898 + row * 78.233) * 43758.5453;
-    seed -= Math.floor(seed);
-    float reveal = Mth.clamp((progress - (float) seed * .85f) / .15f, 0, 1);
-    return reveal * reveal * (3 - 2 * reveal);
+    if (progress <= 0) return 0;
+    if (!e.controls.animation) return progress;
+    Vec3 normal = point(1, azimuth, elevation).subtract(.5, 0, .5);
+    return e.controls.projection.coverage(
+        azimuth, (elevation - minimum) / (Math.PI / 2 - minimum), shellNoise(normal, 0), progress);
   }
 
   private static void renderPattern(
@@ -172,6 +148,7 @@ final class SphereRenderer {
       float progress,
       float opacity,
       double minLatitude) {
+    if (e.controls.pattern == 3) return;
     float right = (float) (Math.PI * 2 * PATTERN_RADIUS);
     float bottom = (float) (minLatitude * PATTERN_RADIUS);
     float top = (float) (Math.PI / 2 * PATTERN_RADIUS);
@@ -188,8 +165,8 @@ final class SphereRenderer {
         e.color,
         e.controls.particleColor,
         e.controls.pattern,
-        e.controls.formation,
-        progress,
+        0,
+        1,
         (x1, y1, x2, y2, width, color, alpha) -> {
           // The curved shell above supplies the broad fill. Keep the detailed strokes and tiles.
           if (width > .2f) return;
@@ -197,7 +174,11 @@ final class SphereRenderer {
           if (middle < 0 || middle > right) return;
           float reveal =
               coverage(
-                  middle / PATTERN_RADIUS, (y1 + y2) * .5 / PATTERN_RADIUS, minLatitude, progress);
+                  e,
+                  middle / PATTERN_RADIUS,
+                  (y1 + y2) * .5 / PATTERN_RADIUS,
+                  minLatitude,
+                  progress);
           if (reveal <= 0) return;
           float dx = x2 - x1, dy = y2 - y1;
           float length = (float) Math.hypot(dx, dy);
@@ -224,7 +205,7 @@ final class SphereRenderer {
         Mth.clamp(v, bottom, top) / PATTERN_RADIUS);
   }
 
-  private static Vec3 point(double radius, double azimuth, double elevation) {
+  static Vec3 point(double radius, double azimuth, double elevation) {
     double horizontal = Math.cos(elevation) * radius;
     return new Vec3(
         .5 + Math.cos(azimuth) * horizontal,
@@ -232,7 +213,7 @@ final class SphereRenderer {
         .5 + Math.sin(azimuth) * horizontal);
   }
 
-  private static void quad(
+  static void quad(
       VertexConsumer v, Matrix4f matrix, Vec3 a, Vec3 b, Vec3 c, Vec3 d, int color, float alpha) {
     vertex(v, matrix, a, color, alpha);
     vertex(v, matrix, b, color, alpha);

@@ -31,6 +31,34 @@ public final class AccessGameTests {
   }
 
   @GameTest(template = "core_empty")
+  public static void projectionChoicesPersistIndependently(GameTestHelper h) {
+    for (var projection : com.zeromods.core.animation.SphereFormation.values()) {
+      for (int pattern = 0; pattern < 4; pattern++) {
+        var settings = new ControlSettings();
+        settings.projection = projection;
+        settings.pattern = pattern;
+        settings.formation = 2;
+        var copy = ControlSettings.load(settings.save());
+        h.assertTrue(
+            copy.projection == projection && copy.pattern == pattern && copy.formation == 2,
+            "Tower projection, surface, and linked-field formation must persist independently");
+      }
+    }
+    var legacy = new ControlSettings().save();
+    legacy.remove("Projection");
+    h.assertTrue(
+        ControlSettings.load(legacy).projection
+            == com.zeromods.core.animation.SphereFormation.LASER_CURTAIN,
+        "Existing emitters must receive a valid default projection");
+    legacy.putString("Projection", "unknown");
+    h.assertTrue(
+        ControlSettings.load(legacy).projection
+            == com.zeromods.core.animation.SphereFormation.LASER_CURTAIN,
+        "Unknown projection identifiers must safely default");
+    h.succeed();
+  }
+
+  @GameTest(template = "core_empty")
   public static void largeSpheresConsumeTheirFullEnergyCost(GameTestHelper h) {
     var energy = new EmitterEnergyStorage(100000, 10000, () -> {});
     for (int i = 0; i < 10; i++) energy.receiveEnergy(10000, false);
