@@ -30,3 +30,11 @@ __pycache__/
 
 # os
 .DS_Store
+
+# External workspace material
+/docs/evidence/
+/docs/media/
+/docs/publishing/
+/tools/
+/demo/
+/Launch*.command

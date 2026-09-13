@@ -1,6 +1,5 @@
 plugins {
     id 'fabric-loom' version '1.10.5'
-    id 'maven-publish'
 }
 version = mod_version
 group = mod_group_id
@@ -27,7 +26,3 @@ tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8'; options.
 tasks.withType(AbstractArchiveTask).configureEach { preserveFileTimestamps = false; reproducibleFileOrder = true }
 processResources { inputs.property 'version', project.version; filesMatching('fabric.mod.json') { expand version: project.version } }
 jar { includeEmptyDirs = false; exclude '.cache/**'; from('LICENSE') { into 'META-INF' } }
-if (providers.gradleProperty('extraMods').isPresent()) { dependencies { modLocalRuntime files(providers.gradleProperty('extraMods').get().split(',')) } }
-
-// Isolated localhost server validation; normal server launches retain their defaults.
-if (providers.gradleProperty('qaPort').isPresent()) { loom.runs.server { programArg '--port'; programArg providers.gradleProperty('qaPort').get() } }
