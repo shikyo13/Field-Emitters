@@ -82,7 +82,6 @@ public final class FieldEmitters implements net.fabricmc.api.ModInitializer {
     team.reborn.energy.api.EnergyStorage.SIDED.registerForBlockEntity((be, side) -> be.energy, EMITTER_BE.get());
     FieldControls.register(new com.zerotheabsolute.fieldemitters.network.NativeNetwork());
     net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents.END_WORLD_TICK.register(FieldNetwork::tick);
-    net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback.EVENT.register((dispatcher, access, environment) -> DemoCommands.register(dispatcher));
   }
   private static final class Registration<T> {
     private final net.minecraft.core.Registry<T> registry;

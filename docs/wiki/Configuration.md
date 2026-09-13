@@ -20,11 +20,11 @@ Start the game or server once to generate the configuration files, then close it
 
 | File | Controls |
 | --- | --- |
-| `<world>/serverconfig/fieldemitters-server.toml` | Energy cost, capacity and transfer rate, plus the testing switch below. |
+| `<world>/serverconfig/fieldemitters-server.toml` | Energy cost, capacity and transfer rate. |
 | `config/fieldemitters-client.toml` | Whether direction guides are shown while holding the tuner. |
 
 In multiplayer the server's settings apply to everyone.
 
-## Testing switch
+## Free operation
 
-`demoRedstonePower = true` lets a redstone signal supply unlimited energy. It exists for testing builds and showcase worlds and is off by default. The Power tab says when it is active.
+Fields require FE. Set `energyPerCellTick = 0` for free operation. Redstone only controls operation.
