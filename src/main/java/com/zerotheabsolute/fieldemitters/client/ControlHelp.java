@@ -139,8 +139,7 @@ final class ControlHelp {
     if (text.startsWith("Turn on:"))
       return "Choose when the field operates: whenever energy is available, only while its redstone"
           + " input is on, or only while that input is off. Normal operation always requires"
-          + " FE energy. Only the explicitly enabled demo test mode can use redstone as"
-          + " power.";
+          + " FE energy.";
     if (text.startsWith("Read redstone from:"))
       return "Choose the side that reads your enable/disable signal. Top and Bottom refer to the"
           + " emitter block; North, South, East and West are world directions. The output"

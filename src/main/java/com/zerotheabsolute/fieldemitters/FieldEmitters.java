@@ -120,6 +120,5 @@ public final class FieldEmitters {
     NeoForge.EVENT_BUS.addListener(HardwareProtection::explosion);
     NeoForge.EVENT_BUS.addListener(AccessPackets::tick);
     NeoForge.EVENT_BUS.addListener(HardwareProtection::mobBreak);
-    NeoForge.EVENT_BUS.addListener(DemoCommands::register);
   }
 }

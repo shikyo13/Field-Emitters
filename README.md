@@ -4,15 +4,15 @@ Terrain-following forcefields for Minecraft. Place Field Emitter posts around an
 
 [Download](https://www.curseforge.com/minecraft/mc-mods/field-emitters) · [Wiki](https://github.com/shikyo13/Field-Emitters/tree/main/docs/wiki) · [Issues](https://github.com/shikyo13/Field-Emitters/issues) · [Discord](https://discord.gg/NrdXnbWzGC)
 
-[![Field Emitters: terrain-following forcefields](docs/media/showcase-poster.png)](https://youtu.be/HvTZJLOWlAM)
+[![Field Emitters: terrain-following forcefields](docs/images/showcase-thumbnail.png)](https://youtu.be/_XEWAr7P7vQ)
 
-**[Watch the 30-second showcase](https://youtu.be/HvTZJLOWlAM)** · [Full gallery and media downloads](docs/media/README.md) · [Editable video source](tools/showcase/README.md)
+**[Watch the feature showcase](https://youtu.be/_XEWAr7P7vQ)**
 
 The showcase combines studio views of the shipped models with gameplay captures.
 
 | Posts link, the field follows | Rails seal the openings |
 |---|---|
-| ![Four posts around a stepped hillside](docs/publishing/gallery/gallery-perimeter-day.png) | ![Rails sealing a doorway, a shaft and a walkway](docs/publishing/gallery/gallery-rails-doorway.png) |
+| ![Four posts around a stepped hillside](docs/images/perimeter-day.png) | ![Rails sealing a doorway, a shaft and a walkway](docs/images/rails-doorway.png) |
 
 ## Features
 
@@ -54,7 +54,7 @@ Install the mod on both the server and clients. An energy source from another mo
 
 ## Build
 
-Use JDK 21 for 1.21.1 or JDK 17 for 1.20.1, and the included Gradle wrapper:
+The current NeoForge branch requires JDK 21 and [ZeroMods Core](https://github.com/shikyo13/ZeroMods-Core) checked out beside this repository in a folder named `ZeroMods-Core`. Use the included Gradle wrapper:
 
 ```sh
 ./gradlew build

@@ -663,7 +663,6 @@ public final class ControlScreen extends FittedScreen {
         if (!SphereField.fitsHeight(emitter)) status = "Outside world height: move tower or reduce radius";
         else if (emitter.powered && !SphereField.formed(emitter)) status = "Projecting field…";
       }
-      if (FieldConfig.DEMO_POWER.get()) status += " (demo power enabled)";
       g.drawString(
           font, font.plainSubstrByWidth(status, 380), left + 12, top + 44, 0x77FFBD, false);
       g.drawString(

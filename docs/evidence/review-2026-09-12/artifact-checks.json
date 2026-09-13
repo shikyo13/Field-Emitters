@@ -1,8 +1,0 @@
-{
-  "jar_reproduces_release_hash": true,
-  "generated_data_unchanged": true,
-  "gallery_hashes_checked": 17,
-  "media_hash_mismatches": [],
-  "typescript": "passed",
-  "eslint": "Node globals missing in scripts config (5 no-undef errors)"
-}

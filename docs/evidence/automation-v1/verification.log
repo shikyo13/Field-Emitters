@@ -1,2 +1,0 @@
-[15:14:35] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] PASS: 5 rail spans, baby mob movement, both directions, one-way release.
-[15:18:24] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] PASS: actual server movement for all 8 target combinations, both directions, owner exemption, power-off release, projection timing, and every terrain column. Automation: baby/adult, inversion, UUID, item filters, completed crossings, queued pulses, direction and presence.

@@ -23,31 +23,11 @@ neoForge {
     runs {
         client {
             client()
-            if (providers.gradleProperty('coreUiQa').isPresent()) {
-                gameDirectory = project.file('run-core-ui')
-                programArguments.addAll '--quickPlaySingleplayer', 'ZeroMods Core QA'
-            }
-            if (providers.gradleProperty('visualQa').isPresent()) {
-                gameDirectory = project.file('run-visual')
-            }
-            if (providers.gradleProperty('automationQa').isPresent()) {
-                gameDirectory = project.file('run-automation')
-            }
-            if (providers.gradleProperty('menuQa').isPresent()) {
-                gameDirectory = project.file('run-menu')
-            }
-            if (providers.gradleProperty('demoWorld').isPresent()) {
-                programArguments.addAll '--quickPlaySingleplayer', 'Field Emitters Demo'
-            }
+
         }
         server {
             server()
             programArgument '--nogui'
-        }
-        coreGameTestServer {
-            type = 'gameTestServer'
-            gameDirectory = project.file('run-core-tests')
-            systemProperty 'neoforge.enabledGameTestNamespaces', 'fieldemitters'
         }
         data {
             data()
@@ -88,14 +68,6 @@ var generateModMetadata = tasks.register('generateModMetadata', ProcessResources
 }
 sourceSets.main.resources.srcDir generateModMetadata
 neoForge.ideSyncTask generateModMetadata
-
-// Local testing only: -PextraMods=/path/one.jar,/path/two.jar adds mod JARs to the run configurations.
-var extraMods = providers.gradleProperty('extraMods')
-if (extraMods.isPresent()) {
-    dependencies {
-        runtimeOnly files(extraMods.get().split(',').collect { it.trim() }.findAll { !it.isEmpty() })
-    }
-}
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'

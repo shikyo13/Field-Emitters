@@ -54,7 +54,7 @@ Projection is independent of **Pattern**: every animation works with hex lattice
 
 Only the outer shell has collision; the interior and dome floor stay open. Projection beams are visual only. Collision starts when formation completes and stops immediately when power is lost; the visible shell fades out. All surface styles retain curved impact ripples. Mesh resolution and pattern coordinates are fixed to bound rendering work as the radius grows. Tower hardware currently reuses the existing emitter materials.
 
-The tower accepts FE through its block energy capability. At the default energy setting, cost is approximately two FE per square block of shell surface per tick: `2 × π × radius²` surface area for a dome, `4 × π × radius²` for a sphere. Stored FE can be consumed above the external cable transfer limit; the full cost is deducted. Redstone-only power remains an explicit testing configuration, disabled by default.
+The tower accepts FE through its block energy capability. At the default energy setting, cost is approximately two FE per square block of shell surface per tick: `2 × π × radius²` surface area for a dome, `4 × π × radius²` for a sphere. Stored FE can be consumed above the external cable transfer limit; the full cost is deducted. Redstone controls operation but does not supply energy.
 
 
 ## Post, wall, floor and ceiling formation
