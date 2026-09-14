@@ -20,7 +20,7 @@ public final class RemoteScreen extends FittedScreen {
   private EditBox nameBox;
 
   public RemoteScreen(CompoundTag data, String status) {
-    super(Component.literal("FIELD MANAGER"));
+    super(Component.literal(UiText.text("screen.fieldemitters.remote.field_manager")));
     this.data = data;
     this.status = status;
   }
@@ -32,7 +32,8 @@ public final class RemoteScreen extends FittedScreen {
   public static void receive(FieldControls.RemoteData reply) {
     var mc = Minecraft.getInstance();
     if (mc.level == null) return;
-    if (reply.kind() == 0) mc.setScreen(new RemoteScreen(reply.data(), reply.message()));
+    if (reply.kind() == 0)
+      mc.setScreen(new RemoteScreen(reply.data(), reply.message().getString()));
     else if (reply.kind() == 1) {
       var tag = reply.data();
       var pos = BlockPos.of(tag.getLong("Pos"));
@@ -45,9 +46,8 @@ public final class RemoteScreen extends FittedScreen {
       emitter.setLevel(mc.level);
       mc.setScreen(new ControlScreen(emitter));
     } else if (mc.screen instanceof ControlScreen screen) screen.acknowledge(reply.message());
-    else if (mc.screen instanceof RemoteScreen screen) screen.status = reply.message();
-    else if (mc.player != null)
-      mc.player.displayClientMessage(Component.literal(reply.message()), true);
+    else if (mc.screen instanceof RemoteScreen screen) screen.status = reply.message().getString();
+    else if (mc.player != null) mc.player.displayClientMessage(reply.message(), true);
   }
 
   private void rename() {
@@ -70,6 +70,15 @@ public final class RemoteScreen extends FittedScreen {
     super.onClose();
   }
 
+  private static String fieldName(CompoundTag field) {
+    String name = field.getString("Name");
+    return name.isBlank()
+        ? UiText.text(
+            "screen.fieldemitters.remote.default_name",
+            BlockPos.of(field.getLong(field.contains("Origin") ? "Origin" : "Pos")).toShortString())
+        : name;
+  }
+
   @Override
   protected void init() {
     fit(404, 224);
@@ -79,61 +88,85 @@ public final class RemoteScreen extends FittedScreen {
     int pages = Math.max(1, (entries.size() + ROWS_PER_PAGE - 1) / ROWS_PER_PAGE);
     page = Math.min(page, pages - 1);
     if (selected != null) {
-      nameBox = new EditBox(font, left + 48, top + 39, 344, 18, Component.literal("Field name"));
+      nameBox =
+          new EditBox(
+              font,
+              left + 48,
+              top + 39,
+              344,
+              18,
+              Component.literal(UiText.text("screen.fieldemitters.remote.field_name")));
       nameBox.setMaxLength(32);
       nameBox.setValue(selected.getString("Name"));
       nameBox.setTooltip(
           Tooltip.create(
               Component.literal(
-                  "Name this entire connected field. Changes apply automatically. Blank restores"
-                      + " its location-based name. The origin stays at the first known emitter even when"
-                      + " that emitter is unloaded.")));
+                  UiText.text(
+                      "screen.fieldemitters.remote.name_this_entire_connected_field_changes_apply_automatically"))));
       nameBox.setResponder(
           value -> {
             selected.putString("Name", value);
-            renameDue = System.currentTimeMillis() + 350;
+            renameDue = System.currentTimeMillis() + ScreenMetrics.TEXT_DEBOUNCE_MILLIS;
           });
       addRenderableWidget(nameBox);
     }
-    for (int i = page * ROWS_PER_PAGE; i < Math.min(entries.size(), (page + 1) * ROWS_PER_PAGE); i++) {
+    for (int i = page * ROWS_PER_PAGE;
+        i < Math.min(entries.size(), (page + 1) * ROWS_PER_PAGE);
+        i++) {
       var e = entries.getCompound(i);
       var pos = BlockPos.of(e.getLong("Pos"));
-      String label = selected == null ? e.getString("Name")
-          : (e.getBoolean("Rail") ? "Surface rail" : "Emitter") + " at " + pos.toShortString();
-      String detail = selected == null
-          ? e.getList("Members", 10).size() + " emitters | " + e.getInt("Running") + " running | "
-              + BlockPos.of(e.getLong(e.contains("Origin") ? "Origin" : "Pos")).toShortString()
-          : e.getBoolean("Powered") ? "Field running" : "Idle — open to view power and settings";
+      String label =
+          selected == null
+              ? fieldName(e)
+              : UiText.text(
+                  "screen.fieldemitters.remote.at",
+                  (e.getBoolean("Rail")
+                      ? UiText.text("screen.fieldemitters.remote.surface_rail")
+                      : UiText.text("block.fieldemitters.field_emitter")),
+                  pos.toShortString());
+      String detail =
+          selected == null
+              ? UiText.text(
+                  "screen.fieldemitters.remote.emitters_running",
+                  e.getList("Members", 10).size(),
+                  e.getInt("Running"),
+                  BlockPos.of(e.getLong(e.contains("Origin") ? "Origin" : "Pos")).toShortString())
+              : e.getBoolean("Powered")
+                  ? UiText.text("screen.fieldemitters.control.field_running")
+                  : UiText.text("screen.fieldemitters.remote.idle_open_to_view_power_and_settings");
       var button =
           addRenderableWidget(
               new FieldButton(
-                  left + 12,
-                  top + 65 + (i % ROWS_PER_PAGE) * ROW_HEIGHT,
-                  380,
-                  ROW_HEIGHT - 2,
-                  Component.literal(label),
-                  b -> {
-                    if (selected == null) {
-                      selected = e;
-                      page = 0;
-                      status = "Edit the name, or open an emitter below.";
-                      rebuildWidgets();
-                    } else {
-                      rename();
-                      PacketDistributor.sendToServer(new FieldControls.RemoteRequest(false, pos));
-                    }
-                  },
-                  false).detail(detail));
+                      left + 12,
+                      top + 65 + (i % ROWS_PER_PAGE) * ROW_HEIGHT,
+                      ScreenMetrics.CONTENT_WIDTH,
+                      ROW_HEIGHT - 2,
+                      Component.literal(label),
+                      b -> {
+                        if (selected == null) {
+                          selected = e;
+                          page = 0;
+                          status =
+                              UiText.text(
+                                  "screen.fieldemitters.remote.edit_the_name_or_open_an_emitter_below");
+                          rebuildWidgets();
+                        } else {
+                          rename();
+                          PacketDistributor.sendToServer(
+                              new FieldControls.RemoteRequest(false, pos));
+                        }
+                      },
+                      false)
+                  .detail(detail));
       button.setTooltip(
           Tooltip.create(
               Component.literal(
                   selected == null
-                      ? "Anchor: "
-                          + pos.toShortString()
-                          + ". Includes connected loaded emitters even when switched off. Click to"
-                          + " rename or manage individual emitters."
-                      : "Open this emitter's controls. Connections selects one connection or your entire"
-                          + " connected field.")));
+                      ? UiText.text(
+                          "screen.fieldemitters.remote.anchor_includes_connected_loaded_emitters_even_when_switched",
+                          pos.toShortString())
+                      : UiText.text(
+                          "screen.fieldemitters.remote.open_this_emitter_s_controls_connections_selects_one"))));
     }
     var prev =
         addRenderableWidget(
@@ -142,7 +175,7 @@ public final class RemoteScreen extends FittedScreen {
                 top + 201,
                 65,
                 18,
-                Component.literal("Previous"),
+                Component.literal(UiText.text("screen.fieldemitters.management.previous")),
                 b -> {
                   rename();
                   page--;
@@ -157,7 +190,7 @@ public final class RemoteScreen extends FittedScreen {
                 top + 201,
                 48,
                 18,
-                Component.literal("Next"),
+                Component.literal(UiText.text("screen.fieldemitters.management.next")),
                 b -> {
                   rename();
                   page++;
@@ -171,7 +204,10 @@ public final class RemoteScreen extends FittedScreen {
             top + 201,
             72,
             18,
-            Component.literal(selected == null ? "Refresh" : "All fields"),
+            Component.literal(
+                selected == null
+                    ? UiText.text("screen.fieldemitters.remote.refresh")
+                    : UiText.text("screen.fieldemitters.remote.all_fields")),
             b -> {
               rename();
               openManager();
@@ -179,7 +215,13 @@ public final class RemoteScreen extends FittedScreen {
             false));
     addRenderableWidget(
         new FieldButton(
-            left + 320, top + 201, 72, 18, Component.literal("Close"), b -> onClose(), false));
+            left + 320,
+            top + 201,
+            72,
+            18,
+            Component.literal(UiText.text("screen.fieldemitters.control.close")),
+            b -> onClose(),
+            false));
   }
 
   @Override
@@ -205,24 +247,46 @@ public final class RemoteScreen extends FittedScreen {
     g.drawString(
         font,
         selected == null
-            ? "Loaded in " + data.getString("Dimension")
-            : "Field location: " + BlockPos.of(selected.getLong(selected.contains("Origin") ? "Origin" : "Pos")).toShortString(),
+            ? UiText.text("screen.fieldemitters.remote.loaded_in", data.getString("Dimension"))
+            : UiText.text(
+                "screen.fieldemitters.remote.field_location",
+                BlockPos.of(selected.getLong(selected.contains("Origin") ? "Origin" : "Pos"))
+                    .toShortString()),
         left + 12,
         top + 26,
         0x92A9BE,
         false);
     g.drawString(
         font,
-        selected == null ? "Choose a field to rename it or manage its emitters." : "Name:",
+        selected == null
+            ? UiText.text("screen.fieldemitters.remote.choose_a_field_to_rename_it_or_manage")
+            : UiText.text("screen.fieldemitters.remote.name"),
         left + 12,
         top + 43,
         0x92A9BE,
         false);
     if (selected == null && data.getList("Entries", 10).isEmpty())
       g.drawString(
-          font, "No loaded fields available to you here.", left + 12, top + 90, 0xDBF8FF, false);
-    g.drawString(font, font.plainSubstrByWidth(status, 380), left + 12, top + 188, 0x92A9BE, false);
-    g.drawString(font, "Page " + (page + 1), left + 153, top + 206, 0x92A9BE, false);
+          font,
+          UiText.text("screen.fieldemitters.remote.no_loaded_fields_available_to_you_here"),
+          left + 12,
+          top + 90,
+          0xDBF8FF,
+          false);
+    g.drawString(
+        font,
+        font.plainSubstrByWidth(status, ScreenMetrics.CONTENT_WIDTH),
+        left + 12,
+        top + 188,
+        0x92A9BE,
+        false);
+    g.drawString(
+        font,
+        UiText.text("screen.fieldemitters.typelist.page", (page + 1)),
+        left + 153,
+        top + 206,
+        0x92A9BE,
+        false);
     super.render(g, x, y, p);
     g.pose().popPose();
   }

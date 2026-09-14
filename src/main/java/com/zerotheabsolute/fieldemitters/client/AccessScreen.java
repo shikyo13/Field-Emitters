@@ -18,11 +18,12 @@ final class AccessScreen extends FittedScreen {
   private String groups,
       group = "staff",
       player = "",
-      notice = "Changes to accepted groups apply automatically.";
+      notice =
+          UiText.text("screen.fieldemitters.access.changes_to_accepted_groups_apply_automatically");
   private long due;
 
   AccessScreen(Screen parent, BlockPos pos, EntityFilter filter, Runnable apply) {
-    super(Component.literal("ACCESS BADGES"));
+    super(Component.literal(UiText.text("screen.fieldemitters.access.access_badges")));
     this.parent = parent;
     this.pos = pos;
     this.filter = filter;
@@ -33,14 +34,26 @@ final class AccessScreen extends FittedScreen {
   private void button(String text, int y, Runnable run) {
     addRenderableWidget(
         new FieldButton(
-            left + 12, top + y, 380, 18, Component.literal(text), b -> run.run(), false));
+            left + 12,
+            top + y,
+            ScreenMetrics.CONTENT_WIDTH,
+            18,
+            Component.literal(text),
+            b -> run.run(),
+            false));
   }
 
   private void input(
       String label, String value, int y, int max, java.util.function.Consumer<String> change) {
     var w =
         addRenderableWidget(
-            new EditBox(font, left + 12, top + y, 380, 18, Component.literal(label)));
+            new EditBox(
+                font,
+                left + 12,
+                top + y,
+                ScreenMetrics.CONTENT_WIDTH,
+                18,
+                Component.literal(label)));
     w.setMaxLength(max);
     w.setValue(value);
     w.setResponder(change);
@@ -48,50 +61,58 @@ final class AccessScreen extends FittedScreen {
   }
 
   protected void init() {
-    fit(404, 306);
-    left = (width - 404) / 2;
-    top = (height - 306) / 2;
+    fit(ScreenMetrics.PANEL_WIDTH, ScreenMetrics.PANEL_HEIGHT);
+    left = (width - ScreenMetrics.PANEL_WIDTH) / 2;
+    top = (height - ScreenMetrics.PANEL_HEIGHT) / 2;
     if (filter != null)
       input(
-          "Accepted groups, separated by commas. Uses the player list mode; only this field owner's"
-              + " badges count.",
+          UiText.text(
+              "screen.fieldemitters.access.accepted_groups_separated_by_commas_uses_the_player"),
           groups,
           48,
           1024,
           v -> {
             groups = v;
-            due = net.minecraft.Util.getMillis() + 350;
+            due = net.minecraft.Util.getMillis() + ScreenMetrics.TEXT_DEBOUNCE_MILLIS;
           });
     input(
-        "Group to issue or revoke: lowercase letters, numbers, spaces, underscores and hyphens",
+        UiText.text(
+            "screen.fieldemitters.access.group_to_issue_or_revoke_lowercase_letters_numbers"),
         group,
         111,
         32,
         v -> group = v);
     input(
-        "Optional player UUID. Blank means anyone carrying the badge can use it.",
+        UiText.text(
+            "screen.fieldemitters.access.optional_player_uuid_blank_means_anyone_carrying_the"),
         player,
         150,
         36,
         v -> player = v);
-    button("Issue badge held in either hand", 176, () -> send(0));
-    button("Revoke my badges in this group", 198, () -> send(1));
-    button("Back", 280, this::onClose);
+    button(
+        UiText.text("screen.fieldemitters.access.issue_badge_held_in_either_hand"),
+        176,
+        () -> send(0));
+    button(
+        UiText.text("screen.fieldemitters.access.revoke_my_badges_in_this_group"),
+        198,
+        () -> send(1));
+    button(UiText.text("screen.fieldemitters.access.back"), 280, this::onClose);
   }
 
   private void send(int action) {
     String name = BadgeAccess.group(group);
     if (!BadgeAccess.validGroup(name)) {
-      notice = "Enter a valid group name first.";
+      notice = UiText.text("screen.fieldemitters.access.enter_a_valid_group_name_first");
       return;
     }
     PacketDistributor.sendToServer(new AccessPackets.Request(pos, name, player.strip(), action));
-    notice = "Waiting for server…";
+    notice = UiText.text("screen.fieldemitters.access.waiting_for_server");
   }
 
   static void receive(AccessPackets.Result result) {
     if (net.minecraft.client.Minecraft.getInstance().screen instanceof AccessScreen screen
-        && screen.pos.equals(result.pos())) screen.notice = result.message();
+        && screen.pos.equals(result.pos())) screen.notice = result.message().getString();
   }
 
   private void save() {
@@ -102,19 +123,22 @@ final class AccessScreen extends FittedScreen {
       if (s.isBlank()) continue;
       var name = BadgeAccess.group(s);
       if (!BadgeAccess.validGroup(name)) {
-        notice = "Invalid group name; previous groups retained.";
+        notice =
+            UiText.text("screen.fieldemitters.access.invalid_group_name_previous_groups_retained");
         return;
       }
       next.add(name);
     }
     if (next.size() > 64) {
-      notice = "Maximum 64 groups.";
+      notice = UiText.text("screen.fieldemitters.access.maximum_64_groups");
       return;
     }
     filter.accessGroups.clear();
     filter.accessGroups.addAll(next);
     apply.run();
-    notice = "Accepted groups updated. Enable a player list mode to use them.";
+    notice =
+        UiText.text(
+            "screen.fieldemitters.access.accepted_groups_updated_enable_a_player_list_mode");
   }
 
   public void tick() {
@@ -134,32 +158,54 @@ final class AccessScreen extends FittedScreen {
 
   public void render(GuiGraphics g, int x, int y, float p) {
     beginFit(g);
-    g.fill(left, top, left + 404, top + 306, 0xFF0D1D2B);
-    g.fill(left, top, left + 404, top + 2, 0xFF53BBCB);
-    g.drawString(font, "ACCESS BADGES", left + 12, top + 12, 0xFFE0F3FF, false);
+    g.fill(
+        left, top, left + ScreenMetrics.PANEL_WIDTH, top + ScreenMetrics.PANEL_HEIGHT, 0xFF0D1D2B);
+    g.fill(left, top, left + ScreenMetrics.PANEL_WIDTH, top + 2, 0xFF53BBCB);
+    g.drawString(
+        font,
+        UiText.text("screen.fieldemitters.access.access_badges"),
+        left + 12,
+        top + 12,
+        0xFFE0F3FF,
+        false);
     g.drawString(
         font,
         filter == null
-            ? "Issue badges for fields you own"
-            : "Accepted groups (player list OR badge group)",
+            ? UiText.text("screen.fieldemitters.access.issue_badges_for_fields_you_own")
+            : UiText.text("screen.fieldemitters.access.accepted_groups_player_list_or_badge_group"),
         left + 12,
         top + 34,
         0xFFADBED0,
         false);
-    g.drawString(font, "Badge group", left + 12, top + 98, 0xFFADBED0, false);
-    g.drawString(font, "Bind to player UUID (optional)", left + 12, top + 137, 0xFFADBED0, false);
+    g.drawString(
+        font,
+        UiText.text("screen.fieldemitters.access.badge_group"),
+        left + 12,
+        top + 98,
+        0xFFADBED0,
+        false);
+    g.drawString(
+        font,
+        UiText.text("screen.fieldemitters.access.bind_to_player_uuid_optional"),
+        left + 12,
+        top + 137,
+        0xFFADBED0,
+        false);
     g.drawWordWrap(
         font,
         Component.literal(
-            "A badge holder stores 16 badges. Right-click it with a badge in your inventory to"
-                + " insert; empty cursor to remove. Equip the holder or tuner in Curios, or carry"
-                + " them normally."),
+            UiText.text("screen.fieldemitters.access.a_badge_holder_stores_16_badges_right_click")),
         left + 12,
         top + 224,
-        380,
+        ScreenMetrics.CONTENT_WIDTH,
         0xFFADBED0);
     g.drawString(
-        font, font.plainSubstrByWidth(notice, 380), left + 12, top + 267, 0xFFADBED0, false);
+        font,
+        font.plainSubstrByWidth(notice, ScreenMetrics.CONTENT_WIDTH),
+        left + 12,
+        top + 267,
+        0xFFADBED0,
+        false);
     super.render(g, fitMouse(x), fitMouse(y), p);
     g.pose().popPose();
   }

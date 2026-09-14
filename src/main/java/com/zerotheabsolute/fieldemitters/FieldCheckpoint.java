@@ -55,7 +55,9 @@ public final class FieldCheckpoint {
     if (fresh && s.detect) {
       output.crossings++;
       output.queuedPulses = Math.min(MAX_QUEUED_PULSES, output.queuedPulses + 1);
-      output.lastDetection = "Contraband: " + player.getName().getString();
+      output.lastDetection =
+          net.minecraft.network.chat.Component.translatable(
+              "message.fieldemitters.detection.contraband", player.getName());
       output.sync();
     }
     if (s.confiscate == 0) return;
@@ -113,16 +115,21 @@ public final class FieldCheckpoint {
             || i > (link.rail() ? link.length() : link.length() - 1)
             || now - e.transition < e.controls.linkFormationTicks(i)) continue;
         var cell = link.cell(p, i, 0);
-        if (!link.rail()
-            && (box.minY >= cell.getY() + 5 || box.maxY <= cell.getY()))
-          continue;
+        if (!link.rail() && (box.minY >= cell.getY() + 5 || box.maxY <= cell.getY())) continue;
         double side = link.normalCoordinate(center) - link.normalCoordinate(link.origin(p));
         double reach =
             (link.normal() == Direction.Axis.Y ? player.getBbHeight() : player.getBbWidth()) * .5
                 + .3;
         if (Math.abs(side) > reach) continue;
-        var previous = space.local(player.getBoundingBox().getCenter().add(
-            player.xo - player.getX(), player.yo - player.getY(), player.zo - player.getZ()));
+        var previous =
+            space.local(
+                player
+                    .getBoundingBox()
+                    .getCenter()
+                    .add(
+                        player.xo - player.getX(),
+                        player.yo - player.getY(),
+                        player.zo - player.getZ()));
         double previousSide =
             link.normalCoordinate(previous) - link.normalCoordinate(link.origin(p));
         Direction movement =

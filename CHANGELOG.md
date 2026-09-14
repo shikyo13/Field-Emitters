@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- Added translation support for tuner menus, filter editors, help, animation names, item instructions, configuration labels, and server messages.
+- Separated control identities and filter purposes from display text. Organized tuner controls into tab builders and shared UI constants.
+- Added fitted labels with full hover text for longer translations.
+- Preserved translatable detection messages across saves. Existing custom names and legacy detection text remain readable.
+- Updated menu-response networking; clients and servers must use the matching mod build.
+
 ## 1.1.0
 
 - Projection towers create hollow spherical fields or domes. Domes reach four blocks below their base to meet nearby terrain. Surface rails form bridges level with adjacent full blocks.

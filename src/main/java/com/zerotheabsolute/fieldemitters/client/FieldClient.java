@@ -11,7 +11,13 @@ public final class FieldClient {
   @SubscribeEvent
   public static void setup(net.neoforged.fml.event.lifecycle.FMLClientSetupEvent event) {
     event.enqueueWork(() -> FizzleNotice.receive = FizzleDeaths::receive);
-    event.enqueueWork(() -> PlayerLookup.receive = result -> { PlayerListScreen.receive(result); ManagementScreen.lookup(result); });
+    event.enqueueWork(
+        () ->
+            PlayerLookup.receive =
+                result -> {
+                  PlayerListScreen.receive(result);
+                  ManagementScreen.lookup(result);
+                });
     event.enqueueWork(() -> ManagementPackets.receive = ManagementScreen::receive);
     event.enqueueWork(() -> AccessPackets.receive = AccessScreen::receive);
     event.enqueueWork(() -> FieldControls.remoteData = RemoteScreen::receive);
@@ -22,18 +28,29 @@ public final class FieldClient {
                   var mc = net.minecraft.client.Minecraft.getInstance();
                   if (mc.player == null) return;
                   if (FieldControls.editable(e, mc.player)) mc.setScreen(new ControlScreen(e));
-                  else mc.player.displayClientMessage(net.minecraft.network.chat.Component.literal(
-                      "This field is private. Ask its owner for management access."), true);
+                  else
+                    mc.player.displayClientMessage(
+                        net.minecraft.network.chat.Component.literal(
+                            UiText.text(
+                                "screen.fieldemitters.fieldclient.this_field_is_private_ask_its_owner_for")),
+                        true);
                 });
   }
 
   @SubscribeEvent
-  public static void keys(net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent event) { event.register(TunerKeys.OPEN); }
+  public static void keys(net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent event) {
+    event.register(TunerKeys.OPEN);
+  }
 
   @SubscribeEvent
-  public static void shaders(net.neoforged.neoforge.client.event.RegisterShadersEvent event) throws java.io.IOException {
-    event.registerShader(new net.minecraft.client.renderer.ShaderInstance(event.getResourceProvider(),
-        net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("zeromodscore", "energy_surface"), com.mojang.blaze3d.vertex.DefaultVertexFormat.NEW_ENTITY),
+  public static void shaders(net.neoforged.neoforge.client.event.RegisterShadersEvent event)
+      throws java.io.IOException {
+    event.registerShader(
+        new net.minecraft.client.renderer.ShaderInstance(
+            event.getResourceProvider(),
+            net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(
+                "zeromodscore", "energy_surface"),
+            com.mojang.blaze3d.vertex.DefaultVertexFormat.NEW_ENTITY),
         com.zeromods.core.client.EnergyRenderTypes::surfaceShader);
   }
 

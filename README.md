@@ -73,3 +73,7 @@ Bug reports, translations and contributions are welcome. Read [CONTRIBUTING.md](
 You may play, research, contribute, redistribute unmodified official releases and include them in modpacks without asking. Retain the license and credit. Separately released modified builds, ports and feature variants require permission.
 
 Support me through [Buy Me a Coffee](https://buymeacoffee.com/zerotheabsolute) or [Patreon](https://www.patreon.com/cw/ZeroTheAbsolute/membership).
+
+## Translations
+
+Want to translate Field Emitters? All English strings, including the Field Tuner menus and tooltips, are in [en_us.json](src/main/resources/assets/fieldemitters/lang/en_us.json). See the [translation guide](docs/LOCALIZATION.md) for language files, placeholders, and testing instructions.

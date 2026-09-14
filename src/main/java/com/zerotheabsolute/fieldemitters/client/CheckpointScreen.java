@@ -16,7 +16,7 @@ final class CheckpointScreen extends FittedScreen {
 
   CheckpointScreen(
       Screen parent, net.minecraft.core.BlockPos pos, CheckpointSettings s, Runnable apply) {
-    super(Component.literal("INVENTORY CHECKPOINT"));
+    super(Component.literal(UiText.text("screen.fieldemitters.checkpoint.inventory_checkpoint")));
     this.parent = parent;
     this.pos = pos;
     this.s = s;
@@ -28,7 +28,7 @@ final class CheckpointScreen extends FittedScreen {
         new FieldButton(
             left + 12,
             top + y,
-            380,
+            ScreenMetrics.CONTENT_WIDTH,
             18,
             Component.literal(text),
             b -> {
@@ -40,12 +40,23 @@ final class CheckpointScreen extends FittedScreen {
   }
 
   protected void init() {
-    fit(404, 306);
-    left = (width - 404) / 2;
-    top = (height - 306) / 2;
-    button("Checkpoint: " + (s.enabled ? "On" : "Off"), 30, () -> s.enabled = !s.enabled);
+    fit(ScreenMetrics.PANEL_WIDTH, ScreenMetrics.PANEL_HEIGHT);
+    left = (width - ScreenMetrics.PANEL_WIDTH) / 2;
+    top = (height - ScreenMetrics.PANEL_HEIGHT) / 2;
     button(
-        "Players moving: " + (direction == null ? "Any direction" : direction.getName()),
+        UiText.text(
+            "screen.fieldemitters.checkpoint.checkpoint",
+            (s.enabled
+                ? UiText.text("screen.fieldemitters.control.on")
+                : UiText.text("screen.fieldemitters.control.off"))),
+        30,
+        () -> s.enabled = !s.enabled);
+    button(
+        UiText.text(
+            "screen.fieldemitters.checkpoint.players_moving",
+            (direction == null
+                ? UiText.text("screen.fieldemitters.checkpoint.any_direction")
+                : UiText.direction(direction))),
         52,
         () ->
             direction =
@@ -56,10 +67,13 @@ final class CheckpointScreen extends FittedScreen {
                         : Direction.values()[direction.ordinal() + 1]);
     var f = direction == null ? s.players : s.directions.resolve(direction, s.players);
     button(
-        "This direction: "
-            + (direction == null
-                ? "Shared rules"
-                : s.directions.has(direction) ? "Custom rules" : "Shared rules"),
+        UiText.text(
+            "screen.fieldemitters.checkpoint.this_direction",
+            (direction == null
+                ? UiText.text("screen.fieldemitters.checkpoint.shared_rules")
+                : s.directions.has(direction)
+                    ? UiText.text("screen.fieldemitters.checkpoint.custom_rules")
+                    : UiText.text("screen.fieldemitters.checkpoint.shared_rules"))),
         74,
         () -> {
           if (direction != null) {
@@ -75,8 +89,11 @@ final class CheckpointScreen extends FittedScreen {
                 187,
                 18,
                 Component.literal(
-                    "Inspect this direction: "
-                        + (direction == null || f.direction(direction) ? "Yes" : "No")),
+                    UiText.text(
+                        "screen.fieldemitters.checkpoint.inspect_this_direction",
+                        (direction == null || f.direction(direction)
+                            ? UiText.text("screen.fieldemitters.control.yes")
+                            : UiText.text("screen.fieldemitters.control.no")))),
                 b -> {
                   var rule = editableRule();
                   rule.directions ^= 1 << direction.ordinal();
@@ -91,7 +108,12 @@ final class CheckpointScreen extends FittedScreen {
             top + 96,
             187,
             18,
-            Component.literal("Skip owner: " + (f.exemptOwner ? "Yes" : "No")),
+            Component.literal(
+                UiText.text(
+                    "screen.fieldemitters.control.skip_owner",
+                    (f.exemptOwner
+                        ? UiText.text("screen.fieldemitters.control.yes")
+                        : UiText.text("screen.fieldemitters.control.no")))),
             b -> {
               var rule = editableRule();
               rule.exemptOwner = !rule.exemptOwner;
@@ -100,30 +122,54 @@ final class CheckpointScreen extends FittedScreen {
             },
             false));
     button(
-        "Contraband item list",
+        UiText.text("screen.fieldemitters.checkpoint.contraband_item_list"),
         118,
-        () -> minecraft.setScreen(new TypeListScreen(this, s.items, true, 4, apply)));
-    button("Redstone alert: " + (s.detect ? "On" : "Off"), 140, () -> s.detect = !s.detect);
+        () ->
+            minecraft.setScreen(
+                new TypeListScreen(this, s.items, true, FilterPurpose.CHECKPOINT, apply)));
     button(
-        "Deny passage while carrying contraband: " + (s.deny ? "Yes" : "No"),
+        UiText.text(
+            "screen.fieldemitters.checkpoint.redstone_alert",
+            (s.detect
+                ? UiText.text("screen.fieldemitters.control.on")
+                : UiText.text("screen.fieldemitters.control.off"))),
+        140,
+        () -> s.detect = !s.detect);
+    button(
+        UiText.text(
+            "screen.fieldemitters.checkpoint.deny_passage_while_carrying_contraband",
+            (s.deny
+                ? UiText.text("screen.fieldemitters.control.yes")
+                : UiText.text("screen.fieldemitters.control.no"))),
         162,
         () -> s.deny = !s.deny);
     button(
-        "Confiscate: "
-            + new String[] {"Off", "Drop on entry side", "Send to adjacent storage"}[s.confiscate],
+        UiText.text(
+            "screen.fieldemitters.checkpoint.confiscate",
+            new String[] {
+                  UiText.text("screen.fieldemitters.control.off"),
+                  UiText.text("screen.fieldemitters.checkpoint.drop_on_entry_side"),
+                  UiText.text("screen.fieldemitters.checkpoint.send_to_adjacent_storage")
+                }
+                [s.confiscate]),
         184,
         () -> s.confiscate = (s.confiscate + 1) % 3);
     button(
-        "Storage side: " + s.storageFace.getName() + " (relative to emitter)",
+        UiText.text(
+            "screen.fieldemitters.checkpoint.storage_side_relative_to_emitter",
+            UiText.direction(s.storageFace)),
         206,
         () -> s.storageFace = Direction.values()[(s.storageFace.ordinal() + 1) % 6]);
     button(
-        "Storage overflow: "
-            + (s.dropOverflow ? "Drop on entry side" : "Hold player; keep remaining items"),
+        UiText.text(
+            "screen.fieldemitters.checkpoint.storage_overflow",
+            (s.dropOverflow
+                ? UiText.text("screen.fieldemitters.checkpoint.drop_on_entry_side")
+                : UiText.text("screen.fieldemitters.checkpoint.hold_player_keep_remaining_items"))),
         228,
         () -> s.dropOverflow = !s.dropOverflow);
     button(
-        "Player / badge filters",
+        UiText.text("screen.fieldemitters.checkpoint.player_badge_filters"),
         250,
         () -> {
           if (direction != null && !s.directions.has(direction))
@@ -133,10 +179,10 @@ final class CheckpointScreen extends FittedScreen {
                   this,
                   pos,
                   direction == null ? s.players : s.directions.resolve(direction, s.players),
-                  4,
+                  FilterPurpose.CHECKPOINT,
                   apply));
         });
-    button("Back", 280, this::onClose);
+    button(UiText.text("screen.fieldemitters.access.back"), 280, this::onClose);
   }
 
   private EntityFilter editableRule() {
@@ -159,9 +205,16 @@ final class CheckpointScreen extends FittedScreen {
 
   public void render(GuiGraphics g, int x, int y, float p) {
     beginFit(g);
-    g.fill(left, top, left + 404, top + 306, 0xFF0D1D2B);
-    g.fill(left, top, left + 404, top + 2, 0xFF53BBCB);
-    g.drawString(font, "INVENTORY CHECKPOINT", left + 12, top + 12, 0xFFE0F3FF, false);
+    g.fill(
+        left, top, left + ScreenMetrics.PANEL_WIDTH, top + ScreenMetrics.PANEL_HEIGHT, 0xFF0D1D2B);
+    g.fill(left, top, left + ScreenMetrics.PANEL_WIDTH, top + 2, 0xFF53BBCB);
+    g.drawString(
+        font,
+        UiText.text("screen.fieldemitters.checkpoint.inventory_checkpoint"),
+        left + 12,
+        top + 12,
+        0xFFE0F3FF,
+        false);
     super.render(g, fitMouse(x), fitMouse(y), p);
     g.pose().popPose();
   }

@@ -1,7 +1,7 @@
 package com.zerotheabsolute.fieldemitters;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -11,16 +11,19 @@ import net.minecraft.server.level.ServerLevel;
 public final class AccessPackets {
   public static java.util.function.Consumer<Result> receive = result -> {};
 
-  public record Result(BlockPos pos, String message) implements CustomPacketPayload {
+  public record Result(BlockPos pos, Component message) implements CustomPacketPayload {
     public static final Type<Result> TYPE =
         new Type<>(ResourceLocation.fromNamespaceAndPath(FieldEmitters.ID, "badge_result"));
-    public static final StreamCodec<FriendlyByteBuf, Result> CODEC =
+    public static final StreamCodec<RegistryFriendlyByteBuf, Result> CODEC =
         StreamCodec.of(
             (b, p) -> {
               b.writeBlockPos(p.pos);
-              b.writeUtf(p.message, 256);
+              net.minecraft.network.chat.ComponentSerialization.STREAM_CODEC.encode(b, p.message);
             },
-            b -> new Result(b.readBlockPos(), b.readUtf(256)));
+            b ->
+                new Result(
+                    b.readBlockPos(),
+                    net.minecraft.network.chat.ComponentSerialization.STREAM_CODEC.decode(b)));
 
     public Type<? extends CustomPacketPayload> type() {
       return TYPE;
@@ -28,7 +31,7 @@ public final class AccessPackets {
   }
 
   private static void reply(
-      net.minecraft.world.entity.player.Player player, BlockPos pos, String message) {
+      net.minecraft.world.entity.player.Player player, BlockPos pos, Component message) {
     net.neoforged.neoforge.network.PacketDistributor.sendToPlayer(
         (net.minecraft.server.level.ServerPlayer) player, new Result(pos, message));
   }
@@ -37,7 +40,7 @@ public final class AccessPackets {
       implements CustomPacketPayload {
     public static final Type<Request> TYPE =
         new Type<>(ResourceLocation.fromNamespaceAndPath(FieldEmitters.ID, "badge_action"));
-    public static final StreamCodec<FriendlyByteBuf, Request> CODEC =
+    public static final StreamCodec<RegistryFriendlyByteBuf, Request> CODEC =
         StreamCodec.of(
             (b, p) -> {
               b.writeBlockPos(p.pos);
@@ -55,7 +58,7 @@ public final class AccessPackets {
   public record Grants(net.minecraft.nbt.CompoundTag data) implements CustomPacketPayload {
     public static final Type<Grants> TYPE =
         new Type<>(ResourceLocation.fromNamespaceAndPath(FieldEmitters.ID, "badge_grants"));
-    public static final StreamCodec<FriendlyByteBuf, Grants> CODEC =
+    public static final StreamCodec<RegistryFriendlyByteBuf, Grants> CODEC =
         StreamCodec.of((b, p) -> b.writeNbt(p.data), b -> new Grants(b.readNbt()));
 
     public Type<? extends CustomPacketPayload> type() {
@@ -80,7 +83,7 @@ public final class AccessPackets {
   public static void register(
       net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent event) {
     event
-        .registrar("1")
+        .registrar("2")
         .playToClient(Result.TYPE, Result.CODEC, (p, c) -> c.enqueueWork(() -> receive.accept(p)))
         .playToClient(
             Grants.TYPE,
@@ -99,7 +102,7 @@ public final class AccessPackets {
                         }
                     }));
     event
-        .registrar("1")
+        .registrar("2")
         .playToServer(
             Request.TYPE,
             Request.CODEC,
@@ -125,10 +128,8 @@ public final class AccessPackets {
                           reply(
                               player,
                               p.pos,
-                              Component.literal(
-                                      "Enter a player UUID, or leave blank for a transferable"
-                                          + " badge.")
-                                  .getString());
+                              Component.translatable(
+                                  "message.fieldemitters.accesspackets.enter_a_player_uuid_or_leave_blank_for"));
                           return;
                         }
                       // An administrator editing somebody else's field still issues only their own
@@ -140,8 +141,10 @@ public final class AccessPackets {
                         reply(
                             player,
                             p.pos,
-                            Component.literal("Revoked " + count + " badges for " + group + ".")
-                                .getString());
+                            Component.translatable(
+                                "message.fieldemitters.accesspackets.revoked_badges_for",
+                                count,
+                                group));
                         return;
                       }
                       if (p.action != 0) return;
@@ -153,8 +156,8 @@ public final class AccessPackets {
                         reply(
                             player,
                             p.pos,
-                            Component.literal("Hold an access badge in either hand to issue it.")
-                                .getString());
+                            Component.translatable(
+                                "message.fieldemitters.accesspackets.hold_an_access_badge_in_either_hand_to"));
                         return;
                       }
                       data.issue(stack, issuer, group, bound);
@@ -163,14 +166,14 @@ public final class AccessPackets {
                       reply(
                           player,
                           p.pos,
-                          Component.literal(
-                                  "Issued "
-                                      + group
-                                      + " badge"
-                                      + (bound == null
-                                          ? " (transferable)."
-                                          : " for " + bound + "."))
-                              .getString());
+                          Component.translatable(
+                              "message.fieldemitters.accesspackets.issued_badge",
+                              group,
+                              (bound == null
+                                  ? Component.translatable(
+                                      "message.fieldemitters.accesspackets.transferable")
+                                  : Component.translatable(
+                                      "message.fieldemitters.accesspackets.for", bound))));
                     }));
   }
 }
