@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.1
+
+- The Field Emitter and Field Tuner can be crafted again. Their glass ingredient tags were not recognized on Forge 1.20.1.
+
 ## 1.1.0
 
 - Projection towers create hollow spherical fields or domes. Domes reach four blocks below their base to meet nearby terrain. Surface rails form bridges level with adjacent full blocks.
