@@ -26,8 +26,12 @@ public final class CheckpointSettings {
   }
 
   public boolean applies(Player player, UUID owner, Direction movement) {
-    var rule = directions.resolve(movement, players);
-    return enabled && rule.direction(movement) && rule.matches(player, owner);
+    return applies(player, owner, movement, null);
+  }
+
+  public boolean applies(Player player, UUID owner, Direction movement, Direction inward) {
+    var rule = players.relative(inward) ? players : directions.resolve(movement, players);
+    return enabled && rule.direction(movement, inward) && rule.matches(player, owner);
   }
 
   public boolean matches(ItemStack stack) {
