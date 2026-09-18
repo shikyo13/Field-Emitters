@@ -12,7 +12,7 @@ Hover over any control for a description with examples.
 - **Appearance:** pick a color preset or enter a six-digit hex color, show or hide the field graphics, toggle the animated pattern, add or remove block light, and show or hide the direction guides on your client.
 - **Connections:** select one outgoing link to give it its own blocking and detection rules, and choose the detection output face, the pulse length in seconds and the field shape for rail spans.
 
-Connected emitters and rails form one group with one set of settings. Every change applies to all connected emitters you are allowed to edit, whichever block you opened, and a newly placed post or rail takes the group's settings when it links up. Only a link selected on the Connections tab keeps rules of its own.
+Connected emitters and rails form one group with one set of settings. Every change applies to all connected emitters you are allowed to edit, whichever block you opened, and a newly placed post or rail takes the group's settings when it links up. Only a link selected on the Connections tab keeps rules of its own, and **Use the group rules for this field** returns it to the group.
 
 Turning off world lighting on the Appearance tab keeps the field visible and solid without adding light, which suits dark mob farms. Hiding the field graphics keeps blocking and detection running.
 

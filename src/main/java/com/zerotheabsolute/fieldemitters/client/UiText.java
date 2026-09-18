@@ -14,6 +14,10 @@ final class UiText {
     return text("direction.fieldemitters." + direction.getName());
   }
 
+  static String crossing(com.zeromods.core.filter.CrossingSense sense) {
+    return text("crossing.fieldemitters." + sense.name().toLowerCase(java.util.Locale.ROOT));
+  }
+
   static String formation(com.zeromods.core.animation.SphereFormation formation) {
     return text("formation.fieldemitters." + formation.name().toLowerCase(java.util.Locale.ROOT));
   }

@@ -280,7 +280,7 @@
   "screen.fieldemitters.controlhelp.checked_detect_crossings_in_this_movement_direction_unchecked": "Checked: detect crossings in this movement direction. Unchecked: ignore them. ",
   "screen.fieldemitters.controlhelp.choose_default_emitter_rules_or_select_one_outgoing": "Choose the group's default rules, or select one outgoing field for different Blocking, Detection and Damage filters. A field-specific rule takes priority over defaults. All three filters can differ for one field; energy, color and redstone output remain group settings. Changes apply automatically; switching loads that field's saved settings.",
   "screen.fieldemitters.controlhelp.choose_hex_lattice_a_clean_translucent_glow_drifting": "Choose hex lattice, a clean translucent glow, drifting colored pixels, or plasma. All styles retain impact ripples. Visuals do not change filters or collision.",
-  "screen.fieldemitters.controlhelp.choose_how_dropped_item_stacks_affect_crossing_counts": "Choose how dropped item stacks affect crossing counts and queued pulses. Count each stack: a stack of 64 gives one count/pulse. Count each item: it gives 64 counts/pulses, sent one at a time. Mobs and players always count once.",
+  "screen.fieldemitters.controlhelp.choose_how_dropped_item_stacks_affect_crossing_counts": "Choose how dropped item stacks affect the crossing counter. Count each stack: a stack of 64 adds one. Count each item: it adds 64. Mobs and players always count once. Detection output is unaffected: every crossing sends one pulse, however much crosses at once.",
   "screen.fieldemitters.controlhelp.choose_how_long_each_detection_pulse_stays_on": "Choose how long each detection pulse stays on. There is a 0.1-second off gap between queued pulses so counters see separate events. Times assume Minecraft's normal 20 ticks per second. Pulse mode must be enabled on Detection.",
   "screen.fieldemitters.controlhelp.choose_how_the_tower_builds_its_hollow_shell": "Choose how the tower builds its hollow shell: opposing laser curtains, a rising ring, assembling hex cells, meridian arcs, a crown seed, or plasma dissolve. Works with every pattern. All take four seconds; collision starts only when complete. This choice does not change filters or power use.",
   "screen.fieldemitters.controlhelp.choose_short_vanilla_sound_effects_soft_sizzle_crystal": "Choose short vanilla sound effects: Soft sizzle, Crystal or Electric. No new music or continuous sound loop is added.",
@@ -474,5 +474,14 @@
   "screen.fieldemitters.control.no_energy_connect_fe": "No energy. Connect an FE cable, generator or energy cell from another mod.",
   "screen.fieldemitters.control.not_enough_energy_needs_fe_t": "Not enough energy. This group needs %1$s FE per tick.",
   "screen.fieldemitters.control.waiting_for_redstone_input": "Powered. Waiting for the redstone condition.",
-  "screen.fieldemitters.control.starting": "Powered. Starting."
+  "screen.fieldemitters.control.starting": "Powered. Starting.",
+  "screen.fieldemitters.control.use_group_rules": "Use the group rules for this field",
+  "screen.fieldemitters.controlhelp.drop_the_rules_kept_for_this_one_field": "Drop the rules kept for this one field so it follows the group again. Both ends of the field forget them. Shown only while a field has rules of its own.",
+  "screen.fieldemitters.control.direction_frame": "Directions: %1$s",
+  "screen.fieldemitters.control.world_directions": "World (north, south, east, west)",
+  "screen.fieldemitters.control.relative_to_the_enclosure": "Relative to the enclosure",
+  "screen.fieldemitters.controlhelp.world_directions_name_the_way_an_entity": "World directions name the way an entity travels, so each side of a perimeter needs its own setting. Relative names the crossing as entering or leaving the area the posts enclose, so one setting reads correctly on every side at once and stays correct if you move or rotate the perimeter. Relative is offered only where the posts enclose an area, and it uses the shared rule rather than per-direction rules.",
+  "crossing.fieldemitters.inward": "Outside → Inside",
+  "crossing.fieldemitters.outward": "Inside → Outside",
+  "screen.fieldemitters.controlhelp.outside_inside_covers_entities_entering_the_area": "Outside → Inside covers entities entering the area the posts enclose; Inside → Outside covers entities leaving it. Each span works out which of its own faces is the inside, so one setting reads correctly on every side of the perimeter."
 }

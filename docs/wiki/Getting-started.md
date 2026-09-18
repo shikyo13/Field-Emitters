@@ -17,7 +17,7 @@ All three items are in the Field Emitters creative tab. Emitters and rails need 
 3. The field between two posts follows the terrain. It steps up or down with the ground, up to four blocks per step, and is five blocks high above the ground at every point. A link fails when the ground between the posts rises or drops more than four blocks in one step, or when the far post stands more than four blocks above or below the path.
 4. Feed Forge Energy into any post with a cable, generator or energy cell from another mod. Field Emitters ships no generator, and redstone switches fields but never powers them. Connected posts pool their stored energy, so one input can run the whole perimeter.
 
-The field switches on as soon as enough energy is stored for one tick of operation and projects outward from the powered post along each link. Turn the whole perimeter off from any post with **Field: Off** on the Power tab.
+The field switches on as soon as enough energy is stored for one tick of operation and projects outward along each link from the same end every time, so detection output and storage stay put no matter which post you feed. Turn the whole perimeter off from any post with **Field: Off** on the Power tab.
 
 ## Seal an opening
 
