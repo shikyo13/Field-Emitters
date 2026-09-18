@@ -59,26 +59,37 @@ public final class FieldNetwork {
     if (a.isRail()) return railNeighbors(a, all, includeDisabled);
     List<EmitterEntity> found = new ArrayList<>();
     for (Direction d : Direction.Plane.HORIZONTAL) {
-      EmitterEntity best = null;
-      int distance = 21;
-      for (var b : all) {
-        if (b.isTower() || b.isRail() || !Objects.equals(a.owner,b.owner)) continue;
-        int x = b.getBlockPos().getX() - a.getBlockPos().getX(),
-            z = b.getBlockPos().getZ() - a.getBlockPos().getZ();
-        int n = x * d.getStepX() + z * d.getStepZ();
-        if (n > 0
-            && n < distance
-            && x == n * d.getStepX()
-            && z == n * d.getStepZ()
-            && Math.abs(b.getBlockPos().getY() - a.getBlockPos().getY()) <= 8) {
-          best = b;
-          distance = n;
-        }
-      }
-      if (best != null && (includeDisabled || best.enabled && a.enabled) && trace(a, best) != null)
-        found.add(best);
+      var best = nearest(a, all, d);
+      // Links are mutual: both posts must choose each other and the ground must trace both ways.
+      // Otherwise stacked or offset posts could produce one-directional links, and a group
+      // would look different depending on which post it was traversed from.
+      if (best != null
+          && (includeDisabled || best.enabled && a.enabled)
+          && nearest(best, all, d.getOpposite()) == a
+          && trace(a, best) != null
+          && trace(best, a) != null) found.add(best);
     }
     return found;
+  }
+
+  /** The closest post in one direction, preferring the closest height when posts are stacked. */
+  private static EmitterEntity nearest(EmitterEntity a, List<EmitterEntity> all, Direction d) {
+    EmitterEntity best = null;
+    int distance = 21, rise = Integer.MAX_VALUE;
+    for (var b : all) {
+      if (b == a || b.isTower() || b.isRail() || !Objects.equals(a.owner, b.owner)) continue;
+      int x = b.getBlockPos().getX() - a.getBlockPos().getX(),
+          z = b.getBlockPos().getZ() - a.getBlockPos().getZ(),
+          dy = Math.abs(b.getBlockPos().getY() - a.getBlockPos().getY());
+      int n = x * d.getStepX() + z * d.getStepZ();
+      if (n <= 0 || x != n * d.getStepX() || z != n * d.getStepZ() || dy > 8) continue;
+      if (n < distance || (n == distance && dy < rise)) {
+        best = b;
+        distance = n;
+        rise = dy;
+      }
+    }
+    return best;
   }
 
   private static boolean ground(Level l, BlockPos p) {
