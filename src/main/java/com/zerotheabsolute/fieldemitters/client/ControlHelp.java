@@ -210,9 +210,6 @@ final class ControlHelp {
     if (control == Control.EDITING)
       return UiText.text(
           "screen.fieldemitters.controlhelp.choose_default_emitter_rules_or_select_one_outgoing");
-    if (control == Control.CHANGE_SETTINGS_FOR)
-      return UiText.text(
-          "screen.fieldemitters.controlhelp.this_emitter_only_changes_the_emitter_you_opened");
     if (control == Control.SEND_REDSTONE_SIGNAL_FROM)
       return UiText.text(
           "screen.fieldemitters.controlhelp.choose_where_to_connect_redstone_dust_a_lamp");
