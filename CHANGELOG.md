@@ -3,6 +3,7 @@
 ## 1.1.1
 
 - The Field Emitter and Field Tuner can be crafted again. Their glass ingredient tags were not recognized on Forge 1.20.1.
+- Fixed a crash when a post was placed directly above another post. Links between posts are now mutual, and stacked posts link to the post closest to their own height.
 - The redstone input reads from any side except the output face by default. A single side can still be chosen.
 - The Power tab now says what a stopped field is missing: no energy, not enough energy for the group, or the redstone condition. Mode names and help make clear that redstone switches fields and FE powers them.
 - The tuner header shows the mod version.
