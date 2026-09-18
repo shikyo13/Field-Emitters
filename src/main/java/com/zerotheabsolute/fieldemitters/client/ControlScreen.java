@@ -28,7 +28,12 @@ public final class ControlScreen extends FittedScreen {
     super(
         Component.literal(
             UiText.text(
-                "screen.fieldemitters.control.field_emitter", e.getBlockPos().toShortString())));
+                "screen.fieldemitters.control.field_emitter",
+                e.getBlockPos().toShortString(),
+                net.neoforged.fml.ModList.get()
+                    .getModContainerById(com.zerotheabsolute.fieldemitters.FieldEmitters.ID)
+                    .map(c -> c.getModInfo().getVersion().toString())
+                    .orElse(""))));
     emitter = e;
     draft = ControlSettings.load(e.controls.save());
     color = e.color;
@@ -142,9 +147,20 @@ public final class ControlScreen extends FittedScreen {
         });
     button(
         Control.READ_REDSTONE_FROM,
-        UiText.text("screen.fieldemitters.control.read_redstone_from", sideName(draft.inputFace)),
+        UiText.text(
+            "screen.fieldemitters.control.read_redstone_from",
+            draft.inputAny
+                ? UiText.text("screen.fieldemitters.control.any_side")
+                : sideName(draft.inputFace)),
         () -> {
-          draft.inputFace = nextFace(draft.inputFace, draft.outputFace);
+          if (draft.inputAny) {
+            draft.inputAny = false;
+            draft.inputFace = Direction.DOWN == draft.outputFace ? Direction.UP : Direction.DOWN;
+          } else {
+            var next = nextFace(draft.inputFace, draft.outputFace);
+            if (next.ordinal() <= draft.inputFace.ordinal()) draft.inputAny = true;
+            else draft.inputFace = next;
+          }
           redraw();
         });
   }
@@ -1210,9 +1226,17 @@ public final class ControlScreen extends FittedScreen {
       String status =
           emitter.powered
               ? UiText.text("screen.fieldemitters.control.field_running")
-              : emitter.enabled
-                  ? UiText.text("screen.fieldemitters.control.waiting_for_energy_or_redstone_input")
-                  : UiText.text("screen.fieldemitters.control.field_switched_off");
+              : !emitter.enabled
+                  ? UiText.text("screen.fieldemitters.control.field_switched_off")
+                  : emitter.energy.getEnergyStored() == 0
+                      ? UiText.text("screen.fieldemitters.control.no_energy_connect_fe")
+                      : emitter.energy.getEnergyStored() < emitter.demand
+                          ? UiText.text(
+                              "screen.fieldemitters.control.not_enough_energy_needs_fe_t",
+                              emitter.demand)
+                          : emitter.controls.inputMode != 0
+                              ? UiText.text("screen.fieldemitters.control.waiting_for_redstone_input")
+                              : UiText.text("screen.fieldemitters.control.starting");
       if (emitter.isTower() && emitter.enabled) {
         if (!SphereField.fitsHeight(emitter))
           status =
