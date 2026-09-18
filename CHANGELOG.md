@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- The redstone input reads from any side except the output face by default. A single side can still be chosen.
+- The Power tab now says what a stopped field is missing: no energy, not enough energy for the group, or the redstone condition. Mode names and help make clear that redstone switches fields and FE powers them.
+- The tuner header shows the mod version.
 - Connected emitters and rails now share one set of settings. Changes made from any block of a group apply to the whole group, and newly placed posts and rails adopt the group's settings when they link up. Previously a post applied changes to itself only, so blocking and detection rules could differ between the sides of one perimeter depending on which post was opened. The "Change settings for" toggle is gone; link-specific rules still work.
 - Added translation support for tuner menus, filter editors, help, animation names, item instructions, configuration labels, and server messages.
 - Separated control identities and filter purposes from display text. Organized tuner controls into tab builders and shared UI constants.

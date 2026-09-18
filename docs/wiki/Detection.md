@@ -18,10 +18,10 @@ With the Drops category selected, **Count each stack** sends one pulse per item 
 
 The Connections tab chooses the detection output face. The Power tab chooses the redstone input face and mode:
 
-- **Always:** the field runs whenever it has energy.
-- **On while high:** the field runs only while the input face receives a signal.
-- **On while low:** the field runs only while the input face receives no signal.
+- **Always (while powered):** the field runs whenever it has energy.
+- **Only while redstone is ON:** the field runs only while the input receives a signal.
+- **Only while redstone is OFF:** the field runs only while the input receives no signal.
 
-Input and output use different faces. Top and bottom refer to the emitter block itself; north, south, east and west are world directions. Redstone never supplies energy; a field with no stored energy stays off in every mode.
+The input reads every side except the output face by default. Choose a single side with **Read redstone from** when a neighboring circuit should be ignored. Top and bottom refer to the emitter block itself; north, south, east and west are world directions. Redstone never supplies energy; a field with no stored energy stays off in every mode.
 
 Rails in one connected chain report through the chain's source rail, shown on the Connections tab, so a wide doorway made of several rails gives one counter and one output.
