@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Connected emitters and rails now share one set of settings. Changes made from any block of a group apply to the whole group, and newly placed posts and rails adopt the group's settings when they link up. Previously a post applied changes to itself only, so blocking and detection rules could differ between the sides of one perimeter depending on which post was opened. The "Change settings for" toggle is gone; link-specific rules still work.
 - Added translation support for tuner menus, filter editors, help, animation names, item instructions, configuration labels, and server messages.
 - Separated control identities and filter purposes from display text. Organized tuner controls into tab builders and shared UI constants.
 - Added fitted labels with full hover text for longer translations.

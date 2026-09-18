@@ -203,6 +203,42 @@ public final class FieldNetwork {
     }
   }
 
+  /**
+   * A group of connected emitters and rails shares one set of settings. Whenever a member has been
+   * placed since the last rebuild, every member is brought in line with the member that has been
+   * configured, or with the oldest member when none has. A new post joining a perimeter takes the
+   * perimeter's rules, and a post bridging two configured groups leaves one group with one set of
+   * rules, so it never matters which block of a group a player opens.
+   */
+  private static void adopt(ServerLevel l, List<EmitterEntity> network) {
+    var members = network.stream().filter(e -> !e.isTower()).toList();
+    if (members.size() < 2 || members.stream().noneMatch(e -> e.adoptPending)) return;
+    var template =
+        members.stream()
+            .filter(e -> !e.adoptPending)
+            .min(java.util.Comparator.comparingLong(e -> e.placedAt))
+            .orElseGet(
+                () ->
+                    members.stream()
+                        .min(java.util.Comparator.comparingLong(e -> e.placedAt))
+                        .orElseThrow());
+    String settings = template.controls.save().toString();
+    for (var e : members) {
+      e.adoptPending = false;
+      if (e == template) continue;
+      if (e.color == template.color
+          && e.enabled == template.enabled
+          && e.controls.save().toString().equals(settings)) continue;
+      e.controls = ControlSettings.load(template.controls.save());
+      e.color = template.color;
+      e.enabled = template.enabled;
+      e.mask = e.controls.barrier.groups;
+      e.passages.clear();
+      l.updateNeighborsAt(e.getBlockPos(), e.getBlockState().getBlock());
+      e.sync();
+    }
+  }
+
   private static void rebuild(ServerLevel l, List<EmitterEntity> all, long now) {
     ManagedFields.refresh(l, all);
     Map<BlockPos, Integer> rank = new HashMap<>();
@@ -236,6 +272,7 @@ public final class FieldNetwork {
           }
       }
       for (var e : network) e.root = source.getBlockPos();
+      adopt(l, network);
     }
     for (var e : all) {
       if(e.isTower()){SphereField.rebuild(l,e);updateLights(l,e,e.powered);continue;}

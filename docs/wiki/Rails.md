@@ -13,7 +13,7 @@ Rails on a floor and a ceiling make a vertical span. Choose **Field shape: Horiz
 
 ## Chains
 
-A chain of connected rails behaves as one field. The rail control screen edits the whole chain by default, so a doorway made of three strips keeps one set of filters, one counter and one output. Select **This emitter only** on the Connections tab to change a single rail.
+A chain of connected rails behaves as one field. The control screen edits the whole chain from any rail in it, so a doorway made of three strips keeps one set of filters, one counter and one output, the same way a perimeter of posts does.
 
 Do not connect a perimeter post directly to a rail. Posts and rails use different projection geometry and link only to their own kind.
 
