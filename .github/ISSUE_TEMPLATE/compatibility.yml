@@ -1,0 +1,33 @@
+name: Mod compatibility
+description: Field Emitters misbehaves alongside another mod, or an energy mod does not power it.
+labels: [compatibility]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: Field Emitters version
+      description: Shown in the header of the tuner screen.
+      placeholder: "1.1.0"
+    validations:
+      required: true
+  - type: input
+    id: other
+    attributes:
+      label: Other mod and version
+      placeholder: Mekanism 10.7.8
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What goes wrong?
+      description: What you did, what you expected, and what happened.
+    validations:
+      required: true
+  - type: textarea
+    id: log
+    attributes:
+      label: latest.log
+      description: Attach `logs/latest.log`. Remove tokens, account details and private server addresses.
+    validations:
+      required: true

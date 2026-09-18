@@ -1,0 +1,16 @@
+name: Feature request
+description: Suggest something new or a change to how something works.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would you like?
+      description: Describe the feature or change and how you would use it.
+    validations:
+      required: true
+  - type: textarea
+    id: current
+    attributes:
+      label: What do you do today instead?
+      description: Optional. Any workaround or the part of the mod that comes closest.

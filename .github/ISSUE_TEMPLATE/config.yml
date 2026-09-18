@@ -1,5 +1,5 @@
-blank_issues_enabled: true
+blank_issues_enabled: false
 contact_links:
-  - name: Setup help and discussion
+  - name: Setup help and questions
     url: https://discord.gg/NrdXnbWzGC
-    about: Join ZeroNexus | Games & Development.
+    about: Ask on Discord if you are not sure whether something is a bug.

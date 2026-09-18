@@ -1,5 +1,6 @@
 name: Bug report
-description: Report a reproducible problem with Field Emitters.
+description: Something is broken or does not work as documented.
+labels: [bug]
 body:
   - type: input
     id: version
