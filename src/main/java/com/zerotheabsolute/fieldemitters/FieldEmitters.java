@@ -8,6 +8,16 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 
 public final class FieldEmitters implements net.fabricmc.api.ModInitializer {
   public static final String ID = "fieldemitters";
+
+  /**
+   * Mod version, read from the jar manifest so it works on every loader. Empty in a development
+   * run, where the classes are not loaded from a built jar.
+   */
+  public static String version() {
+    String version = FieldEmitters.class.getPackage().getImplementationVersion();
+    return version == null ? "" : version;
+  }
+
   public static final Registration<Block> BLOCKS = new Registration<>(net.minecraft.core.registries.BuiltInRegistries.BLOCK);
   public static final Registration<Item> ITEMS = new Registration<>(net.minecraft.core.registries.BuiltInRegistries.ITEM);
   public static final Registration<BlockEntityType<?>> TYPES =
