@@ -36,7 +36,9 @@ public final class FieldGuide {
         var c = center.add(along.scale(sign * .25));
         var forward = normal.scale(sign);
         int color =
-            e.settings(link).barrier(link.movement(sign > 0)).direction(link.movement(sign > 0)) ? 0xFFB750 : 0x77FFBD;
+            e.settings(link).barrierCovers(link.movement(sign > 0), link.inward())
+                ? 0xFFB750
+                : 0x77FFBD;
         var a = c.subtract(forward.scale(.65));
         var b = c.add(forward.scale(.35));
         quad(

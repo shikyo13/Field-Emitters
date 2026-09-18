@@ -204,9 +204,15 @@ final class ControlHelp {
     if (control == Control.ANIMATE_FIELD_PATTERN)
       return UiText.text(
           "screen.fieldemitters.controlhelp.toggle_the_moving_pattern_on_the_field_surface");
+    if (control == Control.CROSSING)
+      return UiText.text("screen.fieldemitters.controlhelp.outside_inside_covers_entities_entering_the_area");
+    if (control == Control.DIRECTION_FRAME)
+      return UiText.text("screen.fieldemitters.controlhelp.world_directions_name_the_way_an_entity");
     if (control == Control.DIRECTION_GUIDES)
       return UiText.text(
           "screen.fieldemitters.controlhelp.show_with_tuner_displays_movement_arrows_while_holding");
+    if (control == Control.USE_GROUP_RULES)
+      return UiText.text("screen.fieldemitters.controlhelp.drop_the_rules_kept_for_this_one_field");
     if (control == Control.EDITING)
       return UiText.text(
           "screen.fieldemitters.controlhelp.choose_default_emitter_rules_or_select_one_outgoing");

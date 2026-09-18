@@ -18,6 +18,11 @@
 
 - Check the Blocking tab: the category must be checked and any details must match. Details combine with AND.
 - Check the direction boxes. An unchecked direction lets entities pass that way.
+- A mount and its riders are checked together, and the field stops the group when it stops either one. A rule that blocks passive mobs therefore also stops a player riding a horse, unless that player has passage rights. The exempt owner, and a listed player or access badge holder while the filter lets listed players pass, take their mount through with them.
+
+## A gap appears where the field crosses a slab or carpet
+
+The field fills whole blocks. Where a slab, carpet, snow layer or fence stands in the field path, that block is already occupied and the field cannot fill it, leaving a partial gap at that spot. Clear the path or raise the posts so the field crosses full blocks or open air.
 - In *Allow selected only* mode, everything outside the selection is blocked and the selection passes.
 - The field projects outward from the powered post over a few ticks after it switches on.
 

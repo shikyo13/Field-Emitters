@@ -48,7 +48,7 @@ public final class FieldDamage {
         };
         if (!slab.intersects(space.local(entity.getBoundingBox()))) continue;
         Direction direction = FieldContact.movement(e, link, entity, center);
-        if (!settings.damages(entity, e.owner, direction)) continue;
+        if (!settings.damages(entity, e.owner, direction, link.inward())) continue;
         if (entity.hurt(level.damageSources().magic(), settings.damageAmount)) {
           ((EntityData) entity).fieldData().putLong(NEXT_HIT, now + settings.damageInterval);
           boolean destroyed = !entity.isAlive() || (entity instanceof LivingEntity living && living.getHealth() <= 0);

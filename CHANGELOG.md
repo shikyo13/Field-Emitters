@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- Blocking, detection and damage rules can name directions relative to the area the posts enclose, as Outside → Inside and Inside → Outside, instead of as world directions. One setting then reads correctly on every side of a perimeter and survives moving or rotating it, where world directions need a separate setting per side. World directions remain the default and are unchanged. The relative choice appears only where the posts enclose an area.
+- Facing rails now link only when they choose each other, the same rule posts follow. Three rails in a line could previously give one rail a span reaching past its neighbour, which made the group look different depending on which rail was read and could switch its power on and off every tick.
+- A field given rules of its own can be returned to the group rules from the Connections tab. Previously there was no way to undo a per-field rule, so later group-wide changes silently skipped that field forever. Rules kept for a partner that has since been removed are now dropped as well.
+- Water and lava now stop at a powered field. Previously a fluid destroyed the field cell and took its place, leaving a permanent gap because the rebuild only refills air.
+- Detection output sends one pulse per crossing, the way a tripwire fires once however much passes over it. A thrown stack of 64 now sends one pulse instead of 64, and pending pulses are capped at 64 instead of 100,000, so a busy field can no longer keep pulsing for hours. Counting each item still affects the crossing counter.
+- The detection output face, checkpoint storage and formation origin of a group no longer move when a buffer empties or a redstone signal changes. They stay with the same emitter until the field is changed or broken. On an existing world the first rebuild may move a group's formation origin and its "connect redstone at" hint once, to the lowest post in the group, after which they stay put.
+- A mount and its riders are now checked together. A field that stops the rider or the vehicle stops the whole group, so a blocked player can no longer cross on a horse, boat or minecart. Inventory checkpoints check riders the same way. A rider with passage rights, the exempt owner or an access badge holder, takes the group through.
 - Fixed a crash when a post was placed directly above another post. Links between posts are now mutual, and stacked posts link to the post closest to their own height.
 - The redstone input reads from any side except the output face by default. A single side can still be chosen.
 - The Power tab now says what a stopped field is missing: no energy, not enough energy for the group, or the redstone condition. Mode names and help make clear that redstone switches fields and FE powers them.

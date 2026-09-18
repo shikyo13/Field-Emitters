@@ -25,8 +25,8 @@ public final class FieldSensor {
                   (net.minecraft.world.entity.Entity) null,
                   area,
                   a ->
-                      settings.detects(a, e.owner, link.movement(true))
-                          || settings.detects(a, e.owner, link.movement(false)))) {
+                      settings.detects(a, e.owner, link.movement(true), link.inward())
+                          || settings.detects(a, e.owner, link.movement(false), link.inward()))) {
             var feet = space.local(entity.position());
             var localBox = space.local(entity.getBoundingBox());
             var position = link.normal() == Direction.Axis.Y ? localBox.getCenter() : feet;
@@ -63,9 +63,9 @@ public final class FieldSensor {
             present |=
                 side == 0
                     && (old != null
-                        ? settings.detects(entity, e.owner, link.movement(old.side() < 0))
-                        : settings.detects(entity, e.owner, link.movement(true))
-                            && settings.detects(entity, e.owner, link.movement(false)));
+                        ? settings.detects(entity, e.owner, link.movement(old.side() < 0), link.inward())
+                        : settings.detects(entity, e.owner, link.movement(true), link.inward())
+                            && settings.detects(entity, e.owner, link.movement(false), link.inward()));
             if (side == 0) {
               if (old != null)
                 e.passages.put(key, new EmitterEntity.Passage(old.side(), old.position(), now));
@@ -88,7 +88,7 @@ public final class FieldSensor {
                   && (link.rail()
                       || intersection.y < link.ground()[ci] + 5
                           && intersection.y + entity.getBbHeight() > link.ground()[ci])
-                  && settings.detects(entity, e.owner, direction)
+                  && settings.detects(entity, e.owner, direction, link.inward())
                   && detected.add(
                       entity.getUUID()
                           + ":"
@@ -102,7 +102,12 @@ public final class FieldSensor {
                         ? item.getItem().getCount()
                         : 1;
                 e.crossings += count;
-                if (mode == 1) e.queuedPulses = Math.min(100000, e.queuedPulses + count);
+                // One pulse per crossing, the way a tripwire fires once however much passes over
+                // it. A thrown stack is one entity, so it sends one pulse while the counter above
+                // still records every item. Pending pulses are capped, because the output can only
+                // emit one per pulse length plus two ticks.
+                if (mode == 1)
+                  e.queuedPulses = Math.min(EmitterEntity.MAX_PENDING_PULSES, e.queuedPulses + 1);
                 e.lastDetection =
                     net.minecraft.network.chat.Component.translatable(
                         "message.fieldemitters.detection.crossing",
