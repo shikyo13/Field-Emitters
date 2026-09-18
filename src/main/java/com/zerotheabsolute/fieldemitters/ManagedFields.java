@@ -27,10 +27,12 @@ public final class ManagedFields {
       var parts =
           FieldNetwork.configurable(seed).stream()
               .filter(e -> Objects.equals(e.owner, seed.owner))
+              .filter(e -> !seen.contains(e.getBlockPos()))
               .sorted(
                   Comparator.comparingLong((EmitterEntity e) -> e.placedAt)
                       .thenComparingLong(e -> e.getBlockPos().asLong()))
               .toList();
+      if (parts.isEmpty()) continue;
       var positions = parts.stream().map(EmitterEntity::getBlockPos).toList();
       seen.addAll(positions);
       var first = parts.get(0);
