@@ -73,3 +73,10 @@ configurations.jarJar.attributes {
     attribute(net.neoforged.moddevgradle.legacyforge.internal.MinecraftMappings.ATTRIBUTE,
             objects.named(net.neoforged.moddevgradle.legacyforge.internal.MinecraftMappings, 'srg'))
 }
+
+// The tuner reads the running version from this manifest entry, on every loader.
+tasks.named('jar', Jar).configure {
+    manifest {
+        attributes(['Implementation-Title': mod_name, 'Implementation-Version': mod_version])
+    }
+}
