@@ -3,6 +3,12 @@
 ## 1.1.1
 
 - The Field Emitter and Field Tuner can be crafted again. Their glass ingredient tags were not recognized on Forge 1.20.1.
+- Connected emitters and rails now share one set of settings. Changes made from any block of a group apply to the whole group, and newly placed posts and rails adopt the group's settings when they link up. Previously a post applied changes to itself only, so blocking and detection rules could differ between the sides of one perimeter depending on which post was opened. The "Change settings for" toggle is gone; link-specific rules still work.
+- Added translation support for tuner menus, filter editors, help, animation names, item instructions, configuration labels, and server messages.
+- Separated control identities and filter purposes from display text. Organized tuner controls into tab builders and shared UI constants.
+- Added fitted labels with full hover text for longer translations.
+- Preserved translatable detection messages across saves. Existing custom names and legacy detection text remain readable.
+- Updated menu-response networking; clients and servers must use the matching mod build.
 
 ## 1.1.0
 

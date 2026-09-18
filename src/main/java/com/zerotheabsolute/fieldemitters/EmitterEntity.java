@@ -38,6 +38,8 @@ public final class EmitterEntity extends BlockEntity {
   public boolean managementPublic;
   public final Set<UUID> managerIds = new HashSet<>();
   public long placedAt = Long.MAX_VALUE;
+  /** Newly placed and not yet given the settings of the group it joins. */
+  public boolean adoptPending = false;
   public String fieldName = "";
   public long transition = 0;
   public int demand = 0;
@@ -175,6 +177,7 @@ public final class EmitterEntity extends BlockEntity {
     super.saveAdditional(t);
     t.put("Management", ManagementAccess.snapshot(this));
     t.putLong("PlacedAt", placedAt);
+    t.putBoolean("AdoptPending", adoptPending);
     t.putString("FieldName", fieldName);
     t.put("Controls", controls.save());
     var overrideTags = new ListTag();
@@ -293,6 +296,7 @@ public final class EmitterEntity extends BlockEntity {
     demand = t.getInt("Demand");
     energy.deserializeNBT(IntTag.valueOf(Math.max(0, Math.min(energy.getMaxEnergyStored(), t.getInt("Energy")))));
     placedAt = t.contains("PlacedAt") ? t.getLong("PlacedAt") : Long.MAX_VALUE;
+    adoptPending = t.getBoolean("AdoptPending");
     fieldName = t.getString("FieldName");
     owner = t.hasUUID("Owner") ? t.getUUID("Owner") : null;
     links = new ArrayList<>();
