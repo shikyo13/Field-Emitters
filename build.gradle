@@ -97,3 +97,10 @@ tasks.named('jarJar') {
     from('LICENSE') { into 'META-INF' }
 }
 tasks.named('build') { dependsOn tasks.named('jarJar') }
+
+// The tuner reads the running version from this manifest entry, on every loader.
+tasks.named('jar', Jar).configure {
+    manifest {
+        attributes(['Implementation-Title': mod_name, 'Implementation-Version': mod_version])
+    }
+}
