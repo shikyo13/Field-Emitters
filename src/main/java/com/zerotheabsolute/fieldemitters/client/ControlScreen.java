@@ -17,7 +17,7 @@ public final class ControlScreen extends FittedScreen {
   private int selectedLink = -1;
   private Direction filterDirection;
   private boolean filterEditable = true;
-  private boolean enabled, network = false, reset = false;
+  private boolean enabled, reset = false;
   private boolean showGuides = FieldConfig.SHOW_GUIDES.get();
   private String notice = UiText.text("screen.fieldemitters.control.changes_apply_automatically");
   private long textDue;
@@ -30,7 +30,6 @@ public final class ControlScreen extends FittedScreen {
             UiText.text(
                 "screen.fieldemitters.control.field_emitter", e.getBlockPos().toShortString())));
     emitter = e;
-    network = e.isRail();
     draft = ControlSettings.load(e.controls.save());
     color = e.color;
     enabled = e.enabled;
@@ -765,20 +764,6 @@ public final class ControlScreen extends FittedScreen {
                       .save());
           rebuildWidgets();
         });
-    button(
-        Control.CHANGE_SETTINGS_FOR,
-        UiText.text(
-            "screen.fieldemitters.control.change_settings_for",
-            (selectedLink >= 0
-                ? UiText.text("screen.fieldemitters.control.this_field_only")
-                : network
-                    ? UiText.text("screen.fieldemitters.control.my_connected_emitters")
-                    : UiText.text("screen.fieldemitters.control.this_emitter_only"))),
-        () -> {
-          applyPending();
-          network = !network;
-          rebuildWidgets();
-        });
     if (emitter.isRail())
       button(
           Control.FIELD_SHAPE,
@@ -892,7 +877,7 @@ public final class ControlScreen extends FittedScreen {
       notice = UiText.text("screen.fieldemitters.control.field_disconnected_reopen_settings");
       return;
     }
-    String signature = draft.save().toString() + color + enabled + network + selectedLink;
+    String signature = draft.save().toString() + color + enabled + selectedLink;
     if (!reset && signature.equals(lastSent)) return;
     var target =
         selectedLink < 0 ? emitter.getBlockPos() : emitter.links.get(selectedLink).target();
@@ -902,7 +887,7 @@ public final class ControlScreen extends FittedScreen {
             draft.save(),
             color,
             enabled,
-            network,
+            true,
             reset,
             target,
             selectedLink >= 0));
@@ -1218,10 +1203,8 @@ public final class ControlScreen extends FittedScreen {
                 ? UiText.text(
                     "screen.fieldemitters.control.this_connection_only",
                     emitter.links.get(selectedLink).target().toShortString())
-                : network
-                    ? UiText.text(
-                        "screen.fieldemitters.control.changes_affect_your_connected_emitters")
-                    : UiText.text("screen.fieldemitters.control.changes_affect_this_emitter_only");
+                : UiText.text(
+                    "screen.fieldemitters.control.changes_affect_your_connected_emitters");
     g.drawString(font, scope, left + 12, top + 26, 0x92A9BE, false);
     if (tab == ControlTab.OVERVIEW) {
       String status =
