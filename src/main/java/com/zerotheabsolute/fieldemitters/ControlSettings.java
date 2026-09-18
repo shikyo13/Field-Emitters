@@ -94,6 +94,8 @@ public final class ControlSettings {
   public int railNormal = 2;
   public int sensorMode = 0, pulseTicks = 4, inputMode = 0;
   public Direction outputFace = Direction.DOWN, inputFace = Direction.UP;
+  /** Read the redstone input from every side except the output face. */
+  public boolean inputAny = true;
 
   public ControlSettings() {
     barrier.exemptOwner = true;
@@ -148,6 +150,7 @@ public final class ControlSettings {
     t.putInt("InputMode", inputMode);
     t.putInt("OutputFace", outputFace.ordinal());
     t.putInt("InputFace", inputFace.ordinal());
+    t.putBoolean("InputAny", inputAny);
     return t;
   }
 
@@ -214,6 +217,7 @@ public final class ControlSettings {
     s.outputFace = Direction.from3DDataValue(Math.max(0, Math.min(5, t.getInt("OutputFace"))));
     s.inputFace = Direction.from3DDataValue(Math.max(0, Math.min(5, t.getInt("InputFace"))));
     if (s.inputFace == s.outputFace) s.inputFace = s.outputFace.getOpposite();
+    s.inputAny = !t.contains("InputAny") || t.getBoolean("InputAny");
     return s;
   }
 }

@@ -524,8 +524,14 @@ public final class FieldNetwork {
   }
 
   private static boolean input(ServerLevel l, EmitterEntity e) {
-    var face = e.controls.inputFace;
-    return l.getSignal(e.getBlockPos().relative(face), face) > 0;
+    if (!e.controls.inputAny) {
+      var face = e.controls.inputFace;
+      return l.getSignal(e.getBlockPos().relative(face), face) > 0;
+    }
+    for (var face : net.minecraft.core.Direction.values())
+      if (face != e.controls.outputFace && l.getSignal(e.getBlockPos().relative(face), face) > 0)
+        return true;
+    return false;
   }
 
   private static String signature(List<EmitterEntity.Link> links) {
