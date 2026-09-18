@@ -4,6 +4,7 @@ import java.util.function.Consumer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import com.zerotheabsolute.fieldemitters.network.PacketCodec;
 import com.zerotheabsolute.fieldemitters.network.FieldPayload;
 import net.minecraft.resources.ResourceLocation;
@@ -14,7 +15,8 @@ public final class FieldControls {
   public static Consumer<RemoteData> remoteData = data -> {};
 
   public static boolean hasTuner(net.minecraft.world.entity.player.Player player) {
-    return BadgeAccess.carried(player).stream().anyMatch(stack -> stack.is(FieldEmitters.TUNER.get()));
+    return BadgeAccess.carried(player).stream()
+        .anyMatch(stack -> stack.is(FieldEmitters.TUNER.get()));
   }
 
   public record RemoteRequest(boolean list, BlockPos pos) implements FieldPayload {
@@ -49,7 +51,7 @@ public final class FieldControls {
     }
   }
 
-  public record RemoteData(int kind, CompoundTag data, String message)
+  public record RemoteData(int kind, CompoundTag data, Component message)
       implements FieldPayload {
     public static final Type<RemoteData> TYPE =
         new Type<>(new ResourceLocation(FieldEmitters.ID, "remote_data"));
@@ -58,9 +60,13 @@ public final class FieldControls {
             (b, p) -> {
               b.writeInt(p.kind);
               b.writeNbt(p.data);
-              b.writeUtf(p.message, 256);
+              b.writeComponent(p.message);
             },
-            b -> new RemoteData(b.readInt(), b.readNbt(), b.readUtf(256)));
+            b ->
+                new RemoteData(
+                    b.readInt(),
+                    b.readNbt(),
+                    b.readComponent()));
 
     public Type<? extends FieldPayload> type() {
       return TYPE;
@@ -68,7 +74,10 @@ public final class FieldControls {
   }
 
   private static void reply(
-      net.minecraft.world.entity.player.Player player, int kind, CompoundTag data, String message) {
+      net.minecraft.world.entity.player.Player player,
+      int kind,
+      CompoundTag data,
+      Component message) {
     com.zerotheabsolute.fieldemitters.network.NativeNetwork.sendToPlayer(
         (net.minecraft.server.level.ServerPlayer) player, new RemoteData(kind, data, message));
   }
@@ -80,12 +89,18 @@ public final class FieldControls {
   private static void remote(
       RemoteRequest request, net.minecraft.world.entity.player.Player player) {
     if (!hasTuner(player)) {
-      reply(player, 2, new CompoundTag(), "Carry or equip a Field Tuner to manage emitters remotely.");
+      reply(
+          player,
+          2,
+          new CompoundTag(),
+          Component.translatable(
+              "message.fieldemitters.fieldcontrols.carry_or_equip_a_field_tuner_to_manage"));
       return;
     }
     var level = player.level();
     if (request.list) {
-      ManagedFields.refresh((net.minecraft.server.level.ServerLevel) level, FieldNetwork.loaded(level));
+      ManagedFields.refresh(
+          (net.minecraft.server.level.ServerLevel) level, FieldNetwork.loaded(level));
       var data = new CompoundTag();
       var entries = new net.minecraft.nbt.ListTag();
       var all =
@@ -109,11 +124,15 @@ public final class FieldControls {
         var entry = new CompoundTag();
         if (anchor.managedNetwork != null) entry.putUUID("NetworkId", anchor.managedNetwork.id());
         entry.putLong("Pos", anchor.getBlockPos().asLong());
-        entry.putLong("Origin", (anchor.managedNetwork == null ? anchor.getBlockPos() : anchor.managedNetwork.anchor().orElse(anchor.getBlockPos())).asLong());
+        entry.putLong(
+            "Origin",
+            (anchor.managedNetwork == null
+                    ? anchor.getBlockPos()
+                    : anchor.managedNetwork.anchor().orElse(anchor.getBlockPos()))
+                .asLong());
         entry.putString(
             "Name",
-            anchor.managedNetwork != null ? anchor.managedNetwork.name() :
-                anchor.fieldName.isBlank() ? "Field at " + anchor.getBlockPos().toShortString() : anchor.fieldName);
+            anchor.managedNetwork != null ? anchor.managedNetwork.name() : anchor.fieldName);
         var parts = new net.minecraft.nbt.ListTag();
         int running = 0;
         for (var e : members) {
@@ -132,7 +151,12 @@ public final class FieldControls {
       }
       data.put("Entries", entries);
       data.putString("Dimension", level.dimension().location().toString());
-      reply(player, 0, data, "Connected loaded emitters form one field. Select a field.");
+      reply(
+          player,
+          0,
+          data,
+          Component.translatable(
+              "message.fieldemitters.fieldcontrols.connected_loaded_emitters_form_one_field_select_a"));
     } else {
       if (!level.hasChunkAt(request.pos)
           || !(level.getBlockEntity(request.pos) instanceof EmitterEntity e)
@@ -141,14 +165,15 @@ public final class FieldControls {
             player,
             2,
             new CompoundTag(),
-            "Emitter unavailable or access denied. Refresh the list.");
+            Component.translatable(
+                "message.fieldemitters.fieldcontrols.emitter_unavailable_or_access_denied_refresh_the_list"));
         return;
       }
       var data = new CompoundTag();
       data.putLong("Pos", e.getBlockPos().asLong());
       data.put("State", net.minecraft.nbt.NbtUtils.writeBlockState(e.getBlockState()));
       data.put("Emitter", e.getUpdateTag());
-      reply(player, 1, data, "");
+      reply(player, 1, data, Component.empty());
     }
   }
 
@@ -211,21 +236,33 @@ public final class FieldControls {
                             player,
                             2,
                             new CompoundTag(),
-                            "Cannot rename: carry or equip a tuner and use an accessible loaded field.");
+                            Component.translatable(
+                                "message.fieldemitters.fieldcontrols.cannot_rename_carry_or_equip_a_tuner_and"));
                         return;
                       }
                       String name = p.name.strip();
                       if (name.chars().anyMatch(ch -> Character.isISOControl(ch) || ch == 167)) {
-                        reply(player, 2, new CompoundTag(), "Use plain text for the field name.");
+                        reply(
+                            player,
+                            2,
+                            new CompoundTag(),
+                            Component.translatable(
+                                "message.fieldemitters.fieldcontrols.use_plain_text_for_the_field_name"));
                         return;
                       }
                       for (var e : FieldNetwork.configurable(seed))
                         if (editable(e, player)) {
-                          ManagedFields.rename((net.minecraft.server.level.ServerLevel) level, e, name);
+                          ManagedFields.rename(
+                              (net.minecraft.server.level.ServerLevel) level, e, name);
                           e.fieldName = name;
                           e.sync();
                         }
-                      reply(player, 2, new CompoundTag(), "Field name updated.");
+                      reply(
+                          player,
+                          2,
+                          new CompoundTag(),
+                          Component.translatable(
+                              "message.fieldemitters.fieldcontrols.field_name_updated"));
                     }));
     event
         
@@ -256,7 +293,8 @@ public final class FieldControls {
                             player,
                             2,
                             new CompoundTag(),
-                            "Emitter unavailable. Stay nearby or carry or equip a Field Tuner.");
+                            Component.translatable(
+                                "message.fieldemitters.fieldcontrols.emitter_unavailable_stay_nearby_or_carry_or_equip"));
                         return;
                       }
                       if (!editable(seed, player)) {
@@ -264,11 +302,12 @@ public final class FieldControls {
                             player,
                             2,
                             new CompoundTag(),
-                            "Access denied. Ask the field owner for management access.");
+                            Component.translatable(
+                                "message.fieldemitters.fieldcontrols.access_denied_ask_the_field_owner_for_management"));
                         return;
                       }
                       var validated = ControlSettings.load(p.settings);
-                      String error = validate(validated);
+                      Component error = validate(validated);
                       if (error != null) {
                         reply(player, 2, new CompoundTag(), error);
                         return;
@@ -285,13 +324,21 @@ public final class FieldControls {
                         other.passages.clear();
                         seed.sync();
                         other.sync();
-                        reply(player, 2, new CompoundTag(), "Changes applied.");
+                        reply(
+                            player,
+                            2,
+                            new CompoundTag(),
+                            Component.translatable(
+                                "message.fieldemitters.fieldcontrols.changes_applied"));
                         return;
                       }
                       for (var e :
                           p.network ? FieldNetwork.configurable(seed) : java.util.List.of(seed)) {
                         if (!editable(e, player)) continue;
-                        if(e.isTower() && (e.controls.sphereRadius!=validated.sphereRadius || e.controls.dome!=validated.dome)) e.transition=level.getGameTime();
+                        if (e.isTower()
+                            && (e.controls.sphereRadius != validated.sphereRadius
+                                || e.controls.dome != validated.dome))
+                          e.transition = level.getGameTime();
                         e.controls = ControlSettings.load(p.settings);
                         e.color = p.color & 0xffffff;
                         e.enabled = p.enabled;
@@ -300,70 +347,113 @@ public final class FieldControls {
                         if (p.reset) {
                           e.crossings = 0;
                           e.queuedPulses = 0;
-                          e.lastDetection = "None";
+                          e.lastDetection =
+                              Component.translatable("message.fieldemitters.detection.none");
                         }
                         level.updateNeighborsAt(e.getBlockPos(), e.getBlockState().getBlock());
                         e.sync();
                       }
-                      reply(player, 2, new CompoundTag(), "Changes applied.");
+                      reply(
+                          player,
+                          2,
+                          new CompoundTag(),
+                          Component.translatable(
+                              "message.fieldemitters.fieldcontrols.changes_applied"));
                     }));
   }
 
-  public static String validate(ControlSettings settings) {
-    if (!Float.isFinite(settings.damageAmount) || settings.damageAmount < 0 || settings.damageAmount > 1000)
-      return "Damage must be a number from 0 to 1000 HP (2 HP = 1 heart).";
-    for(var filter:settings.filters()) { String error=validate(filter);if(error!=null)return error; }
+  public static Component validate(ControlSettings settings) {
+    if (!Float.isFinite(settings.damageAmount)
+        || settings.damageAmount < 0
+        || settings.damageAmount > ControlSettings.MAX_DAMAGE)
+      return Component.translatable(
+          "message.fieldemitters.fieldcontrols.damage_must_be_a_number_from_0_to");
+    for (var filter : settings.filters()) {
+      Component error = validate(filter);
+      if (error != null) return error;
+    }
     return null;
   }
 
-  public static String validate(EntityFilter f) {
-    if (f.mobMode < 0 || f.mobMode > 2 || f.itemMode < 0 || f.itemMode > 2
-        || f.mobList.size() > EntityFilter.MAX_TYPES || f.itemList.size() > EntityFilter.MAX_TYPES)
-      return "Mob and item lists support at most 64 entries each.";
-    for (String value : f.mobList) { String error = validateTypeEntry(value, false); if (error != null) return error; }
-    for (String value : f.itemList) { String error = validateTypeEntry(value, true); if (error != null) return error; }
-    if(f.accessGroups.size()>64 || f.accessGroups.stream().anyMatch(g->!BadgeAccess.validGroup(g))) return "Use up to 64 group names: lowercase letters, numbers, spaces, underscores or hyphens.";
+  public static Component validate(EntityFilter f) {
+    if (f.mobMode < 0
+        || f.mobMode > 2
+        || f.itemMode < 0
+        || f.itemMode > 2
+        || f.mobList.size() > EntityFilter.MAX_TYPES
+        || f.itemList.size() > EntityFilter.MAX_TYPES)
+      return Component.translatable(
+          "message.fieldemitters.fieldcontrols.mob_and_item_lists_support_at_most_64");
+    for (String value : f.mobList) {
+      Component error = validateTypeEntry(value, false);
+      if (error != null) return error;
+    }
+    for (String value : f.itemList) {
+      Component error = validateTypeEntry(value, true);
+      if (error != null) return error;
+    }
+    if (f.accessGroups.size() > EntityFilter.MAX_ACCESS_GROUPS
+        || f.accessGroups.stream().anyMatch(g -> !BadgeAccess.validGroup(g)))
+      return Component.translatable(
+          "message.fieldemitters.fieldcontrols.use_up_to_64_group_names_lowercase_letters");
     if (f.playerMode < 0 || f.playerMode > 2 || f.playerList.size() > EntityFilter.MAX_PLAYERS)
-      return "Player lists support at most 64 entries.";
-    if (f.playerList.values().stream().anyMatch(name -> !name.isEmpty() && !name.matches("[A-Za-z0-9_]{1,16}")))
-      return "Player names must be Minecraft account names, not display nicknames.";
+      return Component.translatable(
+          "message.fieldemitters.fieldcontrols.player_lists_support_at_most_64_entries");
+    if (f.playerList.values().stream()
+        .anyMatch(name -> !name.isEmpty() && !name.matches("[A-Za-z0-9_]{1,16}")))
+      return Component.translatable(
+          "message.fieldemitters.fieldcontrols.player_names_must_be_minecraft_account_names_not");
     for (String value : java.util.List.of(f.entityType, f.itemType))
       if (!value.isEmpty()
           && net.minecraft.resources.ResourceLocation.tryParse(
                   value.startsWith("#") ? value.substring(1) : value)
-              == null) return "Invalid ID or tag: " + value;
+              == null)
+        return Component.translatable(
+            "message.fieldemitters.fieldcontrols.invalid_id_or_tag", value);
     if (!f.identity.isEmpty())
       try {
         java.util.UUID.fromString(f.identity);
       } catch (IllegalArgumentException ex) {
-        return "Invalid individual UUID.";
+        return Component.translatable(
+            "message.fieldemitters.fieldcontrols.invalid_individual_uuid");
       }
     if (!f.entityType.isEmpty()
         && !f.entityType.startsWith("#")
         && !net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.containsKey(
             new net.minecraft.resources.ResourceLocation(f.entityType)))
-      return "Unknown entity ID: " + f.entityType;
+      return Component.translatable(
+          "message.fieldemitters.fieldcontrols.unknown_entity_id", f.entityType);
     if (!f.itemType.isEmpty()
         && !f.itemType.startsWith("#")
         && !net.minecraft.core.registries.BuiltInRegistries.ITEM.containsKey(
             new net.minecraft.resources.ResourceLocation(f.itemType)))
-      return "Unknown item ID: " + f.itemType;
+      return Component.translatable(
+          "message.fieldemitters.fieldcontrols.unknown_item_id", f.itemType);
     return null;
   }
 
-  public static String validateTypeEntry(String value, boolean item) {
+  public static Component validateTypeEntry(String value, boolean item) {
     boolean tag = value.startsWith("#");
     var id = net.minecraft.resources.ResourceLocation.tryParse(tag ? value.substring(1) : value);
-    if (value.length() > 128 || id == null) return "Use a registry ID or #tag, such as minecraft:pig or #minecraft:logs.";
-    if (!tag && !(item ? net.minecraft.core.registries.BuiltInRegistries.ITEM.containsKey(id)
-        : net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.containsKey(id)))
-      return "Unknown " + (item ? "item" : "entity") + " ID: " + value;
+    if (value.length() > EntityFilter.MAX_TYPE_LENGTH || id == null)
+      return Component.translatable(
+          "message.fieldemitters.fieldcontrols.use_a_registry_id_or_tag_such_as");
+    if (!tag
+        && !(item
+            ? net.minecraft.core.registries.BuiltInRegistries.ITEM.containsKey(id)
+            : net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.containsKey(id)))
+      return Component.translatable(
+          item
+              ? "message.fieldemitters.fieldcontrols.unknown_item_id"
+              : "message.fieldemitters.fieldcontrols.unknown_entity_id",
+          value);
     if (!tag && !item && (id.toString().equals("minecraft:player")))
-      return "Use the player list for players. This list accepts mob types and entity-type tags.";
+      return Component.translatable(
+          "message.fieldemitters.fieldcontrols.use_the_player_list_for_players_this_list");
     return null;
   }
 
   public static boolean editable(EmitterEntity e, net.minecraft.world.entity.player.Player player) {
-    return ManagementAccess.editable(e,player);
+    return ManagementAccess.editable(e, player);
   }
 }

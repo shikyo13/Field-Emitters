@@ -15,8 +15,9 @@ public final class TunerItem extends Item {
   public InteractionResult useOn(UseOnContext c) {
     var l = c.getLevel();
     var state = l.getBlockState(c.getClickedPos());
-    if (!state.is(FieldEmitters.EMITTER.get()) && !state.is(FieldEmitters.RAIL.get()) && !state.is(FieldEmitters.TOWER.get()))
-      return InteractionResult.PASS;
+    if (!state.is(FieldEmitters.EMITTER.get())
+        && !state.is(FieldEmitters.RAIL.get())
+        && !state.is(FieldEmitters.TOWER.get())) return InteractionResult.PASS;
     if (l.isClientSide) {
       if (c.getPlayer() != null
           && !c.getPlayer().isShiftKeyDown()
@@ -27,9 +28,11 @@ public final class TunerItem extends Item {
     var p = c.getPlayer();
     if (p == null) return InteractionResult.PASS;
     if (l.getBlockEntity(EmitterBlock.base(c.getClickedPos(), state)) instanceof EmitterEntity e) {
-      if (!FieldControls.editable(e,p)) {
+      if (!FieldControls.editable(e, p)) {
         p.displayClientMessage(
-            Component.literal("This perimeter belongs to another player."), true);
+            Component.translatable(
+                "message.fieldemitters.tuneritem.this_perimeter_belongs_to_another_player"),
+            true);
         return InteractionResult.FAIL;
       }
       if (p.isShiftKeyDown()) {
@@ -37,12 +40,14 @@ public final class TunerItem extends Item {
         for (int i = 0; i < COLORS.length; i++) if (COLORS[i] == e.color) index = i;
         int color = COLORS[(index + 1) % COLORS.length];
         for (var part : FieldNetwork.connected(e)) {
-          if (!FieldControls.editable(part,p)) continue;
+          if (!FieldControls.editable(part, p)) continue;
           part.color = color;
           part.sync();
         }
         p.displayClientMessage(
-            Component.literal("Field color: #" + String.format("%06X", color)), true);
+            Component.translatable(
+                "message.fieldemitters.tuneritem.field_color", String.format("%06X", color)),
+            true);
       } else {
         // The control screen sends an explicit, validated settings update.
 
@@ -101,8 +106,9 @@ public final class TunerItem extends Item {
             .toString());
     stack.setTag(tag);
     player.displayClientMessage(
-        Component.literal(
-            "Sampled " + entity.getName().getString() + ". Apply identity or type in controls."),
+        Component.translatable(
+            "message.fieldemitters.tuneritem.sampled_apply_identity_or_type_in_controls",
+            entity.getName()),
         true);
   }
 
@@ -113,25 +119,32 @@ public final class TunerItem extends Item {
       java.util.List<Component> lines,
       TooltipFlag flags) {
     lines.add(
-        Component.literal("Use in air: remote manager; on emitter: controls")
+        Component.translatable(
+                "message.fieldemitters.tuneritem.use_in_air_remote_manager_on_emitter_controls")
             .withStyle(net.minecraft.ChatFormatting.GRAY));
     lines.add(
-        Component.literal("Sneak-use emitter: color; mob / air: sample")
+        Component.translatable(
+                "message.fieldemitters.tuneritem.sneak_use_emitter_color_mob_air_sample")
             .withStyle(net.minecraft.ChatFormatting.GRAY));
     var data = stack.getTag();
     if (data != null && data.copy().contains("FieldTargets")) {
       lines.add(
-          Component.literal("Last tuned: " + targets(data.copy().getInt("FieldTargets")))
+          Component.translatable(
+                  "message.fieldemitters.tuneritem.last_tuned",
+                  targets(data.copy().getInt("FieldTargets")))
               .withStyle(net.minecraft.ChatFormatting.AQUA));
     }
   }
 
-  public static String targets(int mask) {
-    if (mask == 0) return "nothing (visual only)";
-    java.util.List<String> a = new java.util.ArrayList<>();
-    if ((mask & 1) != 0) a.add("hostiles");
-    if ((mask & 2) != 0) a.add("peaceful mobs");
-    if ((mask & 4) != 0) a.add("other players");
-    return String.join(", ", a);
+  public static Component targets(int mask) {
+    if (mask == 0)
+      return Component.translatable("message.fieldemitters.tuneritem.nothing_visual_only");
+    java.util.List<Component> a = new java.util.ArrayList<>();
+    if ((mask & 1) != 0) a.add(Component.translatable("message.fieldemitters.tuneritem.hostiles"));
+    if ((mask & 2) != 0)
+      a.add(Component.translatable("message.fieldemitters.tuneritem.peaceful_mobs"));
+    if ((mask & 4) != 0)
+      a.add(Component.translatable("message.fieldemitters.tuneritem.other_players"));
+    return net.minecraft.network.chat.ComponentUtils.formatList(a, Component.literal(", "));
   }
 }

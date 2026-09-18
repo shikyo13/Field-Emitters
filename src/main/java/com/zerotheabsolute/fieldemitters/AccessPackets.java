@@ -11,16 +11,19 @@ import net.minecraft.server.level.ServerLevel;
 public final class AccessPackets {
   public static java.util.function.Consumer<Result> receive = result -> {};
 
-  public record Result(BlockPos pos, String message) implements FieldPayload {
+  public record Result(BlockPos pos, Component message) implements FieldPayload {
     public static final Type<Result> TYPE =
         new Type<>(new ResourceLocation(FieldEmitters.ID, "badge_result"));
     public static final PacketCodec<FriendlyByteBuf, Result> CODEC =
         PacketCodec.of(
             (b, p) -> {
               b.writeBlockPos(p.pos);
-              b.writeUtf(p.message, 256);
+              b.writeComponent(p.message);
             },
-            b -> new Result(b.readBlockPos(), b.readUtf(256)));
+            b ->
+                new Result(
+                    b.readBlockPos(),
+                    b.readComponent()));
 
     public Type<? extends FieldPayload> type() {
       return TYPE;
@@ -28,7 +31,7 @@ public final class AccessPackets {
   }
 
   private static void reply(
-      net.minecraft.world.entity.player.Player player, BlockPos pos, String message) {
+      net.minecraft.world.entity.player.Player player, BlockPos pos, Component message) {
     com.zerotheabsolute.fieldemitters.network.NativeNetwork.sendToPlayer(
         (net.minecraft.server.level.ServerPlayer) player, new Result(pos, message));
   }
@@ -124,10 +127,8 @@ public final class AccessPackets {
                           reply(
                               player,
                               p.pos,
-                              Component.literal(
-                                      "Enter a player UUID, or leave blank for a transferable"
-                                          + " badge.")
-                                  .getString());
+                              Component.translatable(
+                                  "message.fieldemitters.accesspackets.enter_a_player_uuid_or_leave_blank_for"));
                           return;
                         }
                       // An administrator editing somebody else's field still issues only their own
@@ -139,8 +140,10 @@ public final class AccessPackets {
                         reply(
                             player,
                             p.pos,
-                            Component.literal("Revoked " + count + " badges for " + group + ".")
-                                .getString());
+                            Component.translatable(
+                                "message.fieldemitters.accesspackets.revoked_badges_for",
+                                count,
+                                group));
                         return;
                       }
                       if (p.action != 0) return;
@@ -152,8 +155,8 @@ public final class AccessPackets {
                         reply(
                             player,
                             p.pos,
-                            Component.literal("Hold an access badge in either hand to issue it.")
-                                .getString());
+                            Component.translatable(
+                                "message.fieldemitters.accesspackets.hold_an_access_badge_in_either_hand_to"));
                         return;
                       }
                       data.issue(stack, issuer, group, bound);
@@ -162,14 +165,14 @@ public final class AccessPackets {
                       reply(
                           player,
                           p.pos,
-                          Component.literal(
-                                  "Issued "
-                                      + group
-                                      + " badge"
-                                      + (bound == null
-                                          ? " (transferable)."
-                                          : " for " + bound + "."))
-                              .getString());
+                          Component.translatable(
+                              "message.fieldemitters.accesspackets.issued_badge",
+                              group,
+                              (bound == null
+                                  ? Component.translatable(
+                                      "message.fieldemitters.accesspackets.transferable")
+                                  : Component.translatable(
+                                      "message.fieldemitters.accesspackets.for", bound))));
                     }));
   }
 }

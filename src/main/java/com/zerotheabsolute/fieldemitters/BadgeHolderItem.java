@@ -76,9 +76,11 @@ public final class BadgeHolderItem extends Item {
   public void appendHoverText(
       ItemStack stack, net.minecraft.world.level.Level context, List<Component> lines, TooltipFlag flags) {
     lines.add(
-        Component.literal(
-            "Right-click with a badge to store it; with an empty cursor to remove it."));
-    lines.add(Component.literal("Holds 16 badges. Works in your inventory or Trinkets slot."));
+        Component.translatable(
+            "message.fieldemitters.badgeholderitem.right_click_with_a_badge_to_store_it"));
+    lines.add(
+        Component.translatable(
+            "message.fieldemitters.badgeholderitem.holds_16_badges_works_in_your_inventory_or"));
     for (var badge : contents(stack))
       lines.add(badge.getHoverName().copy().withStyle(net.minecraft.ChatFormatting.AQUA));
   }
