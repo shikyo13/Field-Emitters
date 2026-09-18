@@ -1,7 +1,5 @@
 # Access, checkpoints and projection towers
 
-These features are in the NeoForge 1.21.1 development build. They are not in the published 1.0.2 release or the other loader builds yet. The development checkout requires the sibling ZeroMods-Core project.
-
 ## Who can manage a field?
 
 New networks are private. Open **Power → Network management access** to add a Minecraft account name or UUID, remove a manager, or enable public management. Account names resolve to UUIDs; server nicknames are not account names.

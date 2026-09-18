@@ -10,4 +10,4 @@ The [license](LICENSE) permits private research and contributions, including cle
 
 ## Repository scope
 
-Keep this repository limited to mod source, assets required by the mod, build files, and user or developer documentation. Keep test harnesses, demo worlds and commands, recordings, showcase projects, release tooling, and publishing records in an external workspace. Documentation images belong in `docs/images`.
+Keep this repository limited to mod source, assets required by the mod, build files, and user or developer documentation. Keep test harnesses, recordings, showcase projects, release tooling, and publishing records outside this repository. Documentation images belong in `docs/images`.

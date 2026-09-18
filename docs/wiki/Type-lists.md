@@ -1,6 +1,4 @@
-# Mob and item lists (development build)
-
-These controls are in the unreleased NeoForge 1.21.1 build. Published versions may not include them yet.
+# Mob and item lists
 
 Open **Block**, **Detect**, or **Damage**, choose the travel direction to edit, then open **Mob list** or **Item list**. A custom directional rule has its own lists. Shared rules continue to apply in directions without an override.
 
