@@ -14,6 +14,16 @@ public final class FieldClient implements net.fabricmc.api.ClientModInitializer 
     run(() -> PlayerLookup.receive = result -> { PlayerListScreen.receive(result); ManagementScreen.lookup(result); });
     run(() -> ManagementPackets.receive = ManagementScreen::receive);
     run(() -> AccessPackets.receive = AccessScreen::receive);
+    run(() -> FizzleNotice.receive = FizzleDeaths::receive);
+    run(
+        () ->
+            PlayerLookup.receive =
+                result -> {
+                  PlayerListScreen.receive(result);
+                  ManagementScreen.lookup(result);
+                });
+    run(() -> ManagementPackets.receive = ManagementScreen::receive);
+    run(() -> AccessPackets.receive = AccessScreen::receive);
     run(() -> FieldControls.remoteData = RemoteScreen::receive);
     run(
         () ->
@@ -22,8 +32,12 @@ public final class FieldClient implements net.fabricmc.api.ClientModInitializer 
                   var mc = net.minecraft.client.Minecraft.getInstance();
                   if (mc.player == null) return;
                   if (FieldControls.editable(e, mc.player)) mc.setScreen(new ControlScreen(e));
-                  else mc.player.displayClientMessage(net.minecraft.network.chat.Component.literal(
-                      "This field is private. Ask its owner for management access."), true);
+                  else
+                    mc.player.displayClientMessage(
+                        net.minecraft.network.chat.Component.literal(
+                            UiText.text(
+                                "screen.fieldemitters.fieldclient.this_field_is_private_ask_its_owner_for")),
+                        true);
                 });
     net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper.registerKeyBinding(TunerKeys.OPEN);
     net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.END_CLIENT_TICK.register(TunerKeys::tick);
@@ -44,6 +58,7 @@ public final class FieldClient implements net.fabricmc.api.ClientModInitializer 
           return 0xFF52E5FF;
         },
         FieldEmitters.TOWER.get(),
+        FieldEmitters.TOWER.get(),
         FieldEmitters.EMITTER.get(),
         FieldEmitters.RAIL.get());
   }
@@ -56,6 +71,7 @@ public final class FieldClient implements net.fabricmc.api.ClientModInitializer 
           var tag = data == null ? new net.minecraft.nbt.CompoundTag() : data.copyTag();
           return 0xFF000000 | (tag.contains("FieldColor") ? tag.getInt("FieldColor") : 0x52E5FF);
         },
+        FieldEmitters.TOWER_ITEM.get(),
         FieldEmitters.TOWER_ITEM.get(),
         FieldEmitters.TUNER.get(),
         FieldEmitters.EMITTER_ITEM.get(),

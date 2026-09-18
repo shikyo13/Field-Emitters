@@ -19,12 +19,15 @@ public final class FieldConfig {
     b.push("balance");
     ENERGY_PER_CELL =
         b.comment("FE consumed per projected field block each tick while a field is running.")
+            .translation("configuration.fieldemitters.energyPerCellTick")
             .defineInRange("energyPerCellTick", DEFAULT_ENERGY_PER_CELL, 0, 10000);
     CAPACITY =
         b.comment("FE stored by each Field Emitter and Field Rail.")
+            .translation("configuration.fieldemitters.emitterCapacity")
             .defineInRange("emitterCapacity", DEFAULT_CAPACITY, 1000, 1000000000);
     TRANSFER =
         b.comment("Maximum FE per tick an emitter or rail accepts from cables and generators.")
+            .translation("configuration.fieldemitters.emitterTransferRate")
             .defineInRange("emitterTransferRate", DEFAULT_TRANSFER, 1, 1000000000);
     b.pop();
     SPEC = b.build();
@@ -32,6 +35,7 @@ public final class FieldConfig {
     SHOW_GUIDES =
         client
             .comment("Show direction arrows while holding the tuner or previewing a connection.")
+            .translation("configuration.fieldemitters.showDirectionGuides")
             .define("showDirectionGuides", true);
     CLIENT_SPEC = client.build();
   }

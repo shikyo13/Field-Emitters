@@ -52,9 +52,7 @@ public final class FieldSensor {
             if (!link.rail()
                 && (feet.y >= link.ground()[i] + 5
                     || feet.y + entity.getBbHeight() <= link.ground()[i])) continue;
-            double normal =
-                link.normalCoordinate(position)
-                    - link.normalCoordinate(link.origin(p));
+            double normal = link.normalCoordinate(position) - link.normalCoordinate(link.origin(p));
             double margin =
                 (link.normal() == Direction.Axis.Y ? entity.getBbHeight() : entity.getBbWidth()) / 2
                     + .1;
@@ -77,8 +75,7 @@ public final class FieldSensor {
               var direction = link.movement(side > 0);
               // Reject shortcuts around an end or across a terrain discontinuity.
               double previousNormal =
-                  link.normalCoordinate(old.position())
-                      - link.normalCoordinate(link.origin(p));
+                  link.normalCoordinate(old.position()) - link.normalCoordinate(link.origin(p));
               double fraction = -previousNormal / (normal - previousNormal);
               var intersection = old.position().lerp(position, fraction);
               double crossingU =
@@ -106,7 +103,12 @@ public final class FieldSensor {
                         : 1;
                 e.crossings += count;
                 if (mode == 1) e.queuedPulses = Math.min(100000, e.queuedPulses + count);
-                e.lastDetection = entity.getName().getString() + " → " + direction.getName();
+                e.lastDetection =
+                    net.minecraft.network.chat.Component.translatable(
+                        "message.fieldemitters.detection.crossing",
+                        entity.getName(),
+                        net.minecraft.network.chat.Component.translatable(
+                            "direction.fieldemitters." + direction.getName()));
                 e.sync();
               }
             }

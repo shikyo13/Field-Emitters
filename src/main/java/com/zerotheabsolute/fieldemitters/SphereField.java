@@ -107,14 +107,20 @@ public final class SphereField {
 
   private static Direction movement(EmitterEntity e, Entity entity, Vec3 point) {
     var radial = point.subtract(center(e));
-    boolean inside = FieldContact.negative(e, e.getBlockPos(), entity,
-        radial.length() - e.controls.sphereRadius, contactMargin(entity, radial.normalize()));
+    boolean inside =
+        FieldContact.negative(
+            e,
+            e.getBlockPos(),
+            entity,
+            radial.length() - e.controls.sphereRadius,
+            contactMargin(entity, radial.normalize()));
     var travel = inside ? radial : radial.scale(-1);
     return Direction.getNearest(travel.x, travel.y, travel.z);
   }
 
   public static VoxelShape collision(EmitterEntity e, Entity entity, BlockPos p, Vec3 center) {
-    if (!formed(e) || e.controls.dome && p.getY() < e.getBlockPos().getY() - DOME_DEPTH) return Shapes.empty();
+    if (!formed(e) || e.controls.dome && p.getY() < e.getBlockPos().getY() - DOME_DEPTH)
+      return Shapes.empty();
     var direction = movement(e, entity, center);
     if (!e.controls.blocks(entity, e.owner, direction)
         && !FieldCheckpoint.blocks(e, e.controls, entity, direction)) return Shapes.empty();
@@ -170,8 +176,10 @@ public final class SphereField {
     var space = FieldSpace.at(e);
     int radius = e.controls.sphereRadius;
     var bounds = new AABB(center, center).inflate(radius + 2);
-    var impacts = now - e.impactTime >= ImpactSelection.EFFECT_INTERVAL
-        ? new ImpactSelection<Vec3>(e.contacts, now) : null;
+    var impacts =
+        now - e.impactTime >= ImpactSelection.EFFECT_INTERVAL
+            ? new ImpactSelection<Vec3>(e.contacts, now)
+            : null;
     for (var entity :
         level.getEntities((Entity) null, bounds, a -> a.isAlive() && !a.isSpectator())) {
       var point = space.local(entity.getBoundingBox().getCenter());
@@ -190,7 +198,13 @@ public final class SphereField {
           e.crossings++;
           if (e.controls.sensorMode == 1) e.queuedPulses = Math.min(100000, e.queuedPulses + 1);
           e.lastDetection =
-              entity.getName().getString() + " → " + (sign < 0 ? "inside" : "outside");
+              net.minecraft.network.chat.Component.translatable(
+                  "message.fieldemitters.detection.crossing",
+                  entity.getName(),
+                  net.minecraft.network.chat.Component.translatable(
+                      sign < 0
+                          ? "direction.fieldemitters.inside"
+                          : "direction.fieldemitters.outside"));
           e.sync();
         }
         e.spherePassages.put(entity.getUUID(), new EmitterEntity.Passage(sign, point, now));
@@ -199,13 +213,18 @@ public final class SphereField {
           e.spherePassages.put(
               entity.getUUID(), new EmitterEntity.Passage(old.side(), old.position(), now));
         if (impacts != null)
-          impacts.consider(entity.getUUID(), center.add(point.subtract(center).normalize().scale(radius)));
+          impacts.consider(
+              entity.getUUID(), center.add(point.subtract(center).normalize().scale(radius)));
         if (e.controls.sensorMode == 2 && e.controls.detects(entity, e.owner, direction))
           e.spherePresent = true;
         FieldDamage.contact(level, e, entity, e.controls, direction, now);
         if (entity instanceof Player player) {
           var outward = point.subtract(center).normalize();
-          var entry = space.world(space.local(player.position()).add(outward.scale((side >= 0 ? 1 : -1) * (margin + .5))));
+          var entry =
+              space.world(
+                  space
+                      .local(player.position())
+                      .add(outward.scale((side >= 0 ? 1 : -1) * (margin + .5))));
           FieldCheckpoint.process(level, e, e.controls, player, direction, entry, now);
         }
       }
