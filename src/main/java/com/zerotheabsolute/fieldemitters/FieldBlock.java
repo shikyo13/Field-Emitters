@@ -1,6 +1,7 @@
 package com.zerotheabsolute.fieldemitters;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.*;
@@ -11,7 +12,10 @@ import net.minecraft.world.level.block.state.*;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.shapes.*;
 
-public final class FieldBlock extends BaseEntityBlock {
+public final class FieldBlock extends BaseEntityBlock implements LiquidBlockContainer {
+  /** Player mode in which listed players and badge holders are the ones allowed through. */
+  private static final int PASSES_WHEN_LISTED = 2;
+
   public static final BooleanProperty LIT = BooleanProperty.create("lit");
   public static final BooleanProperty X_AXIS = BooleanProperty.create("x_axis");
 
@@ -23,6 +27,27 @@ public final class FieldBlock extends BaseEntityBlock {
 
   protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> b) {
     b.add(X_AXIS, LIT);
+  }
+
+  /**
+   * Field cells are not solid, so without this a fluid would treat a cell as free space, destroy it
+   * and take its place. The rebuild only refills air, so the hole would be permanent. Returning
+   * false stops water and lava at the field instead.
+   */
+  public boolean canPlaceLiquid(
+      BlockGetter l,
+      BlockPos p,
+      BlockState s,
+      net.minecraft.world.level.material.Fluid fluid) {
+    return false;
+  }
+
+  public boolean placeLiquid(
+      net.minecraft.world.level.LevelAccessor l,
+      BlockPos p,
+      BlockState s,
+      net.minecraft.world.level.material.FluidState fluid) {
+    return false;
   }
 
   public RenderShape getRenderShape(BlockState s) {
@@ -51,6 +76,68 @@ public final class FieldBlock extends BaseEntityBlock {
         ? local.center : ec.getEntity().getBoundingBox().getCenter());
   }
 
+  /**
+   * A mount and everything riding it cross as one body. The field stops the group when it stops any
+   * member, so a blocked player cannot ride through on an unblocked horse or boat. A rider who
+   * holds passage rights carries the group through instead, so the owner and badge holders are not
+   * stopped by their own mount.
+   */
+  public static boolean blocked(
+      EmitterEntity e, ControlSettings settings, Entity entity, Direction movement) {
+    return blocked(e, settings, entity, movement, null);
+  }
+
+  public static boolean blocked(
+      EmitterEntity e,
+      ControlSettings settings,
+      Entity entity,
+      Direction movement,
+      Direction inward) {
+    if (!entity.isVehicle() && !entity.isPassenger())
+      return stops(e, settings, entity, movement, inward);
+    var root = entity.getRootVehicle();
+    var riders = new java.util.ArrayList<Entity>();
+    riders.add(root);
+    root.getIndirectPassengers().forEach(riders::add);
+    // A checkpoint holds the group whatever else is true: the contraband is aboard either way.
+    for (var rider : riders)
+      if (FieldCheckpoint.blocks(e, settings, rider, movement, inward)) return true;
+    boolean stopped = false;
+    for (var rider : riders)
+      if (settings.blocks(rider, e.owner, movement, inward)) {
+        stopped = true;
+        break;
+      }
+    if (!stopped) return false;
+    var rule = settings.barrierRule(movement, inward);
+    for (var rider : riders) if (permitted(rule, rider, e.owner)) return false;
+    return true;
+  }
+
+  /**
+   * Whether this rider may take the group through: the exempt owner, or a listed player or access
+   * badge holder while the blocking filter lets listed players pass. Simply falling outside the
+   * filter is not passage rights, so an ordinary player cannot ferry a blocked mob across.
+   */
+  private static boolean permitted(EntityFilter rule, Entity entity, java.util.UUID owner) {
+    if (!(entity instanceof net.minecraft.world.entity.player.Player player)
+        || player.isSpectator()) return false;
+    if (rule.exemptOwner && owner != null && player.getUUID().equals(owner)) return true;
+    if (rule.playerMode != PASSES_WHEN_LISTED) return false;
+    return rule.playerList.containsKey(player.getUUID())
+        || BadgeAccess.matches(player, owner, rule.accessGroups);
+  }
+
+  private static boolean stops(
+      EmitterEntity e,
+      ControlSettings settings,
+      Entity entity,
+      Direction movement,
+      Direction inward) {
+    return settings.blocks(entity, e.owner, movement, inward)
+        || FieldCheckpoint.blocks(e, settings, entity, movement, inward);
+  }
+
   public static VoxelShape collision(EmitterEntity e, Entity entity, BlockPos p) {
     return entity == null ? Shapes.empty() : collision(e, entity, p, entity.getBoundingBox().getCenter());
   }
@@ -73,8 +160,7 @@ public final class FieldBlock extends BaseEntityBlock {
           || p.getY() >= expected.getY() + link.height()) continue;
       if (e.getLevel().getGameTime() - e.transition < e.controls.linkFormationTicks(index)) continue;
       var movement = FieldContact.movement(e, link, entity, center);
-      if (!settings.blocks(entity, e.owner, movement)
-          && !FieldCheckpoint.blocks(e, settings, entity, movement)) continue;
+      if (!blocked(e, settings, entity, movement, link.inward())) continue;
       return switch (link.normal()) {
         case X -> Block.box(6.5, 0, 0, 9.5, 16, 16);
         case Y -> Block.box(0, 15, 0, 16, 16, 16);

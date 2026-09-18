@@ -1,11 +1,11 @@
 # Detection and redstone
 
-The Detection tab reports entities over redstone. Its filter is independent of the Blocking filter and uses the same categories, details, directions and owner option. *Detect selected* reports matching entities; *Detect unselected* reports everything outside the selection.
+The Detection tab reports entities over redstone. Like blocking, its directions can be written in world terms or relative to the area the posts enclose; see [Blocking filters](Filters.md). Its filter is independent of the Blocking filter and uses the same categories, details, directions and owner option. *Detect selected* reports matching entities; *Detect unselected* reports everything outside the selection.
 
 ## Signal modes
 
 - **Off:** no output.
-- **Pulse on crossing:** one redstone pulse each time a matching entity passes completely through the field. Pulses last the configured duration and are separated by two ticks. Up to 100,000 pulses queue while the output is busy.
+- **Pulse on crossing:** one redstone pulse each time a matching entity passes completely through the field. One crossing sends one pulse, the way a tripwire fires once however much passes over it. A thrown stack is a single entity and sends a single pulse. Pulses last the configured duration and are separated by two ticks, so the output emits at most one per pulse length plus two ticks. Crossings arriving faster than that wait their turn, up to 64 pending; beyond that the extra pulses are dropped rather than replayed for minutes. The lifetime crossing counter always records every crossing, and counts items rather than stacks when that option is set.
 - **On while touching:** the output stays on while a matching entity overlaps the field.
 
 A crossing counts only after the whole entity has cleared the far side. Touching the field, bouncing off it or walking along it does not count. The Power tab shows the lifetime crossing counter and the most recent detection, and can reset both.

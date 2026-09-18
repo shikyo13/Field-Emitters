@@ -185,7 +185,8 @@ public final class FieldControls {
       boolean network,
       boolean reset,
       BlockPos target,
-      boolean linkOnly)
+      boolean linkOnly,
+      boolean inherit)
       implements FieldPayload {
     public static final Type<Update> TYPE =
         new Type<>(new ResourceLocation(FieldEmitters.ID, "controls"));
@@ -200,6 +201,7 @@ public final class FieldControls {
               b.writeBoolean(p.reset);
               b.writeBlockPos(p.target);
               b.writeBoolean(p.linkOnly);
+              b.writeBoolean(p.inherit);
             },
             b ->
                 new Update(
@@ -210,6 +212,7 @@ public final class FieldControls {
                     b.readBoolean(),
                     b.readBoolean(),
                     b.readBlockPos(),
+                    b.readBoolean(),
                     b.readBoolean()));
 
     public Type<? extends FieldPayload> type() {
@@ -310,6 +313,27 @@ public final class FieldControls {
                       Component error = validate(validated);
                       if (error != null) {
                         reply(player, 2, new CompoundTag(), error);
+                        return;
+                      }
+                      if (p.linkOnly && p.inherit) {
+                        if (seed.links.stream().noneMatch(link -> link.target().equals(p.target)))
+                          return;
+                        seed.overrides.remove(p.target);
+                        seed.passages.clear();
+                        seed.sync();
+                        if (level.hasChunkAt(p.target)
+                            && level.getBlockEntity(p.target) instanceof EmitterEntity other
+                            && editable(other, player)) {
+                          other.overrides.remove(p.pos);
+                          other.passages.clear();
+                          other.sync();
+                        }
+                        reply(
+                            player,
+                            2,
+                            new CompoundTag(),
+                            Component.translatable(
+                                "message.fieldemitters.fieldcontrols.changes_applied"));
                         return;
                       }
                       if (p.linkOnly) {

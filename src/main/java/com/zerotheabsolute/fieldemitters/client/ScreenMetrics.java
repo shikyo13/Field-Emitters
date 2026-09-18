@@ -6,6 +6,12 @@ final class ScreenMetrics {
   static final int CONTENT_WIDTH = 380;
   static final int BUTTON_HEIGHT = 18;
   static final int ROW_HEIGHT = 20;
+  static final int COMPACT_ROW_HEIGHT = 27;
+  static final int CONTENT_INSET = 12;
+  static final int COLUMN_GAP = 6;
+  static final int HALF_CONTENT_WIDTH = (CONTENT_WIDTH - COLUMN_GAP) / 2;
+  static final int DIRECTION_COLUMN_STEP = 64;
+  static final int DIRECTION_BUTTON_WIDTH = 61;
   static final int PLAYER_ROWS = 6;
   static final int TYPE_SLOTS = 24;
   static final int DAMAGE_INTERVAL_STEP = 10;

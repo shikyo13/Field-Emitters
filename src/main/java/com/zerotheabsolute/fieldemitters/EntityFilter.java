@@ -10,6 +10,13 @@ public final class EntityFilter {
   public static final int MAX_ACCESS_GROUPS = 64;
   public int groups = 1, age = 0, directions = 63;
 
+  /** Whether the selection below is read as world directions or as crossings of an enclosure. */
+  public com.zeromods.core.filter.DirectionFrame frame =
+      com.zeromods.core.filter.DirectionFrame.WORLD;
+
+  /** Selected crossing senses while the relative frame is in use. */
+  public int crossings = com.zeromods.core.filter.CrossingSense.ALL;
+
   /** 0 uses general filters; 1 matches listed players; 2 matches unlisted players. */
   public int playerMode = 0;
 
@@ -69,6 +76,27 @@ public final class EntityFilter {
     return (directions & (1 << movement.ordinal())) != 0;
   }
 
+  /**
+   * Whether this rule covers a crossing, given which way the span faces into the enclosure. In the
+   * relative frame one setting reads correctly on every side of a perimeter, because each span
+   * translates the crossing into inward or outward for itself. Vertical crossings and spans with no
+   * enclosure fall back to world directions.
+   */
+  public boolean direction(net.minecraft.core.Direction movement, net.minecraft.core.Direction inward) {
+    if (!relative(inward) || movement.getAxis() == net.minecraft.core.Direction.Axis.Y)
+      return direction(movement);
+    var sense =
+        movement == inward
+            ? com.zeromods.core.filter.CrossingSense.INWARD
+            : com.zeromods.core.filter.CrossingSense.OUTWARD;
+    return sense.selected(crossings);
+  }
+
+  /** Whether this rule is written relative to an enclosure that the span actually has. */
+  public boolean relative(net.minecraft.core.Direction inward) {
+    return frame == com.zeromods.core.filter.DirectionFrame.RELATIVE && inward != null;
+  }
+
   public CompoundTag save() {
     var t = new CompoundTag();
     t.putInt("Groups", groups);
@@ -89,6 +117,8 @@ public final class EntityFilter {
     saveTypes(t, "ItemList", itemList);
     t.putInt("Age", age);
     t.putInt("Directions", directions);
+    t.putInt("DirectionFrame", frame.id());
+    t.putInt("Crossings", crossings);
     t.putBoolean("Invert", inverted);
     t.putBoolean("OwnerExempt", exemptOwner);
     t.putString("Entity", entityType);
@@ -116,6 +146,11 @@ public final class EntityFilter {
     loadTypes(t, "ItemList", f.itemList);
     f.age = Math.max(0, Math.min(2, t.getInt("Age")));
     f.directions = t.contains("Directions") ? t.getInt("Directions") & 63 : 63;
+    f.frame = com.zeromods.core.filter.DirectionFrame.byId(t.getInt("DirectionFrame"));
+    f.crossings =
+        t.contains("Crossings")
+            ? com.zeromods.core.filter.CrossingSense.sanitize(t.getInt("Crossings"))
+            : com.zeromods.core.filter.CrossingSense.ALL;
     f.inverted = t.getBoolean("Invert");
     f.exemptOwner = t.getBoolean("OwnerExempt");
     f.entityType = bounded(t.getString("Entity"));
