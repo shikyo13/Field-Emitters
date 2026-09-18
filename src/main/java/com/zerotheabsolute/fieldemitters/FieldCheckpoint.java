@@ -15,7 +15,6 @@ import net.minecraftforge.items.*;
 public final class FieldCheckpoint {
   private static final int CONTACT_GAP_TICKS = 4;
   private static final int PICKUP_DELAY_TICKS = 40;
-  private static final int MAX_QUEUED_PULSES = 100000;
 
   public static boolean hasContraband(Player p, CheckpointSettings s) {
     for (int i = 0; i < p.getInventory().getContainerSize(); i++)
@@ -28,9 +27,18 @@ public final class FieldCheckpoint {
       ControlSettings settings,
       net.minecraft.world.entity.Entity entity,
       Direction movement) {
+    return blocks(e, settings, entity, movement, null);
+  }
+
+  public static boolean blocks(
+      EmitterEntity e,
+      ControlSettings settings,
+      net.minecraft.world.entity.Entity entity,
+      Direction movement,
+      Direction inward) {
     if (!(entity instanceof Player p)) return false;
     var s = settings.checkpoint;
-    if (!s.applies(p, e.owner, movement) || !hasContraband(p, s)) return false;
+    if (!s.applies(p, e.owner, movement, inward) || !hasContraband(p, s)) return false;
     // Storage checkpoints hold the player until every selected item has been transferred.
     return s.deny || s.confiscate == 2 && !s.dropOverflow;
   }
@@ -54,7 +62,7 @@ public final class FieldCheckpoint {
     output.passages.put(key, new EmitterEntity.Passage(0, entry, now));
     if (fresh && s.detect) {
       output.crossings++;
-      output.queuedPulses = Math.min(MAX_QUEUED_PULSES, output.queuedPulses + 1);
+      output.queuedPulses = Math.min(EmitterEntity.MAX_PENDING_PULSES, output.queuedPulses + 1);
       output.lastDetection =
           net.minecraft.network.chat.Component.translatable(
               "message.fieldemitters.detection.contraband", player.getName());

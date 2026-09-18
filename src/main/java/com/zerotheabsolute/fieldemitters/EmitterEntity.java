@@ -22,6 +22,13 @@ public final class EmitterEntity extends BlockEntity {
     return overrides.getOrDefault(link.target(), controls);
   }
 
+  /**
+   * Pending detection pulses are capped. The output emits one pulse per pulse length plus two
+   * ticks, so an uncapped queue could keep pulsing for hours after a flood of crossings. The
+   * lifetime crossing counter records every crossing either way.
+   */
+  public static final int MAX_PENDING_PULSES = 64;
+
   public long crossings = 0;
   public int queuedPulses = 0, outputSignal = 0;
   public long pulseUntil = 0, gapUntil = 0;
@@ -114,9 +121,15 @@ public final class EmitterEntity extends BlockEntity {
       int[] ground,
       int dy,
       net.minecraft.core.Direction.Axis normal,
-      boolean rail) {
+      boolean rail,
+      /** Facing along the normal that points into the enclosure, or null when there is none. */
+      Direction inward) {
     public Link(BlockPos target, int dx, int dz, int[] ground) {
-      this(target, dx, dz, ground, 0, dx != 0 ? Direction.Axis.Z : Direction.Axis.X, false);
+      this(target, dx, dz, ground, 0, dx != 0 ? Direction.Axis.Z : Direction.Axis.X, false, null);
+    }
+
+    public Link withInward(Direction facing) {
+      return new Link(target, dx, dz, ground, dy, normal, rail, facing);
     }
 
     public BlockPos cell(BlockPos source, int i, int h) {
@@ -231,6 +244,7 @@ public final class EmitterEntity extends BlockEntity {
       n.putInt("DY", link.dy);
       n.putBoolean("Rail", link.rail);
       n.putString("Normal", link.normal.getName());
+      if (link.inward != null) n.putString("Inward", link.inward.getName());
       n.putIntArray("Ground", link.ground);
       a.add(n);
     }
@@ -288,7 +302,7 @@ public final class EmitterEntity extends BlockEntity {
     } else if (t.contains("LastDetection") && !t.getString("LastDetection").equals("None")) {
       lastDetection = net.minecraft.network.chat.Component.literal(t.getString("LastDetection"));
     }
-    queuedPulses = Math.max(0, Math.min(100000, t.getInt("QueuedPulses")));
+    queuedPulses = Math.max(0, Math.min(MAX_PENDING_PULSES, t.getInt("QueuedPulses")));
     outputSignal = t.getInt("OutputSignal");
     enabled = !t.contains("Enabled") || t.getBoolean("Enabled");
     powered = t.getBoolean("Powered");
@@ -320,7 +334,8 @@ public final class EmitterEntity extends BlockEntity {
                 n.contains("Normal")
                     ? Direction.Axis.byName(n.getString("Normal"))
                     : n.getInt("DX") != 0 ? Direction.Axis.Z : Direction.Axis.X,
-                n.getBoolean("Rail")));
+                n.getBoolean("Rail"),
+                n.contains("Inward") ? Direction.byName(n.getString("Inward")) : null));
     }
     // State-identical server block packets do not dirty the client's baked tint cache.
     // Rebuild all five sections after the authoritative color has actually been loaded.

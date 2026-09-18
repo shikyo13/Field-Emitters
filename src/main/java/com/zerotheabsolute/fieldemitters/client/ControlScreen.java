@@ -6,6 +6,8 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.*;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
+import com.zeromods.core.filter.CrossingSense;
+import com.zeromods.core.filter.DirectionFrame;
 import com.zerotheabsolute.fieldemitters.network.ForgePacketDistributor;
 
 /** Changes are sent immediately; text is validated after a short typing pause. */
@@ -174,47 +176,13 @@ public final class ControlScreen extends FittedScreen {
         tab == ControlTab.BLOCKING
             ? draft.barrierDirections
             : tab == ControlTab.SENSOR ? draft.sensorDirections : draft.damageDirections;
-    small(
-        Control.RULES_FOR,
-        UiText.text(
-            "screen.fieldemitters.control.rules_for",
-            (filterDirection == null
-                ? UiText.text("screen.fieldemitters.control.all_directions")
-                : travelName(filterDirection))),
-        left + 12,
-        row,
-        220,
-        () -> {
-          applyPending();
-          filterDirection =
-              filterDirection == null
-                  ? Direction.DOWN
-                  : filterDirection == Direction.EAST
-                      ? null
-                      : Direction.values()[filterDirection.ordinal() + 1];
-          rebuildWidgets();
-        });
-    small(
-        Control.RULE_SOURCE,
-        UiText.text(
-            "screen.fieldemitters.control.rule_source",
-            (filterDirection == null
-                ? UiText.text("screen.fieldemitters.control.shared")
-                : rules.has(filterDirection)
-                    ? UiText.text("screen.fieldemitters.control.custom")
-                    : UiText.text("screen.fieldemitters.control.shared"))),
-        left + 237,
-        row,
-        155,
-        () -> {
-          if (filterDirection == null) return;
-          applyPending();
-          if (rules.has(filterDirection)) rules.inherit(filterDirection);
-          else rules.set(filterDirection, EntityFilter.load(shared.save()));
-          redraw();
-        });
-    row += ScreenMetrics.ROW_HEIGHT;
-    filterEditable = filterDirection == null || rules.has(filterDirection);
+    // A relative rule describes every span at once, so the per-direction overrides, which are
+    // written in world directions, are not offered while it is in use.
+    boolean enclosed = emitter.links.stream().anyMatch(link -> link.inward() != null);
+    boolean relative = enclosed && shared.frame == DirectionFrame.RELATIVE;
+    if (relative) filterDirection = null;
+    if (!relative) ruleScopeControls(shared, rules);
+    filterEditable = relative || filterDirection == null || rules.has(filterDirection);
     var f = filterDirection == null ? shared : rules.resolve(filterDirection, shared);
     if (tab == ControlTab.SENSOR) {
       small(
@@ -430,34 +398,7 @@ public final class ControlScreen extends FittedScreen {
         row,
         185);
     row += 27;
-    if (filterDirection != null) {
-      small(
-          Control.MOVEMENT,
-          movementName(filterDirection),
-          left + 12,
-          row,
-          ScreenMetrics.CONTENT_WIDTH,
-          () -> {
-            f.directions ^= 1 << filterDirection.ordinal();
-            redraw();
-          },
-          f.direction(filterDirection));
-    } else {
-      for (int i = 0; i < 6; i++) {
-        final var d = Direction.values()[i];
-        small(
-            Control.MOVEMENT,
-            movementName(d),
-            left + 12 + i * 64,
-            row,
-            61,
-            () -> {
-              f.directions ^= 1 << d.ordinal();
-              redraw();
-            },
-            f.direction(d));
-      }
-    }
+    directionControls(shared, f, enclosed, relative);
     row += ScreenMetrics.ROW_HEIGHT;
     small(
         Control.SAMPLE_INDIVIDUAL,
@@ -780,6 +721,31 @@ public final class ControlScreen extends FittedScreen {
                       .save());
           rebuildWidgets();
         });
+    if (selectedLink >= 0
+        && emitter.overrides.containsKey(emitter.links.get(selectedLink).target()))
+      button(
+          Control.USE_GROUP_RULES,
+          UiText.text("screen.fieldemitters.control.use_group_rules"),
+          () -> {
+            var target = emitter.links.get(selectedLink).target();
+            if (canConfigure())
+              ForgePacketDistributor.sendToServer(
+                  new FieldControls.Update(
+                      emitter.getBlockPos(),
+                      draft.save(),
+                      color,
+                      enabled,
+                      true,
+                      false,
+                      target,
+                      true,
+                      true));
+            emitter.overrides.remove(target);
+            selectedLink = -1;
+            draft = ControlSettings.load(emitter.controls.save());
+            lastSent = "";
+            rebuildWidgets();
+          });
     if (emitter.isRail())
       button(
           Control.FIELD_SHAPE,
@@ -906,7 +872,8 @@ public final class ControlScreen extends FittedScreen {
             true,
             reset,
             target,
-            selectedLink >= 0));
+            selectedLink >= 0,
+            false));
     if (selectedLink < 0) {
       emitter.controls = ControlSettings.load(draft.save());
       emitter.color = color;
@@ -1036,6 +1003,130 @@ public final class ControlScreen extends FittedScreen {
         || control == Control.RESET_CROSSING;
   }
 
+  /**
+   * The direction selection for the filter on screen. World directions are always available. The
+   * relative pair is offered only where the group's posts enclose an area, because a rule that
+   * names an inside has nothing to refer to without one.
+   */
+  /** Chooses whether the filter below is the shared rule or one written for a single direction. */
+  private void ruleScopeControls(
+      EntityFilter shared,
+      com.zeromods.core.filter.DirectionalRules<Direction, EntityFilter> rules) {
+    small(
+        Control.RULES_FOR,
+        UiText.text(
+            "screen.fieldemitters.control.rules_for",
+            (filterDirection == null
+                ? UiText.text("screen.fieldemitters.control.all_directions")
+                : travelName(filterDirection))),
+        left + 12,
+        row,
+        220,
+        () -> {
+          applyPending();
+          filterDirection =
+              filterDirection == null
+                  ? Direction.DOWN
+                  : filterDirection == Direction.EAST
+                      ? null
+                      : Direction.values()[filterDirection.ordinal() + 1];
+          rebuildWidgets();
+        });
+    small(
+        Control.RULE_SOURCE,
+        UiText.text(
+            "screen.fieldemitters.control.rule_source",
+            (filterDirection == null
+                ? UiText.text("screen.fieldemitters.control.shared")
+                : rules.has(filterDirection)
+                    ? UiText.text("screen.fieldemitters.control.custom")
+                    : UiText.text("screen.fieldemitters.control.shared"))),
+        left + 237,
+        row,
+        155,
+        () -> {
+          if (filterDirection == null) return;
+          applyPending();
+          if (rules.has(filterDirection)) rules.inherit(filterDirection);
+          else rules.set(filterDirection, EntityFilter.load(shared.save()));
+          redraw();
+        });
+    row += ScreenMetrics.ROW_HEIGHT;
+  }
+
+  private void directionControls(
+      EntityFilter shared, EntityFilter f, boolean enclosed, boolean relative) {
+    if (enclosed) {
+      small(
+          Control.DIRECTION_FRAME,
+          UiText.text(
+              "screen.fieldemitters.control.direction_frame",
+              relative
+                  ? UiText.text("screen.fieldemitters.control.relative_to_the_enclosure")
+                  : UiText.text("screen.fieldemitters.control.world_directions")),
+          left + ScreenMetrics.CONTENT_INSET,
+          row,
+          ScreenMetrics.CONTENT_WIDTH,
+          () -> {
+            applyPending();
+            shared.frame = relative ? DirectionFrame.WORLD : DirectionFrame.RELATIVE;
+            if (shared.frame == DirectionFrame.RELATIVE) filterDirection = null;
+            rebuildWidgets();
+          });
+      row += ScreenMetrics.COMPACT_ROW_HEIGHT;
+    }
+    if (relative) {
+      crossingControls(f);
+      return;
+    }
+    if (filterDirection != null) {
+      worldDirectionControl(
+          f, filterDirection, left + ScreenMetrics.CONTENT_INSET, ScreenMetrics.CONTENT_WIDTH);
+      return;
+    }
+    var directions = Direction.values();
+    for (int i = 0; i < directions.length; i++)
+      worldDirectionControl(
+          f,
+          directions[i],
+          left + ScreenMetrics.CONTENT_INSET + i * ScreenMetrics.DIRECTION_COLUMN_STEP,
+          ScreenMetrics.DIRECTION_BUTTON_WIDTH);
+  }
+
+  private void worldDirectionControl(EntityFilter f, Direction direction, int x, int width) {
+    small(
+        Control.MOVEMENT,
+        movementName(direction),
+        x,
+        row,
+        width,
+        () -> {
+          f.directions ^= 1 << direction.ordinal();
+          redraw();
+        },
+        f.direction(direction));
+  }
+
+  private void crossingControls(EntityFilter f) {
+    var senses = CrossingSense.values();
+    for (int i = 0; i < senses.length; i++) {
+      final var sense = senses[i];
+      small(
+          Control.CROSSING,
+          UiText.crossing(sense),
+          left
+              + ScreenMetrics.CONTENT_INSET
+              + i * (ScreenMetrics.HALF_CONTENT_WIDTH + ScreenMetrics.COLUMN_GAP),
+          row,
+          ScreenMetrics.HALF_CONTENT_WIDTH,
+          () -> {
+            f.crossings = sense.toggle(f.crossings);
+            redraw();
+          },
+          sense.selected(f.crossings));
+    }
+  }
+
   private void small(Control control, String text, int x, int y, int w, Runnable action) {
     small(control, text, x, y, w, action, false);
   }
@@ -1055,6 +1146,7 @@ public final class ControlScreen extends FittedScreen {
     boolean fieldOnly =
         selectedLink >= 0
             && control != Control.EDITING
+            && control != Control.USE_GROUP_RULES
             && control != Control.DIRECTION_GUIDES
             && (tab == ControlTab.OVERVIEW
                 || tab == ControlTab.APPEARANCE

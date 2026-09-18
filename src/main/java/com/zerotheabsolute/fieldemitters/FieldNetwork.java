@@ -92,6 +92,27 @@ public final class FieldNetwork {
     return best;
   }
 
+  /**
+   * The facing of this span that points into the enclosed area, found by stepping half a block off
+   * the middle of the span and testing that point against the ring. A ray test rather than an
+   * averaged centre, so it stays correct where the ring bends back on itself.
+   */
+  private static Direction inward(EmitterEntity e, EmitterEntity.Link link, GroupGeometry group) {
+    double midX = (e.getBlockPos().getX() + link.target().getX()) / 2.0 + .5;
+    double midZ = (e.getBlockPos().getZ() + link.target().getZ()) / 2.0 + .5;
+    if (link.normal() == Direction.Axis.X)
+      return enclosed(group, midX + PROBE_OFFSET, midZ) ? Direction.EAST : Direction.WEST;
+    return enclosed(group, midX, midZ + PROBE_OFFSET) ? Direction.SOUTH : Direction.NORTH;
+  }
+
+  /** Whether a point lies inside the ring, by counting the spans a ray along positive X crosses. */
+  private static boolean enclosed(GroupGeometry group, double x, double z) {
+    boolean inside = false;
+    for (var span : group.crossings())
+      if (span[0] > x && z >= span[1] && z < span[2]) inside = !inside;
+    return inside;
+  }
+
   private static boolean ground(Level l, BlockPos p) {
     if (!l.hasChunkAt(p)) return false;
     var s = l.getBlockState(p);
@@ -117,7 +138,7 @@ public final class FieldNetwork {
       if (normal == face.getAxis())
         normal = face.getAxis() == Direction.Axis.Z ? Direction.Axis.X : Direction.Axis.Z;
       return new EmitterEntity.Link(
-          t, face.getStepX(), face.getStepZ(), heights, face.getStepY(), normal, true);
+          t, face.getStepX(), face.getStepZ(), heights, face.getStepY(), normal, true, null);
     }
     int dx = Integer.signum(t.getX() - p.getX()),
         dz = Integer.signum(t.getZ() - p.getZ()),
@@ -251,51 +272,78 @@ public final class FieldNetwork {
     }
   }
 
+  /** Axis-aligned spans need four posts to close a ring, and every post must continue it. */
+  private static final int MIN_ENCLOSING_POSTS = 4, MIN_ENCLOSING_NEIGHBOURS = 2;
+
+  /** Half a block to either side of a span, far enough to be clear of it and of any corner. */
+  private static final double PROBE_OFFSET = .5;
+
+  /**
+   * The group's spans that can cross a ray travelling along positive X, each as {x, zFrom, zTo}.
+   * Spans that run along X are parallel to the ray and cannot cross it, so they are not kept.
+   */
+  private record GroupGeometry(List<double[]> crossings, boolean closed) {}
+
   private static void rebuild(ServerLevel l, List<EmitterEntity> all, long now) {
     ManagedFields.refresh(l, all);
-    Map<BlockPos, Integer> rank = new HashMap<>();
+    // One adjacency pass per rebuild, shared by the enclosure test and the link pass below.
+    Map<BlockPos, List<EmitterEntity>> adjacency = new HashMap<>(all.size());
+    for (var e : all) adjacency.put(e.getBlockPos(), neighbors(e, all));
+    Map<BlockPos, GroupGeometry> geometry = new HashMap<>(all.size());
+    // The root is the lowest position in the group, never the post that happens to hold energy or
+    // a redstone signal. Detection output, checkpoint storage and the formation origin therefore
+    // stay where they were put and only move when the player changes or breaks the field.
+    Set<BlockPos> grouped = new HashSet<>();
     for (var seed : all) {
-      if (rank.containsKey(seed.getBlockPos())) continue;
+      if (grouped.contains(seed.getBlockPos())) continue;
       var network = connected(seed);
       for (var member : network) member.network = network;
       var source =
           network.stream()
-              .filter(
-                  e ->
-                      e.enabled
-                          && (l.hasNeighborSignal(e.getBlockPos())
-                              || e.energy.getEnergyStored() > 0))
               .min(java.util.Comparator.comparingLong(e -> e.getBlockPos().asLong()))
-              .orElseGet(
-                  () ->
-                      network.stream()
-                          .filter(e -> e.getBlockPos().equals(seed.root))
-                          .findFirst()
-                          .orElse(seed));
-      var queue = new ArrayDeque<EmitterEntity>();
-      queue.add(source);
-      rank.put(source.getBlockPos(), 0);
-      while (!queue.isEmpty()) {
-        var current = queue.remove();
-        for (var next : neighbors(current, all))
-          if (!rank.containsKey(next.getBlockPos())) {
-            rank.put(next.getBlockPos(), rank.get(current.getBlockPos()) + 1);
-            queue.add(next);
-          }
+              .orElse(seed);
+      // Posts that enclose an area give every span an inside, which is what lets one relative
+      // rule read correctly on all four sides of a perimeter. A line of posts encloses nothing.
+      var posts = network.stream().filter(x -> !x.isRail() && !x.isTower()).toList();
+      var crossings = new ArrayList<double[]>();
+      for (var post : posts)
+        for (var other : adjacency.getOrDefault(post.getBlockPos(), List.of())) {
+          var from = post.getBlockPos();
+          var to = other.getBlockPos();
+          // Each span once, and only those running along Z, which are the ones a ray can cross.
+          if (other.isRail() || other.isTower() || from.asLong() >= to.asLong()) continue;
+          if (from.getX() != to.getX()) continue;
+          crossings.add(
+              new double[] {
+                from.getX() + .5,
+                Math.min(from.getZ(), to.getZ()) + .5,
+                Math.max(from.getZ(), to.getZ()) + .5
+              });
+        }
+      var group =
+          new GroupGeometry(
+              crossings,
+              posts.size() >= MIN_ENCLOSING_POSTS
+                  && posts.stream()
+                      .allMatch(
+                          x ->
+                              adjacency.getOrDefault(x.getBlockPos(), List.of()).size()
+                                  >= MIN_ENCLOSING_NEIGHBOURS));
+      for (var e : network) {
+        e.root = source.getBlockPos();
+        geometry.put(e.getBlockPos(), group);
+        grouped.add(e.getBlockPos());
       }
-      for (var e : network) e.root = source.getBlockPos();
       adopt(l, network);
     }
     for (var e : all) {
       if(e.isTower()){SphereField.rebuild(l,e);updateLights(l,e,e.powered);continue;}
       List<EmitterEntity.Link> links = new ArrayList<>();
       if (e.enabled)
-        for (var other : neighbors(e, all)) {
-          if (other.enabled
-              && (rank.getOrDefault(e.getBlockPos(), 0) < rank.getOrDefault(other.getBlockPos(), 0)
-                  || (rank.getOrDefault(e.getBlockPos(), 0)
-                          .equals(rank.getOrDefault(other.getBlockPos(), 0))
-                      && e.getBlockPos().asLong() < other.getBlockPos().asLong()))) {
+        for (var other : adjacency.getOrDefault(e.getBlockPos(), List.of())) {
+          // The lower position always owns the link, so its detection output and checkpoint
+          // storage never migrate to the other end.
+          if (other.enabled && e.getBlockPos().asLong() < other.getBlockPos().asLong()) {
             var link = trace(e, other);
             if (link != null) links.add(link);
           }
@@ -303,6 +351,14 @@ public final class FieldNetwork {
       // Keep the outgoing geometry until its shutdown has reached zero.
       if (!e.enabled && (e.powered || now - e.transition < FieldShutdown.DURATION_TICKS))
         links = new ArrayList<>(e.links);
+      // A rule kept for a partner that has been removed would silently return if a post were
+      // rebuilt in the same spot. Unloaded partners are left alone.
+      e.overrides
+          .keySet()
+          .removeIf(t -> l.hasChunkAt(t) && !(l.getBlockEntity(t) instanceof EmitterEntity));
+      var group = geometry.get(e.getBlockPos());
+      if (group != null && group.closed() && !e.isRail())
+        links.replaceAll(link -> link.withInward(inward(e, link, group)));
       String before = signature(e.links);
       e.links = links;
       e.demand =
@@ -509,10 +565,9 @@ public final class FieldNetwork {
     var found = new ArrayList<EmitterEntity>();
     if (!includeDisabled && !a.enabled) return found;
     var face = a.getBlockState().getValue(RailBlock.FACING);
-    EmitterEntity best = null;
-    int distance = 21;
     for (var b : all) {
-      if (!Objects.equals(a.owner,b.owner) || !b.isRail() || !includeDisabled && !b.enabled || a == b) continue;
+      if (!Objects.equals(a.owner, b.owner) || !b.isRail() || !includeDisabled && !b.enabled || a == b)
+        continue;
       var delta = b.getBlockPos().subtract(a.getBlockPos());
       int n =
           delta.getX() * face.getStepX()
@@ -521,6 +576,29 @@ public final class FieldNetwork {
       if (n == 0
           && a.getBlockPos().distManhattan(b.getBlockPos()) == 1
           && b.getBlockState().getValue(RailBlock.FACING) == face) found.add(b);
+    }
+    // Facing rails link only when they choose each other. Without this, three rails in a line can
+    // give one rail a span that reaches past its neighbour, so the same group looks different
+    // depending on which rail it is traversed from and its power can oscillate.
+    var best = nearestOpposing(a, all, includeDisabled);
+    if (best != null && nearestOpposing(best, all, includeDisabled) == a) found.add(best);
+    return found;
+  }
+
+  /** The closest rail facing this one head on, within the twenty block span. */
+  private static EmitterEntity nearestOpposing(
+      EmitterEntity a, List<EmitterEntity> all, boolean includeDisabled) {
+    var face = a.getBlockState().getValue(RailBlock.FACING);
+    EmitterEntity best = null;
+    int distance = 21;
+    for (var b : all) {
+      if (!Objects.equals(a.owner, b.owner) || !b.isRail() || !includeDisabled && !b.enabled || a == b)
+        continue;
+      var delta = b.getBlockPos().subtract(a.getBlockPos());
+      int n =
+          delta.getX() * face.getStepX()
+              + delta.getY() * face.getStepY()
+              + delta.getZ() * face.getStepZ();
       if (n > 0
           && n < distance
           && delta.equals(
@@ -530,8 +608,7 @@ public final class FieldNetwork {
         distance = n;
       }
     }
-    if (best != null) found.add(best);
-    return found;
+    return best;
   }
 
   private static boolean input(ServerLevel l, EmitterEntity e) {
@@ -547,7 +624,8 @@ public final class FieldNetwork {
 
   private static String signature(List<EmitterEntity.Link> links) {
     StringBuilder s = new StringBuilder();
-    for (var link : links) s.append(link.target()).append(Arrays.toString(link.ground()));
+    for (var link : links)
+      s.append(link.target()).append(Arrays.toString(link.ground())).append(link.inward());
     return s.toString();
   }
 }

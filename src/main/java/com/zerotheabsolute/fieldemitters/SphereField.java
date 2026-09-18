@@ -122,8 +122,7 @@ public final class SphereField {
     if (!formed(e) || e.controls.dome && p.getY() < e.getBlockPos().getY() - DOME_DEPTH)
       return Shapes.empty();
     var direction = movement(e, entity, center);
-    if (!e.controls.blocks(entity, e.owner, direction)
-        && !FieldCheckpoint.blocks(e, e.controls, entity, direction)) return Shapes.empty();
+    if (!FieldBlock.blocked(e, e.controls, entity, direction)) return Shapes.empty();
     var offset = p.subtract(e.getBlockPos());
     return SHAPES
         .computeIfAbsent(key(e), ignored -> new HashMap<>())
@@ -196,7 +195,8 @@ public final class SphereField {
             && now - old.time() <= 2
             && e.controls.detects(entity, e.owner, direction)) {
           e.crossings++;
-          if (e.controls.sensorMode == 1) e.queuedPulses = Math.min(100000, e.queuedPulses + 1);
+          if (e.controls.sensorMode == 1)
+            e.queuedPulses = Math.min(EmitterEntity.MAX_PENDING_PULSES, e.queuedPulses + 1);
           e.lastDetection =
               net.minecraft.network.chat.Component.translatable(
                   "message.fieldemitters.detection.crossing",

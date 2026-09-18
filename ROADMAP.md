@@ -16,6 +16,7 @@ Version 1.0.1 adds the four ports supported by Flux Pylons: Forge and Fabric for
 
 ## Later ideas
 
+- Partial field cells, so a field forms flush across slabs, carpets, snow layers and fences instead of leaving a gap where the path is already occupied.
 - Balance changes supported by experience in real packs.
 - Additional field shapes and larger spans once performance in big farms is measured.
 

@@ -49,10 +49,18 @@ public final class ControlSettings {
 
   public boolean damages(
       net.minecraft.world.entity.Entity entity, java.util.UUID owner, Direction movement) {
-    var rule = damage(movement);
+    return damages(entity, owner, movement, null);
+  }
+
+  public boolean damages(
+      net.minecraft.world.entity.Entity entity,
+      java.util.UUID owner,
+      Direction movement,
+      Direction inward) {
+    var rule = relative(damage, inward) ? damage : damage(movement);
     return damageEnabled
         && damageAmount > 0
-        && rule.direction(movement)
+        && rule.direction(movement, inward)
         && rule.matches(entity, owner);
   }
 
@@ -66,14 +74,48 @@ public final class ControlSettings {
 
   public boolean blocks(
       net.minecraft.world.entity.Entity entity, java.util.UUID owner, Direction movement) {
-    var rule = barrier(movement);
-    return rule.direction(movement) && rule.matches(entity, owner);
+    return blocks(entity, owner, movement, null);
+  }
+
+  public boolean blocks(
+      net.minecraft.world.entity.Entity entity,
+      java.util.UUID owner,
+      Direction movement,
+      Direction inward) {
+    var rule = barrierRule(movement, inward);
+    return rule.direction(movement, inward) && rule.matches(entity, owner);
+  }
+
+  /** The blocking rule that governs this crossing, once direction and frame are resolved. */
+  public EntityFilter barrierRule(Direction movement, Direction inward) {
+    return relative(barrier, inward) ? barrier : barrier(movement);
+  }
+
+  /** Whether blocking covers this crossing at all, regardless of which entity is crossing. */
+  public boolean barrierCovers(Direction movement, Direction inward) {
+    return barrierRule(movement, inward).direction(movement, inward);
   }
 
   public boolean detects(
       net.minecraft.world.entity.Entity entity, java.util.UUID owner, Direction movement) {
-    var rule = sensor(movement);
-    return rule.direction(movement) && rule.matches(entity, owner);
+    return detects(entity, owner, movement, null);
+  }
+
+  public boolean detects(
+      net.minecraft.world.entity.Entity entity,
+      java.util.UUID owner,
+      Direction movement,
+      Direction inward) {
+    var rule = relative(sensor, inward) ? sensor : sensor(movement);
+    return rule.direction(movement, inward) && rule.matches(entity, owner);
+  }
+
+  /**
+   * The relative frame describes one rule for every side, so it uses the shared filter rather than
+   * the per-direction overrides, which are written in world directions.
+   */
+  private static boolean relative(EntityFilter filter, Direction inward) {
+    return filter.relative(inward);
   }
 
   public java.util.List<EntityFilter> filters() {
