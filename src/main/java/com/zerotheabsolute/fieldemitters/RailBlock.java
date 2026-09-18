@@ -77,6 +77,7 @@ public final class RailBlock extends BaseEntityBlock {
     if (l.getBlockEntity(p) instanceof EmitterEntity e && entity != null) {
       e.owner = entity.getUUID();
       e.placedAt = l.getGameTime();
+      e.adoptPending = true;
       e.setChanged();
     }
   }

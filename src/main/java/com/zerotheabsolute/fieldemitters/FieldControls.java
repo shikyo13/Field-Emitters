@@ -332,9 +332,9 @@ public final class FieldControls {
                                 "message.fieldemitters.fieldcontrols.changes_applied"));
                         return;
                       }
-                      for (var e :
-                          p.network ? FieldNetwork.configurable(seed) : java.util.List.of(seed)) {
+                      for (var e : FieldNetwork.configurable(seed)) {
                         if (!editable(e, player)) continue;
+                        e.adoptPending = false;
                         if (e.isTower()
                             && (e.controls.sphereRadius != validated.sphereRadius
                                 || e.controls.dome != validated.dome))
