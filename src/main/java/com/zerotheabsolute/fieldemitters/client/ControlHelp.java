@@ -2,200 +2,232 @@ package com.zerotheabsolute.fieldemitters.client;
 
 /** Player-facing help shared by mouse hover and keyboard focus. */
 final class ControlHelp {
-  private static final String FILTER =
-      "Selected means any checked category that also meets EVERY filled-in detail below. Blank"
-          + " details add no restriction. Enabled player, mob and item lists use their own modes instead. ";
+  private static String filterHelp() {
+    return UiText.text(
+        "screen.fieldemitters.controlhelp.selected_means_any_checked_category_that_also_meets");
+  }
 
-  static String field(String label) {
-    return switch (label) {
-      case "Entity type or #group" ->
-          "Optional: enter one entity type, such as minecraft:creeper. Or enter an existing"
-              + " entity-type tag, such as #yourpack:guards, to match a group defined by a mod or"
-              + " datapack. The # is required for groups; typing a name does not create a group."
-              + " Keep its category checked above. Leave blank to accept any type in the selected"
-              + " categories.";
-      case "Dropped item or #group" ->
-          "Optional: enter minecraft:gunpowder to match dropped gunpowder, or #minecraft:logs to"
-              + " match dropped logs. Check Drops above and use Any age. This checks items on the"
-              + " ground, not a mob's or player's inventory. One ID or existing item tag per box;"
-              + " blank means any dropped item.";
-      case "Specific mob / player (UUID)" ->
-          "Optional: match one specific entity using its unique UUID. Easier: sneak-right-click a"
-              + " living mob with the tuner, or sneak-right-click air to sample yourself. Then"
-              + " click Sample individual. An enabled Player list replaces this restriction for players.";
-      case "Custom entity label (/tag)" ->
-          "Optional: match a label assigned to an entity with Minecraft's /tag command. For"
-              + " example, /tag @s add resident gives you the label resident; enter resident here,"
-              + " without #. This is different from an entity-type or item group. Leave blank to"
-              + " ignore custom labels.";
-      case "Damage per hit (HP; 2 = 1 heart)" ->
-          "Enter 0 to 1000 health points per successful hit. 2 HP equals one heart. Damage is off by default. Vanilla invulnerability, damage immunity and protection mods still apply. Nonliving entities respond only if Minecraft gives them damage behavior; this never forcibly deletes an entity.";
-      case "Effect color (6-digit hex)" ->
-          "Custom color for impact effects, drifting pixels, plasma veins and fizzle bursts. Used only while Effect color is set to Custom accent. Enter six hex digits, such as FF33CC for magenta.";
-      case "Custom color (6-digit hex code)" ->
-          "Enter a six-digit color code, for example 52E5FF for cyan. You can also choose a color"
-              + " preset above. Valid color changes apply automatically.";
-      default -> "Leave blank for no additional restriction. Valid changes apply automatically.";
+  static String field(Control control) {
+    return switch (control) {
+      case ENTITY_TYPE_OR_GROUP ->
+          UiText.text(
+              "screen.fieldemitters.controlhelp.optional_enter_one_entity_type_such_as_minecraft");
+      case DROPPED_ITEM_OR_GROUP ->
+          UiText.text(
+              "screen.fieldemitters.controlhelp.optional_enter_minecraft_gunpowder_to_match_dropped_gunpowder");
+      case SPECIFIC_MOB_PLAYER_UUID ->
+          UiText.text(
+              "screen.fieldemitters.controlhelp.optional_match_one_specific_entity_using_its_unique");
+      case CUSTOM_ENTITY_LABEL_TAG ->
+          UiText.text(
+              "screen.fieldemitters.controlhelp.optional_match_a_label_assigned_to_an_entity");
+      case DAMAGE_PER_HIT_HP_2_1_HEART ->
+          UiText.text(
+              "screen.fieldemitters.controlhelp.enter_0_to_1000_health_points_per_successful");
+      case EFFECT_COLOR_6_DIGIT_HEX ->
+          UiText.text(
+              "screen.fieldemitters.controlhelp.custom_color_for_impact_effects_drifting_pixels_plasma");
+      case CUSTOM_COLOR_6_DIGIT_HEX_CODE ->
+          UiText.text("screen.fieldemitters.controlhelp.enter_a_six_digit_color_code_for_example");
+      default ->
+          UiText.text(
+              "screen.fieldemitters.controlhelp.leave_blank_for_no_additional_restriction_valid_changes");
     };
   }
 
-  static String button(String raw, int tab) {
-    String text = raw.replaceFirst("^[✓○] ", "");
-    if (text.startsWith("Effect color:")) return "Matches field keeps impacts, pixels, plasma veins and fizzle effects in the field's color. Custom accent lets you choose their color separately below. Formation beams keep the field color.";
-    if (text.equals("Preset: Purple field / magenta effects")) return "Sets a purple field with drifting pixels and explicitly enables a magenta custom accent.";
-    if (text.equals("Managers and public access")) return "Choose who can change this connected network's settings. Management permission is separate from permission to pass through the field.";
-    if (text.equals("Issue and revoke badges")) return "Issue badges for access groups and revoke them when needed. Add an access group to a player filter to use its badges. A badge does not grant management permission.";
-    if (text.equals("Inventory checkpoint")) return "Inspect carried inventory using a separate player and item filter. Detect contraband, deny passage, drop it, or transfer it to adjacent storage. Badge and management permissions remain separate.";
-    if (text.startsWith("Output side:")) return "Emitter face that sends the sensor's redstone signal. The input face is excluded. This is a physical block face, not an entity's travel direction.";
-    if (text.startsWith("Pulse length:")) return "How long each crossing pulse stays on. A short off interval separates queued pulses so counters can distinguish them. Used with Pulse on crossing.";
-    if (text.startsWith("Mob list")) return "Manage up to 64 mob IDs or entity-type tags using whitelist/blacklist modes. Drag spawn eggs into the boxes or type IDs. Age, individual UUID and custom label narrow the listed selection. Players and dropped items have separate lists. Rules belong to the selected travel direction.";
-    if (text.startsWith("Item list")) return "Manage up to 64 dropped-item IDs or item tags. Drag item icons from your inventory or JEI into the boxes without consuming anything. Whitelist allows listed drops; blacklist blocks listed drops. Detection and damage have their own lists. Item lists ignore mob age and general inversion.";
-    if (text.startsWith("Player list")) return "Manage up to 64 players by Minecraft account name or UUID. Choose a whitelist or blacklist for blocking, or listed/unlisted players for detection and damage. A list changes players only, respects this direction and Skip owner, and replaces the other filter details for players.";
-    if (text.equals("Sample individual")) return "Copy the individual UUID sampled with your tuner into this filter. An enabled Player list takes priority for players.";
-    if (text.equals("Sample type")) return "Copy the entity type sampled with your tuner into this filter. An enabled Player list takes priority for players.";
-    if (text.startsWith("Damage:")) return "Enable contact damage using this tab's own filter. Blocking and detection remain independent. Damage starts off; enabling it can hurt selected players, mobs and damageable nonliving entities.";
-    if (text.startsWith("Damage selected") || text.startsWith("Damage unselected")) return FILTER + "Choose whether matching entities or everything outside the selection takes damage. Skip owner always takes priority.";
-    if (text.startsWith("Hit interval:")) return "Minimum time between successful field hits on one entity, shared across touching tiles and overlapping fields so seams cannot multiply damage. Vanilla damage cooldowns still apply.";
-    if (text.startsWith("Fizzle particles:")) return "Short colored bursts on damage and a larger body-shaped burst on a lethal hit. Effects are capped per tick and emitter. This changes particles, not damage or sounds.";
-    if (text.startsWith("Pattern:")) return "Choose hex lattice, a clean translucent glow, drifting colored pixels, or plasma. All styles retain impact ripples. Visuals do not change filters or collision.";
-    if (text.startsWith("Projection:")) return "Choose how the tower builds its hollow shell: opposing laser curtains, a rising ring, assembling hex cells, meridian arcs, a crown seed, or plasma dissolve. Works with every pattern. All take four seconds; collision starts only when complete. This choice does not change filters or power use.";
-    if (text.startsWith("Formation:")) return "Cycle Sweep, Dissolve, Fade, or the six projection styles. On walls the ring becomes a rising scan line and meridians become tracing ribs. On floors and ceilings they travel across the surface. Projection styles form for four seconds before blocking, detecting or damaging; the original three modes keep their progressive activation.";
-    if (text.startsWith("Purple /")) return "Apply a translucent purple field with drifting magenta pixels. Field and particle colors can also be edited separately.";
-    if (text.startsWith("All field sounds:")) return "Master switch for this emitter's activation, deactivation, impact and fizzle sounds. Minecraft's Blocks volume also controls these effects. No looping background hum.";
-    if (text.startsWith("Power on / off sounds:") || text.startsWith("Impact sounds:") || text.startsWith("Damage sounds:")) return "Toggle this sound category independently. The master All field sounds switch must also be on.";
-    if (text.startsWith("Sound palette:")) return "Choose short vanilla sound effects: Soft sizzle, Crystal or Electric. No new music or continuous sound loop is added.";
-    if (text.startsWith("Rules for:")) return "Choose the travel direction to edit. North → South means entering from the north and leaving to the south. All directions edits the shared fallback; custom directional rules take priority. Blocking, detection and damage are independent.";
-    if (text.startsWith("Rule source:")) return "Shared uses the All directions filter. Click to create a Custom copy for this travel direction, then edit it below. Click again to remove the override and use Shared. Changing shared rules does not change custom copies.";
-    if (text.equals("Hostile"))
-      return FILTER
-          + "Hostile selects entities Minecraft classifies as monsters, such as zombies and"
-          + " creepers.";
-    if (text.equals("Passive"))
-      return FILTER
-          + "Passive selects living entities that are not players or monsters, such as cows, sheep"
-          + " and villagers. Neutral mobs can belong here even when angry.";
-    if (text.equals("Players"))
-      return FILTER
-          + "Players selects player characters. Skip owner controls whether this emitter's owner"
-          + " can match.";
-    if (text.equals("Drops"))
-      return FILTER
-          + "Drops selects loose item entities, such as gunpowder on the ground. Use the Dropped"
-          + " item box for a specific item. Use Any age.";
-    if (text.equals("Nonliving"))
-      return FILTER
-          + "Nonliving selects the remaining entities, such as arrows, boats, minecarts and XP"
-          + " orbs. Dropped items have their own Drops category. Use Any age.";
-    if (text.startsWith("Block selected"))
-      return FILTER
-          + "Matching entities are blocked. Everything else may pass. Click to switch to allowing"
-          + " only the selection.";
-    if (text.startsWith("Allow selected"))
-      return FILTER
-          + "Only matching entities may pass; everything else is blocked. Example: check Passive"
-          + " and Babies only to allow baby passive mobs through. Skip owner: Yes always lets the"
-          + " owner pass.";
-    if (text.startsWith("Detect selected"))
-      return FILTER
-          + "Matching entities trigger detection. Blocking is configured separately in Blocking.";
-    if (text.startsWith("Detect unselected"))
-      return FILTER
-          + "Entities outside that selection trigger detection. Skip owner: Yes always excludes the"
-          + " owner. This does not change what the field blocks.";
-    if (text.startsWith("Age:"))
-      return "Click to cycle: Any age, Babies only, Adults only. Babies are living entities"
-          + " Minecraft marks as babies; Adults means living entities that are not babies."
-          + " Dropped items and other nonliving entities need Any age.";
-    if (text.startsWith("Skip owner:") && tab == 3) return "Yes always exempts the emitter owner from damage, including inverted filters. No includes the owner when they match.";
-    if (text.startsWith("Skip owner:"))
-      return tab == 1
-          ? "Yes always allows the player who placed this emitter through, even with Allow selected"
-              + " only. No applies the normal blocking rules to the owner too."
-          : "Yes never detects the player who placed this emitter. No includes that player when"
-              + " they match the detection rules.";
-    if (tab == 3 && (text.startsWith("To ") || text.equals("Upward") || text.equals("Downward"))) return "Checked: damage matching entities approaching in this world direction. Downward applies from above, including entities standing on a horizontal bridge. Unchecked: no damage in this direction.";
-    if (text.startsWith("To ") || text.equals("Upward") || text.equals("Downward"))
-      return (tab == 1
-              ? "Checked: apply blocking in this movement direction. Unchecked: allow passage in"
-                  + " this direction. "
-              : "Checked: detect crossings in this movement direction. Unchecked: ignore them. ")
-          + "To South means traveling from north to south; Upward means moving from below to above."
-          + " These are world directions, not the direction you are looking. Entity filters still"
-          + " apply.";
-    if (text.startsWith("Signal:"))
-      return "Click to cycle. Off: no detection output. Pulse on crossing: send one redstone pulse"
-          + " when a matching entity completely passes through. On while touching: keep"
-          + " redstone on while a matching entity overlaps the field. Touching alone does"
-          + " not count as a crossing.";
-    if (text.startsWith("Items:"))
-      return "Choose how dropped item stacks affect crossing counts and queued pulses. Count each"
-          + " stack: a stack of 64 gives one count/pulse. Count each item: it gives 64"
-          + " counts/pulses, sent one at a time. Mobs and players always count once.";
-    if (text.startsWith("Match this sampled"))
-      return "Copy the individual saved in your tuner. Sneak-right-click a living mob to sample it,"
-          + " or sneak-right-click air to sample yourself. This replaces the current filter"
-          + " details with that individual's UUID. Changes apply immediately.";
-    if (text.startsWith("Match the sampled"))
-      return "Copy the entity type saved in your tuner, for example all cows rather than one"
-          + " particular cow. First sneak-right-click a living mob, or air for players. This"
-          + " replaces the current filter details. Changes apply immediately.";
-    if (text.startsWith("Field:"))
-      return "On allows this emitter to operate when it has energy and satisfies its redstone"
-          + " condition. Off stops its fields. Change settings for determines whether this"
-          + " affects just this emitter or your connected emitters.";
-    if (text.startsWith("Turn on:"))
-      return "Choose when the field operates: whenever energy is available, only while its redstone"
-          + " input is on, or only while that input is off. Normal operation always requires"
-          + " FE energy.";
-    if (text.startsWith("Read redstone from:"))
-      return "Choose the side that reads your enable/disable signal. Top and Bottom refer to the"
-          + " emitter block; North, South, East and West are world directions. The output"
-          + " side is excluded to avoid using the same face for input and output.";
-    if (text.startsWith("Reset crossing"))
-      return "Immediately clear the recorded crossing count, recent detection and waiting pulses.";
-    if (text.startsWith("Light nearby blocks:"))
-      return "Yes adds real Minecraft block light. No keeps the surroundings dark for mob farms."
-          + " The field can still look bright and block entities when world lighting is"
-          + " off.";
-    if (text.startsWith("Show forcefield:"))
-      return "No hides the forcefield graphics only. Blocking, detection and damage continue while powered."
-          + " Use Field: Off on the Overview tab to stop operation.";
-    if (text.startsWith("Animate field pattern:"))
-      return "Toggle the moving pattern on the field surface. This does not disable"
-          + " projection/retraction or hardware animations.";
-    if (text.startsWith("Direction guides:"))
-      return "Show with tuner displays movement arrows while holding the tuner or briefly"
-          + " previewing a connection. Amber means blocking is enabled in that direction;"
-          + " green means it is disabled. Filters still determine which entities are"
-          + " blocked. Hidden removes these guides. This preference is saved for your client"
-          + " only.";
-    if (text.startsWith("Editing:"))
-      return "Choose default emitter rules, or select one outgoing field for different Blocking,"
-          + " Detection and Damage filters. A field-specific rule takes priority over defaults. All three filters can differ for one field; energy, color and redstone output"
-          + " remain emitter settings. Changes apply automatically; switching loads"
-          + " that field's saved settings.";
-    if (text.startsWith("Change settings for:"))
-      return "This emitter only changes the emitter you opened. My connected emitters copies these"
-          + " settings to the connected emitters you are allowed to edit. Existing"
-          + " field-specific rules remain in place. When editing one field, each change updates"
-          + " only that field's filters at both endpoints.";
-    if (text.startsWith("Send redstone signal from:"))
-      return "Choose where to connect redstone dust, a lamp or a counter. The detector sends its"
-          + " output through this side of the source emitter. A rail chain shares one"
-          + " detector output at the coordinates shown below. Input and output must use"
-          + " different sides.";
-    if (text.startsWith("Signal pulse length:"))
-      return "Choose how long each detection pulse stays on. There is a 0.1-second off gap between"
-          + " queued pulses so counters see separate events. Times assume Minecraft's normal"
-          + " 20 ticks per second. Pulse mode must be enabled on Detection.";
-    if (text.startsWith("Bridge preset:")) return "Set horizontal mode, block all entities moving downward (including the owner), allow upward passage and disable damage. Replaces blocking direction overrides. Use on connected rails to build a walkable bridge.";
-    if (text.startsWith("Field shape:"))
-      return "Choose the orientation of the flat field between these rails. Wall facing North /"
-          + " South is crossed north-to-south; Wall facing East / West is crossed"
-          + " east-to-west. Horizontal floor / ceiling is crossed upward or downward. Only"
-          + " orientations compatible with the rail placement are offered.";
-    if (text.startsWith("#"))
-      return "Immediately use this color preset for the emitter(s) selected in" + " Connections.";
+  static String button(Control control, String text, ControlTab tab) {
+    if (control == Control.EFFECT_COLOR)
+      return UiText.text(
+          "screen.fieldemitters.controlhelp.matches_field_keeps_impacts_pixels_plasma_veins_and");
+    if (control == Control.PRESET_PURPLE_FIELD_MAGENTA_EFFECTS)
+      return UiText.text(
+          "screen.fieldemitters.controlhelp.sets_a_purple_field_with_drifting_pixels_and");
+    if (control == Control.MANAGERS_AND_PUBLIC_ACCESS)
+      return UiText.text(
+          "screen.fieldemitters.controlhelp.choose_who_can_change_this_connected_network_s");
+    if (control == Control.ISSUE_AND_REVOKE_BADGES)
+      return UiText.text(
+          "screen.fieldemitters.controlhelp.issue_badges_for_access_groups_and_revoke_them");
+    if (control == Control.INVENTORY_CHECKPOINT)
+      return UiText.text(
+          "screen.fieldemitters.controlhelp.inspect_carried_inventory_using_a_separate_player_and");
+    if (control == Control.OUTPUT_SIDE)
+      return UiText.text(
+          "screen.fieldemitters.controlhelp.emitter_face_that_sends_the_sensor_s_redstone");
+    if (control == Control.PULSE_LENGTH)
+      return UiText.text(
+          "screen.fieldemitters.controlhelp.how_long_each_crossing_pulse_stays_on_a");
+    if (control == Control.MOB_LIST)
+      return UiText.text("screen.fieldemitters.controlhelp.manage_up_to_64_mob_ids_or_entity");
+    if (control == Control.ITEM_LIST)
+      return UiText.text("screen.fieldemitters.controlhelp.manage_up_to_64_dropped_item_ids_or");
+    if (control == Control.PLAYER_LIST)
+      return UiText.text(
+          "screen.fieldemitters.controlhelp.manage_up_to_64_players_by_minecraft_account");
+    if (control == Control.SAMPLE_INDIVIDUAL)
+      return UiText.text(
+          "screen.fieldemitters.controlhelp.copy_the_individual_uuid_sampled_with_your_tuner");
+    if (control == Control.SAMPLE_TYPE)
+      return UiText.text(
+          "screen.fieldemitters.controlhelp.copy_the_entity_type_sampled_with_your_tuner");
+    if (control == Control.DAMAGE)
+      return UiText.text(
+          "screen.fieldemitters.controlhelp.enable_contact_damage_using_this_tab_s_own");
+    if (control == Control.DAMAGE_SELECTED || control == Control.DAMAGE_UNSELECTED)
+      return UiText.text(
+          "screen.fieldemitters.controlhelp.choose_whether_matching_entities_or_everything_outside_the",
+          filterHelp());
+    if (control == Control.HIT_INTERVAL)
+      return UiText.text(
+          "screen.fieldemitters.controlhelp.minimum_time_between_successful_field_hits_on_one");
+    if (control == Control.FIZZLE_PARTICLES)
+      return UiText.text(
+          "screen.fieldemitters.controlhelp.short_colored_bursts_on_damage_and_a_larger");
+    if (control == Control.PATTERN)
+      return UiText.text(
+          "screen.fieldemitters.controlhelp.choose_hex_lattice_a_clean_translucent_glow_drifting");
+    if (control == Control.PROJECTION)
+      return UiText.text(
+          "screen.fieldemitters.controlhelp.choose_how_the_tower_builds_its_hollow_shell");
+    if (control == Control.FORMATION)
+      return UiText.text(
+          "screen.fieldemitters.controlhelp.cycle_sweep_dissolve_fade_or_the_six_projection");
+    if (control == Control.PURPLE)
+      return UiText.text(
+          "screen.fieldemitters.controlhelp.apply_a_translucent_purple_field_with_drifting_magenta");
+    if (control == Control.ALL_FIELD_SOUNDS)
+      return UiText.text(
+          "screen.fieldemitters.controlhelp.master_switch_for_this_emitter_s_activation_deactivation");
+    if (control == Control.POWER_ON_OFF_SOUNDS
+        || control == Control.IMPACT_SOUNDS
+        || control == Control.DAMAGE_SOUNDS)
+      return UiText.text(
+          "screen.fieldemitters.controlhelp.toggle_this_sound_category_independently_the_master_all");
+    if (control == Control.SOUND_PALETTE)
+      return UiText.text(
+          "screen.fieldemitters.controlhelp.choose_short_vanilla_sound_effects_soft_sizzle_crystal");
+    if (control == Control.RULES_FOR)
+      return UiText.text(
+          "screen.fieldemitters.controlhelp.choose_the_travel_direction_to_edit_north_south");
+    if (control == Control.RULE_SOURCE)
+      return UiText.text(
+          "screen.fieldemitters.controlhelp.shared_uses_the_all_directions_filter_click_to");
+    if (control == Control.HOSTILE)
+      return UiText.text(
+          "screen.fieldemitters.controlhelp.hostile_selects_entities_minecraft_classifies_as_monsters_such",
+          filterHelp());
+    if (control == Control.PASSIVE)
+      return UiText.text(
+          "screen.fieldemitters.controlhelp.passive_selects_living_entities_that_are_not_players",
+          filterHelp());
+    if (control == Control.PLAYERS)
+      return UiText.text(
+          "screen.fieldemitters.controlhelp.players_selects_player_characters_skip_owner_controls_whether",
+          filterHelp());
+    if (control == Control.DROPS)
+      return UiText.text(
+          "screen.fieldemitters.controlhelp.drops_selects_loose_item_entities_such_as_gunpowder",
+          filterHelp());
+    if (control == Control.NONLIVING)
+      return UiText.text(
+          "screen.fieldemitters.controlhelp.nonliving_selects_the_remaining_entities_such_as_arrows",
+          filterHelp());
+    if (control == Control.BLOCK_SELECTED)
+      return UiText.text(
+          "screen.fieldemitters.controlhelp.matching_entities_are_blocked_everything_else_may_pass",
+          filterHelp());
+    if (control == Control.ALLOW_SELECTED)
+      return UiText.text(
+          "screen.fieldemitters.controlhelp.only_matching_entities_may_pass_everything_else_is",
+          filterHelp());
+    if (control == Control.DETECT_SELECTED)
+      return UiText.text(
+          "screen.fieldemitters.controlhelp.matching_entities_trigger_detection_blocking_is_configured_separately",
+          filterHelp());
+    if (control == Control.DETECT_UNSELECTED)
+      return UiText.text(
+          "screen.fieldemitters.controlhelp.entities_outside_that_selection_trigger_detection_skip_owner",
+          filterHelp());
+    if (control == Control.AGE)
+      return UiText.text(
+          "screen.fieldemitters.controlhelp.click_to_cycle_any_age_babies_only_adults");
+    if (control == Control.SKIP_OWNER && tab == ControlTab.DAMAGE)
+      return UiText.text(
+          "screen.fieldemitters.controlhelp.yes_always_exempts_the_emitter_owner_from_damage");
+    if (control == Control.SKIP_OWNER)
+      return tab == ControlTab.BLOCKING
+          ? UiText.text(
+              "screen.fieldemitters.controlhelp.yes_always_allows_the_player_who_placed_this")
+          : UiText.text(
+              "screen.fieldemitters.controlhelp.yes_never_detects_the_player_who_placed_this");
+    if (tab == ControlTab.DAMAGE && (control == Control.MOVEMENT))
+      return UiText.text(
+          "screen.fieldemitters.controlhelp.checked_damage_matching_entities_approaching_in_this_world");
+    if (control == Control.MOVEMENT)
+      return UiText.text(
+          "screen.fieldemitters.controlhelp.to_south_means_traveling_from_north_to_south",
+          (tab == ControlTab.BLOCKING
+              ? UiText.text(
+                  "screen.fieldemitters.controlhelp.checked_apply_blocking_in_this_movement_direction_unchecked")
+              : UiText.text(
+                  "screen.fieldemitters.controlhelp.checked_detect_crossings_in_this_movement_direction_unchecked")));
+    if (control == Control.SIGNAL)
+      return UiText.text(
+          "screen.fieldemitters.controlhelp.click_to_cycle_off_no_detection_output_pulse");
+    if (control == Control.ITEMS)
+      return UiText.text(
+          "screen.fieldemitters.controlhelp.choose_how_dropped_item_stacks_affect_crossing_counts");
+    if (control == Control.MATCH_THIS_SAMPLED)
+      return UiText.text(
+          "screen.fieldemitters.controlhelp.copy_the_individual_saved_in_your_tuner_sneak");
+    if (control == Control.MATCH_THE_SAMPLED)
+      return UiText.text(
+          "screen.fieldemitters.controlhelp.copy_the_entity_type_saved_in_your_tuner");
+    if (control == Control.FIELD)
+      return UiText.text(
+          "screen.fieldemitters.controlhelp.on_allows_this_emitter_to_operate_when_it");
+    if (control == Control.TURN_ON)
+      return UiText.text(
+          "screen.fieldemitters.controlhelp.choose_when_the_field_operates_whenever_energy_is");
+    if (control == Control.READ_REDSTONE_FROM)
+      return UiText.text(
+          "screen.fieldemitters.controlhelp.choose_the_side_that_reads_your_enable_disable");
+    if (control == Control.RESET_CROSSING)
+      return UiText.text(
+          "screen.fieldemitters.controlhelp.immediately_clear_the_recorded_crossing_count_recent_detection");
+    if (control == Control.LIGHT_NEARBY_BLOCKS)
+      return UiText.text(
+          "screen.fieldemitters.controlhelp.yes_adds_real_minecraft_block_light_no_keeps");
+    if (control == Control.SHOW_FORCEFIELD)
+      return UiText.text(
+          "screen.fieldemitters.controlhelp.no_hides_the_forcefield_graphics_only_blocking_detection");
+    if (control == Control.ANIMATE_FIELD_PATTERN)
+      return UiText.text(
+          "screen.fieldemitters.controlhelp.toggle_the_moving_pattern_on_the_field_surface");
+    if (control == Control.DIRECTION_GUIDES)
+      return UiText.text(
+          "screen.fieldemitters.controlhelp.show_with_tuner_displays_movement_arrows_while_holding");
+    if (control == Control.EDITING)
+      return UiText.text(
+          "screen.fieldemitters.controlhelp.choose_default_emitter_rules_or_select_one_outgoing");
+    if (control == Control.CHANGE_SETTINGS_FOR)
+      return UiText.text(
+          "screen.fieldemitters.controlhelp.this_emitter_only_changes_the_emitter_you_opened");
+    if (control == Control.SEND_REDSTONE_SIGNAL_FROM)
+      return UiText.text(
+          "screen.fieldemitters.controlhelp.choose_where_to_connect_redstone_dust_a_lamp");
+    if (control == Control.SIGNAL_PULSE_LENGTH)
+      return UiText.text(
+          "screen.fieldemitters.controlhelp.choose_how_long_each_detection_pulse_stays_on");
+    if (control == Control.BRIDGE_PRESET)
+      return UiText.text(
+          "screen.fieldemitters.controlhelp.set_horizontal_mode_block_all_entities_moving_downward");
+    if (control == Control.FIELD_SHAPE)
+      return UiText.text(
+          "screen.fieldemitters.controlhelp.choose_the_orientation_of_the_flat_field_between");
+    if (control == Control.COLOR_PRESET)
+      return UiText.text(
+          "screen.fieldemitters.controlhelp.immediately_use_this_color_preset_for_the_emitter");
     return text;
   }
 }

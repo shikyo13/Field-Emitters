@@ -68,7 +68,8 @@ public final class BadgeAccess extends SavedData {
     stack.set(DataComponents.CUSTOM_DATA, CustomData.of(display));
     stack.set(
         DataComponents.CUSTOM_NAME,
-        net.minecraft.network.chat.Component.literal("Access badge: " + group));
+        net.minecraft.network.chat.Component.translatable(
+            "item.fieldemitters.access_badge.issued", group));
   }
 
   public int revoke(UUID issuer, String group) {

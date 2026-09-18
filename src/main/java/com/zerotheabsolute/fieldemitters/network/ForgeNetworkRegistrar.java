@@ -14,16 +14,16 @@ import java.util.function.BiConsumer;
 public final class ForgeNetworkRegistrar {
     public static final SimpleChannel CHANNEL = ChannelBuilder
             .named(ResourceLocation.fromNamespaceAndPath(FieldEmitters.ID, "main"))
-            .networkProtocolVersion(1).simpleChannel();
-    public <T extends CustomPacketPayload> ForgeNetworkRegistrar playToClient(Class<T> type, StreamCodec<FriendlyByteBuf, T> codec,
+            .networkProtocolVersion(2).simpleChannel();
+    public <T extends CustomPacketPayload> ForgeNetworkRegistrar playToClient(Class<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> codec,
                                                             BiConsumer<T, ForgePayloadContext> handler) {
         register(type, codec, handler, NetworkDirection.PLAY_TO_CLIENT); return this;
     }
-    public <T extends CustomPacketPayload> ForgeNetworkRegistrar playToServer(Class<T> type, StreamCodec<FriendlyByteBuf, T> codec,
+    public <T extends CustomPacketPayload> ForgeNetworkRegistrar playToServer(Class<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> codec,
                                                             BiConsumer<T, ForgePayloadContext> handler) {
         register(type, codec, handler, NetworkDirection.PLAY_TO_SERVER); return this;
     }
-    private <T extends CustomPacketPayload> void register(Class<T> type, StreamCodec<FriendlyByteBuf, T> codec,
+    private <T extends CustomPacketPayload> void register(Class<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> codec,
                                                          BiConsumer<T, ForgePayloadContext> handler,
                                                          NetworkDirection<RegistryFriendlyByteBuf> direction) {
         CHANNEL.messageBuilder(type, direction)
