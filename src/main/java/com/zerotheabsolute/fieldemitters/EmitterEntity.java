@@ -10,7 +10,11 @@ import net.minecraft.world.level.block.state.BlockState;
 public final class EmitterEntity extends BlockEntity {
   public final Map<UUID, Passage> spherePassages = new HashMap<>();
   public boolean spherePresent;
-  public boolean isTower() { return getBlockState().is(FieldEmitters.TOWER.get()); }
+
+  public boolean isTower() {
+    return getBlockState().is(FieldEmitters.TOWER.get());
+  }
+
   public ControlSettings controls = new ControlSettings();
   public final Map<BlockPos, ControlSettings> overrides = new HashMap<>();
 
@@ -21,7 +25,8 @@ public final class EmitterEntity extends BlockEntity {
   public long crossings = 0;
   public int queuedPulses = 0, outputSignal = 0;
   public long pulseUntil = 0, gapUntil = 0;
-  public String lastDetection = "None";
+  public net.minecraft.network.chat.Component lastDetection =
+      net.minecraft.network.chat.Component.translatable("message.fieldemitters.detection.none");
   final FieldContact.Contacts contactDirections = new FieldContact.Contacts();
   public final Map<String, Passage> passages = new HashMap<>();
 
@@ -44,12 +49,14 @@ public final class EmitterEntity extends BlockEntity {
   public long lastFizzle = -1000;
   public final Map<UUID, Long> contacts = new HashMap<>();
   public List<Link> links = new ArrayList<>();
+
   /** Connected emitters as of the last topology rebuild; refreshed by FieldNetwork. */
   public List<EmitterEntity> network;
+
   public com.zeromods.core.network.ManagedNetwork<BlockPos> managedNetwork;
   public Set<BlockPos> cells = new HashSet<>();
-  public final EmitterEnergyStorage energy = new EmitterEnergyStorage(
-      FieldConfig.capacity(), FieldConfig.transfer(), this::setChanged);
+  public final EmitterEnergyStorage energy =
+      new EmitterEnergyStorage(FieldConfig.capacity(), FieldConfig.transfer(), this::setChanged);
 
     private net.minecraftforge.common.util.LazyOptional<net.minecraftforge.energy.IEnergyStorage> energyCapability =
             net.minecraftforge.common.util.LazyOptional.of(() -> energy);
@@ -82,14 +89,9 @@ public final class EmitterEntity extends BlockEntity {
     return getBlockState().is(FieldEmitters.RAIL.get());
   }
 
-  @Override
-  public net.minecraft.world.phys.AABB getRenderBoundingBox() { return renderBounds(); }
-
   public net.minecraft.world.phys.AABB renderBounds() {
-    if (isTower()) {
-      int radius = controls.sphereRadius;
-      return new net.minecraft.world.phys.AABB(worldPosition).inflate(radius + 1);
-    }
+    if (isTower())
+      return new net.minecraft.world.phys.AABB(worldPosition).inflate(controls.sphereRadius + 1);
     var box = new net.minecraft.world.phys.AABB(worldPosition);
     int low = worldPosition.getY(), high = worldPosition.getY() + 5;
     for (var link : links) {
@@ -99,7 +101,8 @@ public final class EmitterEntity extends BlockEntity {
         high = Math.max(high, y + link.height());
       }
     }
-    return new net.minecraft.world.phys.AABB(box.minX, low, box.minZ, box.maxX, high, box.maxZ).inflate(1);
+    return new net.minecraft.world.phys.AABB(box.minX, low, box.minZ, box.maxX, high, box.maxZ)
+        .inflate(1);
   }
 
   public record Link(
@@ -153,17 +156,6 @@ public final class EmitterEntity extends BlockEntity {
     }
   }
 
-  public String status() {
-    return (powered ? "ONLINE" : enabled ? "NO POWER" : "DISABLED")
-        + " • "
-        + links.size()
-        + " links • "
-        + demand
-        + " FE/t • "
-        + energy.getEnergyStored()
-        + " FE";
-  }
-
   public void sync() {
     setChanged();
     if (level != null) {
@@ -191,13 +183,16 @@ public final class EmitterEntity extends BlockEntity {
           var entry = new CompoundTag();
           entry.putLong("Target", pos.asLong());
           var offset = pos.subtract(worldPosition);
-          entry.putIntArray("TargetOffset", new int[] {offset.getX(), offset.getY(), offset.getZ()});
+          entry.putIntArray(
+              "TargetOffset", new int[] {offset.getX(), offset.getY(), offset.getZ()});
           entry.put("Settings", settings.save());
           overrideTags.add(entry);
         });
     t.put("Overrides", overrideTags);
     t.putLong("Crossings", crossings);
-    t.putString("LastDetection", lastDetection);
+    t.putString(
+        "LastDetectionText",
+        net.minecraft.network.chat.Component.Serializer.toJson(lastDetection));
     t.putInt("QueuedPulses", queuedPulses);
     t.putInt("OutputSignal", outputSignal);
     t.putLong("ImpactTime", impactTime);
@@ -207,7 +202,8 @@ public final class EmitterEntity extends BlockEntity {
     t.putDouble("ImpactZ", impact.z);
     t.putLong("Root", root.asLong());
     var rootOffset = root.subtract(worldPosition);
-    t.putIntArray("RootOffset", new int[] {rootOffset.getX(), rootOffset.getY(), rootOffset.getZ()});
+    t.putIntArray(
+        "RootOffset", new int[] {rootOffset.getX(), rootOffset.getY(), rootOffset.getZ()});
     t.putInt("Color", color);
     t.putInt("Mask", mask);
     t.putBoolean("Enabled", enabled);
@@ -221,8 +217,12 @@ public final class EmitterEntity extends BlockEntity {
       CompoundTag n = new CompoundTag();
       n.putLong("Target", link.target.asLong());
       var targetOffset = link.target.subtract(worldPosition);
-      n.putIntArray("TargetOffset", new int[] {targetOffset.getX(), targetOffset.getY(), targetOffset.getZ()});
-      n.putIntArray("GroundOffset", java.util.Arrays.stream(link.ground).map(y -> y - worldPosition.getY()).toArray());
+      n.putIntArray(
+          "TargetOffset",
+          new int[] {targetOffset.getX(), targetOffset.getY(), targetOffset.getZ()});
+      n.putIntArray(
+          "GroundOffset",
+          java.util.Arrays.stream(link.ground).map(y -> y - worldPosition.getY()).toArray());
       n.putInt("DX", link.dx);
       n.putInt("DZ", link.dz);
       n.putInt("DY", link.dy);
@@ -235,9 +235,14 @@ public final class EmitterEntity extends BlockEntity {
   }
 
   public void load(CompoundTag t) {
-    var management=t.getCompound("Management");
-    managementPublic=management.getBoolean("Public");managerIds.clear();
-    for(var value:management.getList("Managers",8))try{managerIds.add(UUID.fromString(value.getAsString()));}catch(IllegalArgumentException ignored){}
+    var management = t.getCompound("Management");
+    managementPublic = management.getBoolean("Public");
+    managerIds.clear();
+    for (var value : management.getList("Managers", 8))
+      try {
+        managerIds.add(UUID.fromString(value.getAsString()));
+      } catch (IllegalArgumentException ignored) {
+      }
     int previousColor = color;
     super.load(t);
     impactTime = t.contains("ImpactTime") ? t.getLong("ImpactTime") : -1000;
@@ -246,8 +251,10 @@ public final class EmitterEntity extends BlockEntity {
             t.getDouble("ImpactX"), t.getDouble("ImpactY"), t.getDouble("ImpactZ"));
     FieldImpacts.load(this, t);
     int[] rootOffset = t.getIntArray("RootOffset");
-    root = rootOffset.length == 3 ? worldPosition.offset(rootOffset[0], rootOffset[1], rootOffset[2])
-        : BlockPos.of(t.getLong("Root"));
+    root =
+        rootOffset.length == 3
+            ? worldPosition.offset(rootOffset[0], rootOffset[1], rootOffset[2])
+            : BlockPos.of(t.getLong("Root"));
     color = t.contains("Color") ? t.getInt("Color") : 0x52E5FF;
     mask = t.contains("Mask") ? t.getInt("Mask") : 1;
     if (t.contains("Controls")) controls = ControlSettings.load(t.getCompound("Controls"));
@@ -264,23 +271,39 @@ public final class EmitterEntity extends BlockEntity {
             ControlSettings.load(entry.getCompound("Settings")));
     }
     crossings = t.getLong("Crossings");
-    lastDetection = t.contains("LastDetection") ? t.getString("LastDetection") : "None";
+    lastDetection =
+        net.minecraft.network.chat.Component.translatable("message.fieldemitters.detection.none");
+    if (t.contains("LastDetectionText")) {
+      try {
+        var restored =
+            net.minecraft.network.chat.Component.Serializer.fromJson(
+                t.getString("LastDetectionText"));
+        if (restored != null) lastDetection = restored;
+      } catch (com.google.gson.JsonParseException ignored) {
+        // An invalid saved message must not prevent the emitter from loading.
+      }
+    } else if (t.contains("LastDetection") && !t.getString("LastDetection").equals("None")) {
+      lastDetection = net.minecraft.network.chat.Component.literal(t.getString("LastDetection"));
+    }
     queuedPulses = Math.max(0, Math.min(100000, t.getInt("QueuedPulses")));
     outputSignal = t.getInt("OutputSignal");
     enabled = !t.contains("Enabled") || t.getBoolean("Enabled");
     powered = t.getBoolean("Powered");
     transition = t.getLong("Transition");
     demand = t.getInt("Demand");
-    energy.deserializeNBT( IntTag.valueOf(Math.max(0, Math.min(energy.getMaxEnergyStored(), t.getInt("Energy")))));
+    energy.deserializeNBT(IntTag.valueOf(Math.max(0, Math.min(energy.getMaxEnergyStored(), t.getInt("Energy")))));
     placedAt = t.contains("PlacedAt") ? t.getLong("PlacedAt") : Long.MAX_VALUE;
     fieldName = t.getString("FieldName");
     owner = t.hasUUID("Owner") ? t.getUUID("Owner") : null;
     links = new ArrayList<>();
     for (Tag tag : t.getList("Links", Tag.TAG_COMPOUND)) {
       CompoundTag n = (CompoundTag) tag;
-      int[] ground = n.contains("GroundOffset")
-          ? java.util.Arrays.stream(n.getIntArray("GroundOffset")).map(y -> y + worldPosition.getY()).toArray()
-          : n.getIntArray("Ground");
+      int[] ground =
+          n.contains("GroundOffset")
+              ? java.util.Arrays.stream(n.getIntArray("GroundOffset"))
+                  .map(y -> y + worldPosition.getY())
+                  .toArray()
+              : n.getIntArray("Ground");
       if (ground.length > 1 && ground.length <= 21)
         links.add(
             new Link(
@@ -307,7 +330,8 @@ public final class EmitterEntity extends BlockEntity {
 
   private BlockPos relativePosition(CompoundTag tag, String offsetKey, String legacyKey) {
     int[] offset = tag.getIntArray(offsetKey);
-    return offset.length == 3 ? worldPosition.offset(offset[0], offset[1], offset[2])
+    return offset.length == 3
+        ? worldPosition.offset(offset[0], offset[1], offset[2])
         : BlockPos.of(tag.getLong(legacyKey));
   }
 

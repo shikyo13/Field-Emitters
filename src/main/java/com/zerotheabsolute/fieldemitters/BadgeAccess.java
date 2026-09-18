@@ -65,7 +65,8 @@ public final class BadgeAccess extends SavedData {
     display.putUUID("BadgeId", id);
     stack.setTag(display);
     stack.setHoverName(
-        net.minecraft.network.chat.Component.literal("Access badge: " + group));
+        net.minecraft.network.chat.Component.translatable(
+            "item.fieldemitters.access_badge.issued", group));
   }
 
   public int revoke(UUID issuer, String group) {
@@ -95,7 +96,6 @@ public final class BadgeAccess extends SavedData {
     for (int i = 0; i < player.getInventory().getContainerSize(); i++)
       result.add(player.getInventory().getItem(i));
 
-    if (net.minecraftforge.fml.ModList.get().isLoaded("curios")) result.addAll(CuriosBridge.equipped(player));
     return result;
   }
 

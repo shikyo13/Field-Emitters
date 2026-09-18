@@ -10,7 +10,7 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 
 public final class ForgeNetworkRegistrar {
-    private static final String PROTOCOL = "1";
+    private static final String PROTOCOL = "2";
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(FieldEmitters.ID, "main"), () -> PROTOCOL,
             PROTOCOL::equals, PROTOCOL::equals);

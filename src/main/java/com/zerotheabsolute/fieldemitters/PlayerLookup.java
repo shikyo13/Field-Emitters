@@ -4,6 +4,7 @@ import java.util.UUID;
 import java.util.function.Consumer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import com.zerotheabsolute.fieldemitters.network.PacketCodec;
 import com.zerotheabsolute.fieldemitters.network.FieldPayload;
 import net.minecraft.resources.ResourceLocation;
@@ -14,58 +15,163 @@ import com.zerotheabsolute.fieldemitters.network.ForgeNetworkRegistrar;
 /** Resolves names on the server; profile-service requests never block the game thread. */
 public final class PlayerLookup {
   public static Consumer<Result> receive = result -> {};
+
   private PlayerLookup() {}
+
   public record Request(BlockPos pos, int requestId, String query) implements FieldPayload {
-    public static final Type<Request> TYPE = new Type<>(new ResourceLocation(FieldEmitters.ID,"player_lookup"));
-    public static final PacketCodec<FriendlyByteBuf,Request> CODEC = PacketCodec.of(
-        (b,p) -> { b.writeBlockPos(p.pos); b.writeInt(p.requestId); b.writeUtf(p.query,36); },
-        b -> new Request(b.readBlockPos(),b.readInt(),b.readUtf(36)));
-    public Type<? extends FieldPayload> type() { return TYPE; }
+    public static final Type<Request> TYPE =
+        new Type<>(new ResourceLocation(FieldEmitters.ID, "player_lookup"));
+    public static final PacketCodec<FriendlyByteBuf, Request> CODEC =
+        PacketCodec.of(
+            (b, p) -> {
+              b.writeBlockPos(p.pos);
+              b.writeInt(p.requestId);
+              b.writeUtf(p.query, 36);
+            },
+            b -> new Request(b.readBlockPos(), b.readInt(), b.readUtf(36)));
+
+    public Type<? extends FieldPayload> type() {
+      return TYPE;
+    }
   }
-  public record Result(int requestId, String uuid, String name, String error) implements FieldPayload {
-    public static final Type<Result> TYPE = new Type<>(new ResourceLocation(FieldEmitters.ID,"player_lookup_result"));
-    public static final PacketCodec<FriendlyByteBuf,Result> CODEC = PacketCodec.of(
-        (b,p) -> { b.writeInt(p.requestId); b.writeUtf(p.uuid,36); b.writeUtf(p.name,16); b.writeUtf(p.error,128); },
-        b -> new Result(b.readInt(),b.readUtf(36),b.readUtf(16),b.readUtf(128)));
-    public Type<? extends FieldPayload> type() { return TYPE; }
+
+  public record Result(int requestId, String uuid, String name, Component error)
+      implements FieldPayload {
+    public static final Type<Result> TYPE =
+        new Type<>(new ResourceLocation(FieldEmitters.ID, "player_lookup_result"));
+    public static final PacketCodec<FriendlyByteBuf, Result> CODEC =
+        PacketCodec.of(
+            (b, p) -> {
+              b.writeInt(p.requestId);
+              b.writeUtf(p.uuid, 36);
+              b.writeUtf(p.name, 16);
+              b.writeComponent(p.error);
+            },
+            b ->
+                new Result(
+                    b.readInt(),
+                    b.readUtf(36),
+                    b.readUtf(16),
+                    b.readComponent()));
+
+    public Type<? extends FieldPayload> type() {
+      return TYPE;
+    }
   }
+
   public static void register(ForgeNetworkRegistrar event) {
     event
-        .playToServer(Request.class,Request.CODEC,(p,c) -> c.enqueueWork(() -> lookup(p,(ServerPlayer)c.player())))
-        .playToClient(Result.class,Result.CODEC,(p,c) -> c.enqueueWork(() -> receive.accept(p)));
+        
+        .playToServer(
+            Request.class,
+            Request.CODEC,
+            (p, c) -> c.enqueueWork(() -> lookup(p, (ServerPlayer) c.player())))
+        .playToClient(Result.class, Result.CODEC, (p, c) -> c.enqueueWork(() -> receive.accept(p)));
   }
+
   private static boolean allowed(Request r, ServerPlayer p) {
-    return p.level().hasChunkAt(r.pos) && p.level().getBlockEntity(r.pos) instanceof EmitterEntity e
-        && FieldControls.editable(e,p) && (FieldControls.hasTuner(p) || p.distanceToSqr(r.pos.getX()+.5,r.pos.getY()+.5,r.pos.getZ()+.5)<=144);
+    return p.level().hasChunkAt(r.pos)
+        && p.level().getBlockEntity(r.pos) instanceof EmitterEntity e
+        && FieldControls.editable(e, p)
+        && (FieldControls.hasTuner(p)
+            || p.distanceToSqr(r.pos.getX() + .5, r.pos.getY() + .5, r.pos.getZ() + .5) <= 144);
   }
-  private static void reply(Request r, ServerPlayer p, UUID id, String name, String error) {
-    ForgePacketDistributor.sendToPlayer(p,new Result(r.requestId,id==null?"":id.toString(),name,error));
+
+  private static void reply(Request r, ServerPlayer p, UUID id, String name, Component error) {
+    ForgePacketDistributor.sendToPlayer(
+        p, new Result(r.requestId, id == null ? "" : id.toString(), name, error));
   }
+
   private static void lookup(Request r, ServerPlayer p) {
-    if (!allowed(r,p)) { reply(r,p,null,"","Stay near an emitter you can edit, or hold a tuner."); return; }
-    long now=p.server.getTickCount();
-    var data=p.getPersistentData();
-    long due=data.getLong("fieldemitters:lookup_after");
-    if (due>now && due-now<=20) { reply(r,p,null,"","Please wait a second before another lookup."); return; }
-    data.putLong("fieldemitters:lookup_after",now+20);
-    String query=r.query.trim();
+    if (!allowed(r, p)) {
+      reply(
+          r,
+          p,
+          null,
+          "",
+          Component.translatable(
+              "message.fieldemitters.playerlookup.stay_near_an_emitter_you_can_edit_or"));
+      return;
+    }
+    long now = p.server.getTickCount();
+    var data = p.getPersistentData();
+    long due = data.getLong("fieldemitters:lookup_after");
+    if (due > now && due - now <= 20) {
+      reply(
+          r,
+          p,
+          null,
+          "",
+          Component.translatable(
+              "message.fieldemitters.playerlookup.please_wait_a_second_before_another_lookup"));
+      return;
+    }
+    data.putLong("fieldemitters:lookup_after", now + 20);
+    String query = r.query.trim();
     try {
-      UUID id=UUID.fromString(query);
+      UUID id = UUID.fromString(query);
       if (!id.toString().equalsIgnoreCase(query)) throw new IllegalArgumentException();
-      var online=p.server.getPlayerList().getPlayer(id);
-      reply(r,p,id,online==null?"":online.getGameProfile().getName(),""); return;
-    } catch (IllegalArgumentException ignored) {}
-    if (!query.matches("[A-Za-z0-9_]{1,16}")) { reply(r,p,null,"","Enter a Minecraft account name or a full UUID."); return; }
-    var online=p.server.getPlayerList().getPlayerByName(query);
-    if (online!=null) { reply(r,p,online.getUUID(),online.getGameProfile().getName(),""); return; }
-    var cache=p.server.getProfileCache();
-    if (cache==null) { reply(r,p,null,"","Name lookup unavailable. Enter the player's UUID instead."); return; }
+      var online = p.server.getPlayerList().getPlayer(id);
+      reply(r, p, id, online == null ? "" : online.getGameProfile().getName(), Component.empty());
+      return;
+    } catch (IllegalArgumentException ignored) {
+    }
+    if (!query.matches("[A-Za-z0-9_]{1,16}")) {
+      reply(
+          r,
+          p,
+          null,
+          "",
+          Component.translatable(
+              "message.fieldemitters.playerlookup.enter_a_minecraft_account_name_or_a_full"));
+      return;
+    }
+    var online = p.server.getPlayerList().getPlayerByName(query);
+    if (online != null) {
+      reply(r, p, online.getUUID(), online.getGameProfile().getName(), Component.empty());
+      return;
+    }
+    var cache = p.server.getProfileCache();
+    if (cache == null) {
+      reply(
+          r,
+          p,
+          null,
+          "",
+          Component.translatable(
+              "message.fieldemitters.playerlookup.name_lookup_unavailable_enter_the_player_s_uuid"));
+      return;
+    }
     try {
-      cache.getAsync(query, profile -> p.server.execute(() -> {
-        if (p.hasDisconnected() || !allowed(r,p)) return;
-        if (profile==null || profile.isEmpty()) reply(r,p,null,"","Player not found. Check the account name or enter their UUID.");
-        else reply(r,p,profile.get().getId(),profile.get().getName(),"");
-      }));
-    } catch (IllegalStateException ex) { reply(r,p,null,"","Name lookup unavailable. Enter the player's UUID instead."); }
+      cache
+          .getAsync(query, profile ->
+                  p.server.execute(
+                      () -> {
+                        if (p.hasDisconnected() || !allowed(r, p)) return;
+                        if (profile == null || profile.isEmpty())
+                          reply(
+                              r,
+                              p,
+                              null,
+                              "",
+                              Component.translatable(
+                                  "message.fieldemitters.playerlookup.player_not_found_check_the_account_name_or"));
+                        else
+                          reply(
+                              r,
+                              p,
+                              profile.get().getId(),
+                              profile.get().getName(),
+                              Component.empty());
+                      }));
+    } catch (IllegalStateException ex) {
+      reply(
+          r,
+          p,
+          null,
+          "",
+          Component.translatable(
+              "message.fieldemitters.playerlookup.name_lookup_unavailable_enter_the_player_s_uuid"));
+    }
   }
 }
