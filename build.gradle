@@ -38,3 +38,10 @@ dependencies {
  modCompileOnly 'dev.emi:emi-fabric:1.1.24+1.21.1'
  modCompileOnly 'dev.emi:trinkets:3.10.0'
 }
+
+// The tuner reads the running version from this manifest entry, on every loader.
+tasks.named('jar', Jar).configure {
+    manifest {
+        attributes(['Implementation-Title': mod_name, 'Implementation-Version': mod_version])
+    }
+}
