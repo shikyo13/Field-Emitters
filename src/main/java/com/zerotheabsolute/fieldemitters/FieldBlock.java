@@ -35,7 +35,6 @@ public final class FieldBlock extends BaseEntityBlock implements LiquidBlockCont
    * false stops water and lava at the field instead.
    */
   public boolean canPlaceLiquid(
-      net.minecraft.world.entity.player.Player player,
       BlockGetter l,
       BlockPos p,
       BlockState s,
