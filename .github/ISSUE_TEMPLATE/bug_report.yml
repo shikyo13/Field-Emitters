@@ -1,20 +1,26 @@
 name: Bug report
 description: Report a reproducible problem with Field Emitters.
-title: ""
 body:
   - type: input
-    id: versions
+    id: version
     attributes:
-      label: Versions
-      description: Minecraft, NeoForge and Field Emitters versions.
-      placeholder: Minecraft 1.21.1, NeoForge 21.1.206, Field Emitters 1.0.0
+      label: Field Emitters version
+      description: Shown in the header of the tuner screen. Please update to the latest release before reporting.
+      placeholder: "1.1.0"
+    validations:
+      required: true
+  - type: input
+    id: platform
+    attributes:
+      label: Minecraft and loader versions
+      placeholder: Minecraft 1.21.1, NeoForge 21.1.206
     validations:
       required: true
   - type: input
     id: pack
     attributes:
       label: Modpack and power source
-      description: Include the pack version and the energy mod feeding the emitters when relevant.
+      description: The pack version and the energy mod feeding the emitters.
   - type: textarea
     id: reproduction
     attributes:
@@ -23,7 +29,14 @@ body:
     validations:
       required: true
   - type: textarea
+    id: log
+    attributes:
+      label: latest.log
+      description: Attach `logs/latest.log` from the client, and from the server if the problem is on a server. Remove tokens, account details and private server addresses.
+    validations:
+      required: true
+  - type: textarea
     id: evidence
     attributes:
-      label: Screenshots or logs
-      description: A screenshot of the emitter's Power tab helps. Remove tokens, account details and private server information from logs.
+      label: Screenshots
+      description: A screenshot of the emitter's Power tab helps.
