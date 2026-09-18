@@ -14,6 +14,15 @@ import net.neoforged.neoforge.registries.*;
 @Mod(FieldEmitters.ID)
 public final class FieldEmitters {
   public static final String ID = "fieldemitters";
+
+  /**
+   * Mod version, read from the jar manifest so it works on every loader. Empty in a development
+   * run, where the classes are not loaded from a built jar.
+   */
+  public static String version() {
+    String version = FieldEmitters.class.getPackage().getImplementationVersion();
+    return version == null ? "" : version;
+  }
   public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(ID);
   public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(ID);
   public static final DeferredRegister<BlockEntityType<?>> TYPES =

@@ -32,10 +32,7 @@ public final class ControlScreen extends FittedScreen {
             UiText.text(
                 "screen.fieldemitters.control.field_emitter",
                 e.getBlockPos().toShortString(),
-                net.neoforged.fml.ModList.get()
-                    .getModContainerById(com.zerotheabsolute.fieldemitters.FieldEmitters.ID)
-                    .map(c -> c.getModInfo().getVersion().toString())
-                    .orElse(""))));
+                FieldEmitters.version())));
     emitter = e;
     draft = ControlSettings.load(e.controls.save());
     color = e.color;
