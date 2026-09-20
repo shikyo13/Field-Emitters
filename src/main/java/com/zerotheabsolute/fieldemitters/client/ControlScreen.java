@@ -1,5 +1,7 @@
 package com.zerotheabsolute.fieldemitters.client;
 
+import com.zeromods.core.client.FittedScreen;
+
 import com.zerotheabsolute.fieldemitters.*;
 import java.util.*;
 import net.minecraft.client.gui.GuiGraphics;

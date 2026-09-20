@@ -52,11 +52,11 @@ jar { includeEmptyDirs = false; exclude '.cache/**'; from('LICENSE') { into 'MET
 
 repositories { maven { url = 'https://maven.blamejared.com/' } }
 dependencies {
- implementation 'com.zeromods:zeromods-core-forge-1.20.1:0.1.0'
+ implementation 'com.zeromods:zeromods-core-forge-1.20.1:0.1.1'
  jarJar('com.zeromods:zeromods-core-forge-1.20.1') {
     version {
-        strictly '[0.1.0,0.2.0)'
-        prefer '0.1.0'
+        strictly '[0.1.1,0.2.0)'
+        prefer '0.1.1'
     }
 }
  compileOnly 'mezz.jei:jei-1.20.1-common-api:15.20.0.129'
