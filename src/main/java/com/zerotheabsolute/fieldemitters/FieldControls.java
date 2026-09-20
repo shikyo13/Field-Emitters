@@ -73,7 +73,7 @@ public final class FieldControls {
     }
   }
 
-  private static void reply(
+  static void reply(
       net.minecraft.world.entity.player.Player player,
       int kind,
       CompoundTag data,
@@ -283,106 +283,7 @@ public final class FieldControls {
             (p, context) ->
                 context.enqueueWork(
                     () -> {
-                      var player = context.player();
-                      var level = player.level();
-                      if (p.settings == null
-                          || !level.hasChunkAt(p.pos)
-                          || !hasTuner(player)
-                              && player.distanceToSqr(
-                                      p.pos.getX() + .5, p.pos.getY() + .5, p.pos.getZ() + .5)
-                                  > 144
-                          || !(level.getBlockEntity(p.pos) instanceof EmitterEntity seed)) {
-                        reply(
-                            player,
-                            2,
-                            new CompoundTag(),
-                            Component.translatable(
-                                "message.fieldemitters.fieldcontrols.emitter_unavailable_stay_nearby_or_carry_or_equip"));
-                        return;
-                      }
-                      if (!editable(seed, player)) {
-                        reply(
-                            player,
-                            2,
-                            new CompoundTag(),
-                            Component.translatable(
-                                "message.fieldemitters.fieldcontrols.access_denied_ask_the_field_owner_for_management"));
-                        return;
-                      }
-                      var validated = ControlSettings.load(p.settings);
-                      Component error = validate(validated);
-                      if (error != null) {
-                        reply(player, 2, new CompoundTag(), error);
-                        return;
-                      }
-                      if (p.linkOnly && p.inherit) {
-                        if (seed.links.stream().noneMatch(link -> link.target().equals(p.target)))
-                          return;
-                        seed.overrides.remove(p.target);
-                        seed.passages.clear();
-                        seed.sync();
-                        if (level.hasChunkAt(p.target)
-                            && level.getBlockEntity(p.target) instanceof EmitterEntity other
-                            && editable(other, player)) {
-                          other.overrides.remove(p.pos);
-                          other.passages.clear();
-                          other.sync();
-                        }
-                        reply(
-                            player,
-                            2,
-                            new CompoundTag(),
-                            Component.translatable(
-                                "message.fieldemitters.fieldcontrols.changes_applied"));
-                        return;
-                      }
-                      if (p.linkOnly) {
-                        if (seed.links.stream().noneMatch(link -> link.target().equals(p.target)))
-                          return;
-                        if (!level.hasChunkAt(p.target)
-                            || !(level.getBlockEntity(p.target) instanceof EmitterEntity other)
-                            || !editable(other, player)) return;
-                        seed.overrides.put(p.target, validated);
-                        other.overrides.put(p.pos, ControlSettings.load(p.settings));
-                        seed.passages.clear();
-                        other.passages.clear();
-                        seed.sync();
-                        other.sync();
-                        reply(
-                            player,
-                            2,
-                            new CompoundTag(),
-                            Component.translatable(
-                                "message.fieldemitters.fieldcontrols.changes_applied"));
-                        return;
-                      }
-                      for (var e : FieldNetwork.configurable(seed)) {
-                        if (!editable(e, player)) continue;
-                        e.adoptPending = false;
-                        if (e.isTower()
-                            && (e.controls.sphereRadius != validated.sphereRadius
-                                || e.controls.dome != validated.dome))
-                          e.transition = level.getGameTime();
-                        e.controls = ControlSettings.load(p.settings);
-                        e.color = p.color & 0xffffff;
-                        e.enabled = p.enabled;
-                        e.mask = e.controls.barrier.groups;
-                        e.passages.clear();
-                        if (p.reset) {
-                          e.crossings = 0;
-                          e.queuedPulses = 0;
-                          e.lastDetection =
-                              Component.translatable("message.fieldemitters.detection.none");
-                        }
-                        level.updateNeighborsAt(e.getBlockPos(), e.getBlockState().getBlock());
-                        e.sync();
-                      }
-                      reply(
-                          player,
-                          2,
-                          new CompoundTag(),
-                          Component.translatable(
-                              "message.fieldemitters.fieldcontrols.changes_applied"));
+                      ControlEdits.handle(p, (net.minecraft.server.level.ServerPlayer) context.player());
                     }));
   }
 

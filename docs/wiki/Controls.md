@@ -18,7 +18,7 @@ Turning off world lighting on the Appearance tab keeps the field visible and sol
 
 ## Per-link rules
 
-On the Connections tab, **Editing** chooses the emitter's default rules or one outgoing link. A link's own blocking and detection filters take priority over the defaults and apply from both ends of that link. Energy, color and redstone settings always belong to the emitter.
+On the Connections tab, **Editing** chooses the emitter's default rules or one outgoing link. A link's own blocking and detection filters take priority over the defaults and apply from both ends of that link. Energy, color and redstone settings always belong to the group.
 
 ## The Field Tuner
 
@@ -32,3 +32,11 @@ While you hold the tuner, arrows on the field show the movement directions: ambe
 Unloaded chunks are never loaded by the manager. A chain that is partly unloaded can appear as separate fields until its chunks load again.
 
 Effect color defaults to **Matches field**, so changing the field color also changes its effects. Choose **Custom accent** to reveal separate presets and a hex color box. The **Purple field / magenta effects** preset enables a contrasting accent intentionally.
+
+Group settings persist across world loads and chunk unloads. Switched-off emitters remain connected and new members inherit their settings without projecting a field. If previously separate groups reconnect, the most recently edited group settings win. Older saves without edit history use the oldest configured member. Link-specific filter overrides remain explicit exceptions.
+
+## Multiple managers editing
+
+Tuner changes apply immediately. Editing a color does not resend old filter or power settings from an already-open screen. Independent category and direction toggles can merge. If someone changes the same setting while you edit it, the tuner shows the current server value and asks you to retry. Each player, mob or item list is treated as one setting; simultaneous edits to that same list are not combined automatically. Presets apply together or are rejected together.
+
+Clients and servers must use matching mod builds for this settings protocol.

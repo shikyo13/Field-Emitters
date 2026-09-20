@@ -2,6 +2,7 @@ package com.zerotheabsolute.fieldemitters.client;
 
 /** Stable control identities; labels and translations never determine behavior. */
 enum Control {
+  ADVANCED_FILTERS,
   COLOR_PRESET,
   AGE,
   ALLOW_SELECTED,

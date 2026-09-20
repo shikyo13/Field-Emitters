@@ -11,6 +11,7 @@
   "mixins": [
     "EntityDataMixin",
     "HardwareExplosionMixin",
-    "HardwareMobMixin"
+    "HardwareMobMixin",
+    "PhasingCollisionMixin"
   ]
 }

@@ -10,6 +10,7 @@ import net.minecraft.world.level.block.state.BlockState;
 public final class EmitterEntity extends BlockEntity {
   public final Map<UUID, Passage> spherePassages = new HashMap<>();
   public boolean spherePresent;
+  public boolean enclosed;
 
   public boolean isTower() {
     return getBlockState().is(FieldEmitters.TOWER.get());
@@ -27,11 +28,10 @@ public final class EmitterEntity extends BlockEntity {
    * ticks, so an uncapped queue could keep pulsing for hours after a flood of crossings. The
    * lifetime crossing counter records every crossing either way.
    */
-  public static final int MAX_PENDING_PULSES = 64;
 
   public long crossings = 0;
-  public int queuedPulses = 0, outputSignal = 0;
-  public long pulseUntil = 0, gapUntil = 0;
+  public int outputSignal = 0;
+  public long pulseUntil = 0;
   public net.minecraft.network.chat.Component lastDetection =
       net.minecraft.network.chat.Component.translatable("message.fieldemitters.detection.none");
   final FieldContact.Contacts contactDirections = new FieldContact.Contacts();
@@ -42,9 +42,14 @@ public final class EmitterEntity extends BlockEntity {
   public int color = 0x52E5FF, mask = 1;
   public boolean enabled = true, powered = false;
   public UUID owner;
+  UUID emitterId = UUID.randomUUID();
   public boolean managementPublic;
   public final Set<UUID> managerIds = new HashSet<>();
+  public CompoundTag editScope = new CompoundTag();
   public long placedAt = Long.MAX_VALUE;
+  public long settingsRevision;
+  public long networkEnergy, networkDemand, networkCapacity;
+  public String operationStatus = "starting";
   /** Newly placed and not yet given the settings of the group it joins. */
   public boolean adoptPending = false;
   public String fieldName = "";
@@ -166,7 +171,15 @@ public final class EmitterEntity extends BlockEntity {
   protected void saveAdditional(CompoundTag t) {
     super.saveAdditional(t);
     t.put("Management", ManagementAccess.snapshot(this));
+    t.put("EditScope", getLevel() != null && !getLevel().isClientSide ? ControlEdits.describe(this) : editScope.copy());
     t.putLong("PlacedAt", placedAt);
+    t.putUUID("EmitterId", emitterId);
+    t.putLong("SettingsRevision", settingsRevision);
+    t.putBoolean("Enclosed", enclosed);
+    t.putLong("NetworkEnergy", networkEnergy);
+    t.putLong("NetworkCapacity", networkCapacity);
+    t.putLong("NetworkDemand", networkDemand);
+    t.putString("OperationStatus", operationStatus);
     t.putBoolean("AdoptPending", adoptPending);
     t.putString("FieldName", fieldName);
     t.put("Controls", controls.save());
@@ -186,7 +199,6 @@ public final class EmitterEntity extends BlockEntity {
     t.putString(
         "LastDetectionText",
         net.minecraft.network.chat.Component.Serializer.toJson(lastDetection));
-    t.putInt("QueuedPulses", queuedPulses);
     t.putInt("OutputSignal", outputSignal);
     t.putLong("ImpactTime", impactTime);
     FieldImpacts.save(this, t);
@@ -279,14 +291,21 @@ public final class EmitterEntity extends BlockEntity {
     } else if (t.contains("LastDetection") && !t.getString("LastDetection").equals("None")) {
       lastDetection = net.minecraft.network.chat.Component.literal(t.getString("LastDetection"));
     }
-    queuedPulses = Math.max(0, Math.min(MAX_PENDING_PULSES, t.getInt("QueuedPulses")));
     outputSignal = t.getInt("OutputSignal");
     enabled = !t.contains("Enabled") || t.getBoolean("Enabled");
     powered = t.getBoolean("Powered");
     transition = t.getLong("Transition");
     demand = t.getInt("Demand");
     energy.deserializeNBT(IntTag.valueOf(Math.max(0, Math.min(energy.getMaxEnergyStored(), t.getInt("Energy")))));
+    editScope = t.getCompound("EditScope").copy();
+    if (t.hasUUID("EmitterId")) emitterId = t.getUUID("EmitterId");
     placedAt = t.contains("PlacedAt") ? t.getLong("PlacedAt") : Long.MAX_VALUE;
+    settingsRevision = t.getLong("SettingsRevision");
+    enclosed = t.getBoolean("Enclosed");
+    networkEnergy = t.getLong("NetworkEnergy");
+    networkCapacity = t.getLong("NetworkCapacity");
+    networkDemand = t.getLong("NetworkDemand");
+    operationStatus = t.contains("OperationStatus") ? t.getString("OperationStatus") : "starting";
     adoptPending = t.getBoolean("AdoptPending");
     fieldName = t.getString("FieldName");
     owner = t.hasUUID("Owner") ? t.getUUID("Owner") : null;

@@ -14,6 +14,8 @@ public final class ManagedFields {
     var data = NetworkSavedData.get(level, STORE);
     var directory = data.directory();
     var before = directory.snapshot();
+    EmitterIdentities.reconcile(directory, loaded);
+    var savedSettings = NetworkSettings.saved(directory.snapshot());
     var components = new ArrayList<PhysicalNetworkReconciler.Component<BlockPos>>();
     var seen = new HashSet<BlockPos>();
     var ordered =
@@ -40,13 +42,28 @@ public final class ManagedFields {
           new PhysicalNetworkReconciler.Component<>(seed.owner, first.fieldName, positions));
     }
     var observed = new HashSet<BlockPos>(seen);
-    before.forEach(n -> n.nodes().stream().filter(level::hasChunkAt).forEach(observed::add));
+    // A loaded chunk can contain emitters that have not received their first tick yet.
+    // Only a missing emitter is evidence of removal; an unregistered one is still unobserved.
+    before.forEach(n -> n.nodes().stream()
+        .filter(level::hasChunkAt)
+        .filter(pos -> !(level.getBlockEntity(pos) instanceof EmitterEntity))
+        .forEach(observed::add));
     var assignments =
         new PhysicalNetworkReconciler<>(directory, "fieldemitters:field")
             .reconcile(components, observed);
     for (var emitter : loaded)
       emitter.managedNetwork = directory.get(assignments.get(emitter.getBlockPos())).orElse(null);
+    EmitterIdentities.remember(loaded);
+    NetworkSettings.reconcile(loaded, savedSettings);
+    for (var emitter : loaded) {
+      var scope = ControlEdits.describe(emitter);
+      if (!scope.equals(emitter.editScope)) { emitter.editScope = scope; emitter.sync(); }
+    }
     if (!before.equals(directory.snapshot())) data.setDirty();
+  }
+
+  static void dirty(ServerLevel level) {
+    NetworkSavedData.get(level, STORE).setDirty();
   }
 
   public static void rename(ServerLevel level, EmitterEntity emitter, String name) {
