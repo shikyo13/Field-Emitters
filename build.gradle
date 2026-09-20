@@ -88,3 +88,10 @@ mixin {
     config 'fieldemitters.mixins.json'
 }
 jar { manifest.attributes('MixinConfigs': 'fieldemitters.mixins.json') }
+
+// Optional scripting adapter; neither dependency is bundled with Field Emitters.
+repositories { maven { url = 'https://api.modrinth.com/maven' } }
+dependencies {
+    compileOnly('maven.modrinth:kubejs:hVR2xUSr') { transitive = false }
+    compileOnly('maven.modrinth:rhino:uNALdylI') { transitive = false }
+}

@@ -1,0 +1,8 @@
+{
+  "controls": {
+    "Barrier": "fieldemitters:hostile_mobs",
+    "SensorMode": 0
+  },
+  "color": "#52E5FF",
+  "enabled": true
+}

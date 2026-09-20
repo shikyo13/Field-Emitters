@@ -127,6 +127,7 @@ public final class FieldEmitters {
             e.accept(TUNER);
           }
         });
+    FieldDataPlatform.register();
     MinecraftForge.EVENT_BUS.addListener(FieldNetwork::tick);
     MinecraftForge.EVENT_BUS.addListener(HardwareProtection::explosion);
     MinecraftForge.EVENT_BUS.addListener(AccessPackets::tick);
