@@ -65,7 +65,7 @@ public final class FieldCheckpoint {
     output.passages.put(key, new EmitterEntity.Passage(0, entry, now));
     if (fresh && s.detect) {
       output.crossings++;
-      output.queuedPulses = Math.min(EmitterEntity.MAX_PENDING_PULSES, output.queuedPulses + 1);
+      FieldSensor.pulse(output, now);
       output.lastDetection =
           net.minecraft.network.chat.Component.translatable(
               "message.fieldemitters.detection.contraband", player.getName());

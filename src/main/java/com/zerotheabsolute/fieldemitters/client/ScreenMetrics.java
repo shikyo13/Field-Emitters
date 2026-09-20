@@ -1,6 +1,10 @@
 package com.zerotheabsolute.fieldemitters.client;
 
 final class ScreenMetrics {
+  static final int FILTER_HEADER_HEIGHT = 44;
+  static final int FILTER_FOOTER_HEIGHT = 40;
+  static final int DAMAGE_EXTRA_HEIGHT = 49;
+  static final int SENSOR_EXTRA_HEIGHT = 64;
   static final int PANEL_WIDTH = 404;
   static final int PANEL_HEIGHT = 306;
   static final int CONTENT_WIDTH = 380;

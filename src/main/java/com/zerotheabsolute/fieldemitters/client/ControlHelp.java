@@ -36,6 +36,8 @@ final class ControlHelp {
   }
 
   static String button(Control control, String text, ControlTab tab) {
+    if (control == Control.ADVANCED_FILTERS)
+      return UiText.text("screen.fieldemitters.controlhelp.advanced_filters");
     if (control == Control.EFFECT_COLOR)
       return UiText.text(
           "screen.fieldemitters.controlhelp.matches_field_keeps_impacts_pixels_plasma_veins_and");

@@ -27,8 +27,8 @@ public final class EmitterEnergyStorage extends EnergyStorage {
 
   @Override protected void onFinalCommit() { changed.run(); }
 
-  int consume(int amount) {
-    int used = Math.min(amount, Math.max(0, amount));
+  int consume(int requested) {
+    int used = Math.min(amount, Math.max(0, requested));
     amount -= used;
     if (used > 0) changed.run();
     return used;

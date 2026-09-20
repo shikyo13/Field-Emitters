@@ -12,6 +12,7 @@
     "EntityDataMixin",
     "HardwareExplosionMixin",
     "HardwareMobMixin",
-    "SableCollisionMixin"
+    "SableCollisionMixin",
+    "PhasingCollisionMixin"
   ]
 }
