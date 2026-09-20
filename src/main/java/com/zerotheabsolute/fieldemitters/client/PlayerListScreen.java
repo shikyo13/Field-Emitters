@@ -250,44 +250,14 @@ final class PlayerListScreen extends FittedScreen {
     g.fill(
         left, top, left + ScreenMetrics.PANEL_WIDTH, top + ScreenMetrics.PANEL_HEIGHT, 0xFF0D1D2B);
     g.fill(left, top, left + ScreenMetrics.PANEL_WIDTH, top + 2, 0xFF53BBCB);
-    g.drawString(
-        font,
-        UiText.text("screen.fieldemitters.playerlist.player_list", purpose.title()),
-        left + 12,
-        top + 12,
-        0xFFE0F3FF,
-        false);
-    g.drawWordWrap(
-        font,
-        Component.literal(
+    drawLabel(g, UiText.text("screen.fieldemitters.playerlist.player_list", purpose.title()), left + 12, top + 12, ScreenMetrics.CONTENT_WIDTH, 0xFFE0F3FF);
+    drawParagraph(g, Component.literal(
             UiText.text(
-                "screen.fieldemitters.playerlist.list_modes_replace_the_general_filter_for_players")),
-        left + 12,
-        top + 58,
-        ScreenMetrics.CONTENT_WIDTH,
-        0xFFADBED0);
-    g.drawString(
-        font,
-        UiText.text("screen.fieldemitters.management.minecraft_account_name_or_uuid"),
-        left + 12,
-        top + 98,
-        0xFFADBED0,
-        false);
-    g.drawString(
-        font,
-        UiText.text("screen.fieldemitters.playerlist.saved_players"),
-        left + 12,
-        top + 133,
-        0xFFADBED0,
-        false);
+                "screen.fieldemitters.playerlist.list_modes_replace_the_general_filter_for_players")), left + 12, top + 58, ScreenMetrics.CONTENT_WIDTH, 36, 0xFFADBED0);
+    drawLabel(g, UiText.text("screen.fieldemitters.management.minecraft_account_name_or_uuid"), left + 12, top + 98, ScreenMetrics.CONTENT_WIDTH, 0xFFADBED0);
+    drawLabel(g, UiText.text("screen.fieldemitters.playerlist.saved_players"), left + 12, top + 133, ScreenMetrics.CONTENT_WIDTH, 0xFFADBED0);
     if (filter.playerList.isEmpty())
-      g.drawString(
-          font,
-          UiText.text("screen.fieldemitters.playerlist.no_players_added_yet"),
-          left + 12,
-          top + 153,
-          0xFFADBED0,
-          false);
+      drawLabel(g, UiText.text("screen.fieldemitters.playerlist.no_players_added_yet"), left + 12, top + 153, ScreenMetrics.CONTENT_WIDTH, 0xFFADBED0);
     g.drawCenteredString(
         font,
         UiText.text(
@@ -297,7 +267,7 @@ final class PlayerListScreen extends FittedScreen {
         left + 202,
         top + 246,
         0xFFADBED0);
-    g.drawWordWrap(font, Component.literal(status), left + 12, top + 265, 280, 0xFFADBED0);
+    drawParagraph(g, Component.literal(status), left + 12, top + 265, 280, 36, 0xFFADBED0);
     super.render(g, fitMouse(mx), fitMouse(my), partial);
     g.pose().popPose();
   }

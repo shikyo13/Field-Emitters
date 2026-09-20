@@ -161,51 +161,15 @@ final class AccessScreen extends FittedScreen {
     g.fill(
         left, top, left + ScreenMetrics.PANEL_WIDTH, top + ScreenMetrics.PANEL_HEIGHT, 0xFF0D1D2B);
     g.fill(left, top, left + ScreenMetrics.PANEL_WIDTH, top + 2, 0xFF53BBCB);
-    g.drawString(
-        font,
-        UiText.text("screen.fieldemitters.access.access_badges"),
-        left + 12,
-        top + 12,
-        0xFFE0F3FF,
-        false);
-    g.drawString(
-        font,
-        filter == null
+    drawLabel(g, UiText.text("screen.fieldemitters.access.access_badges"), left + 12, top + 12, ScreenMetrics.CONTENT_WIDTH, 0xFFE0F3FF);
+    drawLabel(g, filter == null
             ? UiText.text("screen.fieldemitters.access.issue_badges_for_fields_you_own")
-            : UiText.text("screen.fieldemitters.access.accepted_groups_player_list_or_badge_group"),
-        left + 12,
-        top + 34,
-        0xFFADBED0,
-        false);
-    g.drawString(
-        font,
-        UiText.text("screen.fieldemitters.access.badge_group"),
-        left + 12,
-        top + 98,
-        0xFFADBED0,
-        false);
-    g.drawString(
-        font,
-        UiText.text("screen.fieldemitters.access.bind_to_player_uuid_optional"),
-        left + 12,
-        top + 137,
-        0xFFADBED0,
-        false);
-    g.drawWordWrap(
-        font,
-        Component.literal(
-            UiText.text("screen.fieldemitters.access.a_badge_holder_stores_16_badges_right_click")),
-        left + 12,
-        top + 224,
-        ScreenMetrics.CONTENT_WIDTH,
-        0xFFADBED0);
-    g.drawString(
-        font,
-        font.plainSubstrByWidth(notice, ScreenMetrics.CONTENT_WIDTH),
-        left + 12,
-        top + 267,
-        0xFFADBED0,
-        false);
+            : UiText.text("screen.fieldemitters.access.accepted_groups_player_list_or_badge_group"), left + 12, top + 34, ScreenMetrics.CONTENT_WIDTH, 0xFFADBED0);
+    drawLabel(g, UiText.text("screen.fieldemitters.access.badge_group"), left + 12, top + 98, ScreenMetrics.CONTENT_WIDTH, 0xFFADBED0);
+    drawLabel(g, UiText.text("screen.fieldemitters.access.bind_to_player_uuid_optional"), left + 12, top + 137, ScreenMetrics.CONTENT_WIDTH, 0xFFADBED0);
+    drawParagraph(g, Component.literal(
+            UiText.text("screen.fieldemitters.access.a_badge_holder_stores_16_badges_right_click")), left + 12, top + 224, ScreenMetrics.CONTENT_WIDTH, 39, 0xFFADBED0);
+    drawLabel(g, notice, left + 12, top + 267, ScreenMetrics.CONTENT_WIDTH, 0xFFADBED0);
     super.render(g, fitMouse(x), fitMouse(y), p);
     g.pose().popPose();
   }

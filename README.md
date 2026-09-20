@@ -75,3 +75,7 @@ You may play, research, contribute, redistribute unmodified official releases an
 Support me through [Buy Me a Coffee](https://buymeacoffee.com/zerotheabsolute) or [Patreon](https://www.patreon.com/cw/ZeroTheAbsolute/membership).
 
 See [Datapacks and KubeJS](docs/wiki/Automation.md) for field presets, reusable filters, server commands and scripting events.
+
+## Languages
+
+Field Emitters includes 11 translations in addition to English. See the [localization guide](docs/wiki/Localization.md) for supported languages and contribution instructions.

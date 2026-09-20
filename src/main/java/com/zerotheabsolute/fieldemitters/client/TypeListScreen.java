@@ -350,49 +350,25 @@ public final class TypeListScreen extends FittedScreen {
     g.fill(
         left, top, left + ScreenMetrics.PANEL_WIDTH, top + ScreenMetrics.PANEL_HEIGHT, 0xFF0D1D2B);
     g.fill(left, top, left + ScreenMetrics.PANEL_WIDTH, top + 2, 0xFF53BBCB);
-    g.drawString(
-        font,
-        UiText.text(
+    drawLabel(g, UiText.text(
             "screen.fieldemitters.typelist.list",
             (items
                 ? UiText.text("screen.fieldemitters.typelist.item_2")
                 : UiText.text("screen.fieldemitters.typelist.mob_2")),
-            purpose.title()),
-        left + 12,
-        top + 12,
-        0xFFE0F3FF,
-        false);
-    g.drawString(
-        font,
-        items
+            purpose.title()), left + 12, top + 12, ScreenMetrics.CONTENT_WIDTH, 0xFFE0F3FF);
+    drawLabel(g, items
             ? (purpose == FilterPurpose.CHECKPOINT
                 ? UiText.text(
                     "screen.fieldemitters.typelist.matching_items_carried_by_selected_players_are_contraband")
                 : UiText.text(
                     "screen.fieldemitters.typelist.dropped_items_only_players_and_mobs_keep_their"))
-            : UiText.text("screen.fieldemitters.typelist.mobs_only_age_uuid_and_label_narrow_the"),
-        left + 12,
-        top + 54,
-        0xFFADBED0,
-        false);
-    g.drawString(
-        font,
-        UiText.text("screen.fieldemitters.typelist.general_filter_single_type_or_tag"),
-        left + 12,
-        top + 66,
-        0xFFADBED0,
-        false);
-    g.drawString(
-        font,
-        UiText.text(
+            : UiText.text("screen.fieldemitters.typelist.mobs_only_age_uuid_and_label_narrow_the"), left + 12, top + 54, ScreenMetrics.CONTENT_WIDTH, 0xFFADBED0);
+    drawLabel(g, UiText.text("screen.fieldemitters.typelist.general_filter_single_type_or_tag"), left + 12, top + 66, ScreenMetrics.CONTENT_WIDTH, 0xFFADBED0);
+    drawLabel(g, UiText.text(
             "screen.fieldemitters.typelist.add_id_or_tag",
             (items
                 ? UiText.text("screen.fieldemitters.typelist.item")
-                : UiText.text("screen.fieldemitters.typelist.mob"))),
-        left + 12,
-        top + 96,
-        0xFFADBED0,
-        false);
+                : UiText.text("screen.fieldemitters.typelist.mob"))), left + 12, top + 96, ScreenMetrics.CONTENT_WIDTH, 0xFFADBED0);
     var list = new ArrayList<>(entries());
     String hovered = null;
     for (int i = 0; i < 24; i++) {
@@ -406,27 +382,9 @@ public final class TypeListScreen extends FittedScreen {
           hovered = UiText.text("screen.fieldemitters.typelist.right_click_to_remove", value);
       }
     }
-    g.drawString(
-        font,
-        UiText.text("screen.fieldemitters.typelist.page", (page + 1)),
-        left + 12,
-        top + 178,
-        0xFFADBED0,
-        false);
-    g.drawString(
-        font,
-        font.plainSubstrByWidth(status, ScreenMetrics.CONTENT_WIDTH),
-        left + 12,
-        top + 190,
-        0xFF8DE0CF,
-        false);
-    g.drawString(
-        font,
-        UiText.text("screen.fieldemitters.typelist.your_inventory_drag_a_copy_into_the_boxes"),
-        left + 12,
-        top + 199,
-        0xFFADBED0,
-        false);
+    drawLabel(g, UiText.text("screen.fieldemitters.typelist.page", (page + 1)), left + 12, top + 178, ScreenMetrics.CONTENT_WIDTH, 0xFFADBED0);
+    drawLabel(g, status, left + 12, top + 190, ScreenMetrics.CONTENT_WIDTH, 0xFF8DE0CF);
+    drawLabel(g, UiText.text("screen.fieldemitters.typelist.your_inventory_drag_a_copy_into_the_boxes"), left + 12, top + 199, ScreenMetrics.CONTENT_WIDTH, 0xFFADBED0);
     for (int i = 0; i < 36; i++) {
       int sx = left + 12 + i % 9 * 18, sy = top + 208 + i / 9 * 18;
       var stack = minecraft.player.getInventory().getItem(i < 27 ? i + 9 : i - 27);
@@ -436,25 +394,13 @@ public final class TypeListScreen extends FittedScreen {
       if (!stack.isEmpty() && inside(x, y, sx, sy, 18, 18))
         hovered = stack.getHoverName().getString();
     }
-    g.drawWordWrap(
-        font,
-        Component.literal(
+    drawParagraph(g, Component.literal(
             items
                 ? UiText.text(
                     "screen.fieldemitters.typelist.drag_items_from_your_inventory_jei_or_emi")
                 : UiText.text(
-                    "screen.fieldemitters.typelist.drag_spawn_eggs_from_your_inventory_jei_or")),
-        left + 190,
-        top + 213,
-        196,
-        0xFFADBED0);
-    g.drawString(
-        font,
-        UiText.text("screen.fieldemitters.typelist.right_click_a_filter_icon_to_remove_it"),
-        left + 12,
-        top + 289,
-        0xFFADBED0,
-        false);
+                    "screen.fieldemitters.typelist.drag_spawn_eggs_from_your_inventory_jei_or")), left + 190, top + 213, 196, 63, 0xFFADBED0);
+    drawLabel(g, UiText.text("screen.fieldemitters.typelist.right_click_a_filter_icon_to_remove_it"), left + 12, top + 289, ScreenMetrics.CONTENT_WIDTH, 0xFFADBED0);
     super.render(g, x, y, partial);
     if (!dragging.isEmpty()) g.renderItem(dragging, x - 8, y - 8);
     else if (hovered != null)
