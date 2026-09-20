@@ -14,7 +14,7 @@ import java.util.function.BiConsumer;
 public final class ForgeNetworkRegistrar {
     public static final SimpleChannel CHANNEL = ChannelBuilder
             .named(ResourceLocation.fromNamespaceAndPath(FieldEmitters.ID, "main"))
-            .networkProtocolVersion(2).simpleChannel();
+            .networkProtocolVersion(3).simpleChannel();
     public <T extends CustomPacketPayload> ForgeNetworkRegistrar playToClient(Class<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> codec,
                                                             BiConsumer<T, ForgePayloadContext> handler) {
         register(type, codec, handler, NetworkDirection.PLAY_TO_CLIENT); return this;

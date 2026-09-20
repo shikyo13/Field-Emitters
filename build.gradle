@@ -31,9 +31,6 @@ minecraft {
     }
 }
 sourceSets.main.resources.srcDir 'src/generated/resources'
-// Forge scans each development mod as one directory.
-sourceSets.main.output.resourcesDir = layout.buildDirectory.dir('classes/java/main').get().asFile
-tasks.named('processResources') { dependsOn tasks.named('compileJava') }
 repositories {
     exclusiveContent {
         forRepository { maven { url = 'https://libraries.minecraft.net'; metadataSources { mavenPom(); artifact() } } }
@@ -104,3 +101,5 @@ tasks.named('jar', Jar).configure {
         attributes(['Implementation-Title': mod_name, 'Implementation-Version': mod_version])
     }
 }
+
+jar { manifest.attributes('MixinConfigs': 'fieldemitters.mixins.json') }

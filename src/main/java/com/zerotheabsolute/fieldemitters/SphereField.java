@@ -196,7 +196,7 @@ public final class SphereField {
             && e.controls.detects(entity, e.owner, direction)) {
           e.crossings++;
           if (e.controls.sensorMode == 1)
-            e.queuedPulses = Math.min(EmitterEntity.MAX_PENDING_PULSES, e.queuedPulses + 1);
+            FieldSensor.pulse(e, now);
           e.lastDetection =
               net.minecraft.network.chat.Component.translatable(
                   "message.fieldemitters.detection.crossing",
