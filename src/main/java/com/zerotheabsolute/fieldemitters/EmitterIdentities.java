@@ -12,64 +12,21 @@ final class EmitterIdentities {
 
   private EmitterIdentities() {}
 
-  private record Member(ManagedNetwork<BlockPos> network, BlockPos position) {}
+  private record Node(EmitterEntity emitter) implements NodeIdentities.Node<BlockPos> {
+    public BlockPos position() { return emitter.getBlockPos(); }
+    public UUID identity() { return emitter.emitterId; }
+    public void identity(UUID replacement) { emitter.emitterId = replacement; emitter.setChanged(); }
+    public UUID owner() { return emitter.owner; }
+    public boolean replacement() { return emitter.adoptPending; }
+  }
 
-  private record Move(Member previous, BlockPos destination, UUID identity) {}
+  private static final NodeIdentities.Store<BlockPos> STORE = new NodeIdentities.Store<>() {
+    public Map<BlockPos, UUID> read(ManagedNetwork<BlockPos> network) { return EmitterIdentities.read(network); }
+    public void write(ManagedNetwork<BlockPos> network, Map<BlockPos, UUID> ids) { EmitterIdentities.write(network, ids); }
+  };
 
   static void reconcile(NetworkDirectory<BlockPos> directory, List<EmitterEntity> loaded) {
-    var identities = new HashMap<ManagedNetwork<BlockPos>, Map<BlockPos, UUID>>();
-    var previous = new HashMap<UUID, Member>();
-    for (var snapshot : directory.snapshot()) {
-      var network = directory.get(snapshot.id()).orElseThrow();
-      var ids = read(network);
-      ids.keySet().retainAll(network.nodes());
-      identities.put(network, ids);
-      ids.forEach((pos, id) -> previous.putIfAbsent(id, new Member(network, pos)));
-    }
-    var moves = new ArrayList<Move>();
-    var claimed = new HashSet<UUID>();
-    var ordered = new ArrayList<>(loaded);
-    // A copied block must not steal the original member's network identity.
-    ordered.sort(Comparator.comparing(e -> {
-      var old = previous.get(e.emitterId);
-      return old == null || !old.position.equals(e.getBlockPos());
-    }));
-    for (var emitter : ordered) {
-      if (!claimed.add(emitter.emitterId)) {
-        emitter.emitterId = UUID.randomUUID();
-        claimed.add(emitter.emitterId);
-        emitter.setChanged();
-      }
-      var pos = emitter.getBlockPos();
-      var old = previous.get(emitter.emitterId);
-      for (var entry : identities.entrySet()) {
-        var network = entry.getKey();
-        var known = entry.getValue().get(pos);
-        if (network.nodes().contains(pos)
-            && (known != null && !known.equals(emitter.emitterId)
-                || known == null && emitter.adoptPending)) {
-          network.removeNode(pos);
-          entry.getValue().remove(pos);
-        }
-      }
-      if (old != null && !old.position.equals(pos)
-          && Objects.equals(old.network.owner(), emitter.owner)) {
-        moves.add(new Move(old, pos, emitter.emitterId));
-      }
-    }
-    for (var move : moves) {
-      move.previous.network.removeNode(move.previous.position);
-      identities.get(move.previous.network).remove(move.previous.position);
-      directory.setLoaded(move.previous.position, false);
-    }
-    for (var move : moves) {
-      move.previous.network.addNode(move.destination);
-      identities.get(move.previous.network).put(move.destination, move.identity);
-    }
-    for (var entry : identities.entrySet()) {
-      if (entry.getKey().nodes().isEmpty()) directory.remove(entry.getKey().id());
-      else write(entry.getKey(), entry.getValue());
-    }
+    NodeIdentities.reconcile(directory, loaded.stream().map(Node::new).toList(), STORE);
   }
 
   static void remember(List<EmitterEntity> loaded) {
