@@ -10,17 +10,18 @@ public final class FieldHandle {
   private final java.util.UUID identity;
   FieldHandle(ServerLevel level, BlockPos position) {
     this.level = level; this.position = position.immutable();
-    if (!level.getServer().isSameThread() || !level.hasChunkAt(position)
+    if (!level.getServer().isSameThread()) throw new FieldOperationException("server_thread");
+    if (!level.hasChunkAt(position)
         || !(level.getBlockEntity(position) instanceof EmitterEntity emitter))
-      throw new IllegalArgumentException("Expected a loaded emitter on the server thread");
+      throw new FieldOperationException("loaded_emitter", position.toShortString());
     identity = emitter.emitterId;
   }
 
   private EmitterEntity emitter() {
-    if (!level.getServer().isSameThread()) throw new IllegalStateException("Field operations require the server thread");
+    if (!level.getServer().isSameThread()) throw new FieldOperationException("server_thread");
     if (!level.hasChunkAt(position) || !(level.getBlockEntity(position) instanceof EmitterEntity emitter))
-      throw new IllegalArgumentException("No loaded field emitter at " + position.toShortString());
-    if (!identity.equals(emitter.emitterId)) throw new IllegalStateException("The emitter was replaced; get a new field handle");
+      throw new FieldOperationException("loaded_emitter", position.toShortString());
+    if (!identity.equals(emitter.emitterId)) throw new FieldOperationException("replaced");
     return emitter;
   }
   public ServerLevel getLevel() { return level; }
@@ -35,6 +36,11 @@ public final class FieldHandle {
   public long getCrossings() { return detector().crossings; }
   public int getSignal() { return detector().outputSignal; }
   public String getStatus() { return emitter().operationStatus; }
+  public net.minecraft.network.chat.Component statusText() {
+    var emitter = emitter();
+    return net.minecraft.network.chat.Component.translatable(
+        "screen.fieldemitters.control." + emitter.operationStatus, emitter.networkDemand);
+  }
   public String getPreset() { return emitter().presetId; }
   public boolean isLocked() { return emitter().presetLocked; }
   public String exportPreset() { return FieldPresets.export(emitter()); }
