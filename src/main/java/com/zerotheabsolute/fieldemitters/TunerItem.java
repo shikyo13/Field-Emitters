@@ -35,6 +35,10 @@ public final class TunerItem extends Item {
             true);
         return InteractionResult.FAIL;
       }
+      if (p.isShiftKeyDown() && e.presetLocked) {
+        p.displayClientMessage(Component.translatable("message.fieldemitters.edit.preset_locked"), true);
+        return InteractionResult.FAIL;
+      }
       if (p.isShiftKeyDown()) {
         ManagedFields.refresh((net.minecraft.server.level.ServerLevel) l, FieldNetwork.loaded(l));
         int index = 0;
