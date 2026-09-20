@@ -1,6 +1,7 @@
 package com.zerotheabsolute.fieldemitters;
 
 import java.util.*;
+import com.zeromods.core.sync.SettingsEdits;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.*;
 
@@ -41,23 +42,13 @@ public final class SettingsPatch {
   public static Result apply(CompoundTag current, ListTag changes, boolean atomic) {
     if (changes.size() > PROPERTIES.size() || changes.toString().length() > MAX_PAYLOAD_CHARS)
       throw new IllegalArgumentException("Settings edit exceeds limits");
-    var result = current.copy();
-    var seen = new HashSet<String>();
-    boolean conflict = false;
+    var decoded = new ArrayList<SettingsEdits.Change<Tag>>();
     for (var entry : changes) {
       if (!(entry instanceof CompoundTag change)) throw new IllegalArgumentException("Invalid edit");
-      String key = change.getString("Property");
-      var property = PROPERTIES.get(key);
-      if (property == null || !seen.add(key)) throw new IllegalArgumentException("Unknown or repeated property");
-      var before = change.get("Before");
-      var after = change.get("After");
-      if (!property.accepts(before) || !property.accepts(after))
-        throw new IllegalArgumentException("Wrong property type");
-      var value = property.read(current);
-      if (Objects.equals(value, after)) continue;
-      if (!Objects.equals(value, before)) { conflict = true; continue; }
-      property.write(result, after);
+      decoded.add(new SettingsEdits.Change<>(change.getString("Property"), change.get("Before"), change.get("After")));
     }
+    var applied = SettingsEdits.apply(current, decoded, PROPERTIES, CompoundTag::copy, atomic);
+    var result = applied.settings();
     for (String group : DIRECTION_GROUPS) {
       var parts = group.split("\\.");
       var rules = result.getCompound("Controls");
@@ -65,20 +56,20 @@ public final class SettingsPatch {
       for (Direction direction : Direction.values())
         if (rules.contains(direction.getName(), Tag.TAG_COMPOUND) && rules.getCompound(direction.getName()).isEmpty()) rules.remove(direction.getName());
     }
-    return new Result(atomic && conflict ? current.copy() : result, conflict);
+    return new Result(atomic && applied.conflict() ? current.copy() : result, applied.conflict());
   }
 
-  private record Property(String path, int type, int bit, boolean optional) {
-    Tag read(CompoundTag root) {
+  private record Property(String path, int type, int bit, boolean optional) implements SettingsEdits.Property<CompoundTag, Tag> {
+    public Tag read(CompoundTag root) {
       var parts = path.split("\\.");
       for (int i = 0; i < parts.length - 1; i++) root = root.getCompound(parts[i]);
       var value = root.get(parts[parts.length - 1]);
       return bit == 0 || value == null ? value : ByteTag.valueOf((((NumericTag) value).getAsInt() & bit) != 0);
     }
-    boolean accepts(Tag value) {
+    public boolean accepts(Tag value) {
       return value == null ? optional : value.getId() == (bit == 0 ? type : Tag.TAG_BYTE);
     }
-    void write(CompoundTag root, Tag value) {
+    public void write(CompoundTag root, Tag value) {
       var parts = path.split("\\.");
       for (int i = 0; i < parts.length - 1; i++) {
         if (!root.contains(parts[i], Tag.TAG_COMPOUND)) root.put(parts[i], new CompoundTag());
