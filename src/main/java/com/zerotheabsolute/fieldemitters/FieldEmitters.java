@@ -125,6 +125,7 @@ public final class FieldEmitters {
             e.accept(TUNER);
           }
         });
+    FieldDataPlatform.register();
     NeoForge.EVENT_BUS.addListener(FieldNetwork::tick);
     NeoForge.EVENT_BUS.addListener(HardwareProtection::explosion);
     NeoForge.EVENT_BUS.addListener(AccessPackets::tick);

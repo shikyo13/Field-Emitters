@@ -108,3 +108,10 @@ dependencies { compileOnly 'dev.emi:emi-neoforge:1.1.24+1.21.1' }
 
 repositories { maven { url = 'https://maven.theillusivec4.top/' } }
 dependencies { compileOnly 'top.theillusivec4.curios:curios-neoforge:9.5.1+1.21.1:api' }
+
+// Optional scripting adapter; neither dependency is bundled with Field Emitters.
+repositories { maven { url = 'https://api.modrinth.com/maven' } }
+dependencies {
+    compileOnly('maven.modrinth:kubejs:THIGFPwf') { transitive = false }
+    compileOnly('maven.modrinth:rhino:SqkDvOLG') { transitive = false }
+}

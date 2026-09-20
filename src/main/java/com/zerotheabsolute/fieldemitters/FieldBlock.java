@@ -98,6 +98,11 @@ public final class FieldBlock extends BaseEntityBlock implements LiquidBlockCont
       Entity entity,
       Direction movement,
       Direction inward) {
+    return FieldAutomation.passage(e, entity, movement, blockedByRules(e, settings, entity, movement, inward));
+  }
+
+  private static boolean blockedByRules(EmitterEntity e, ControlSettings settings, Entity entity,
+      Direction movement, Direction inward) {
     if (!entity.isVehicle() && !entity.isPassenger())
       return stops(e, settings, entity, movement, inward);
     var root = entity.getRootVehicle();

@@ -181,6 +181,7 @@ public final class FieldNetwork {
         if (e.isRail()) railImpacts(l, e, now);
         else impacts(l, e, now);
       }
+      ScriptPassage.tick(l, e, now);
       FieldSensor.tick(l, e, now);
       FieldDamage.tick(l, e, now);
       FieldCheckpoint.tick(l,e,now);
@@ -238,6 +239,7 @@ public final class FieldNetwork {
         if (statusChanged && active == e.powered) e.sync();
         if (active != e.powered) {
           e.powered = active;
+          FieldAutomation.emit("powerChanged", e, null, null, active ? 1 : 0);
           e.transition = now;
           e.sync();
           updateLights(l, e, active);

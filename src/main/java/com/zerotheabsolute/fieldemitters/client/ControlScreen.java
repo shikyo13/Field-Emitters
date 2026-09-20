@@ -1353,6 +1353,7 @@ public final class ControlScreen extends FittedScreen {
                     emitter.links.get(selectedLink).target().toShortString())
                 : UiText.text(
                     "screen.fieldemitters.control.changes_affect_your_connected_emitters");
+    if (emitter.presetLocked) scope = UiText.text("screen.fieldemitters.control.locked_preset", emitter.presetId);
     var headings = List.of(
         new Label(UiText.text("screen.fieldemitters.control.controls"),
             left - NAV_WIDTH + ScreenMetrics.CONTENT_INSET, top + 26,
