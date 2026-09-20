@@ -196,6 +196,55 @@ public final class ControlSettings {
     return t;
   }
 
+  public void copyFrom(ControlSettings source) {
+    projection = source.projection;
+    sphereRadius = source.sphereRadius;
+    dome = source.dome;
+    checkpoint.copyFrom(source.checkpoint);
+    barrier.copyFrom(source.barrier);
+    sensor.copyFrom(source.sensor);
+    damage.copyFrom(source.damage);
+    damageEnabled = source.damageEnabled;
+    damageAmount = source.damageAmount;
+    damageInterval = source.damageInterval;
+    fizzleEffects = source.fizzleEffects;
+    pattern = source.pattern;
+    formation = source.formation;
+    customAccent = source.customAccent;
+    particleColor = source.particleColor;
+    sounds = source.sounds;
+    powerSounds = source.powerSounds;
+    impactSounds = source.impactSounds;
+    damageSounds = source.damageSounds;
+    soundStyle = source.soundStyle;
+    light = source.light;
+    visible = source.visible;
+    animation = source.animation;
+    railNormal = source.railNormal;
+    countItems = source.countItems;
+    sensorMode = source.sensorMode;
+    pulseTicks = source.pulseTicks;
+    inputMode = source.inputMode;
+    outputFace = source.outputFace;
+    inputFace = source.inputFace;
+    inputAny = source.inputAny;
+    for (var direction : Direction.values()) {
+      if (!source.barrierDirections.has(direction)) barrierDirections.inherit(direction);
+      else if (barrierDirections.has(direction)) barrierDirections.overrides().get(direction).copyFrom(source.barrierDirections.overrides().get(direction));
+      else barrierDirections.set(direction, EntityFilter.load(source.barrierDirections.overrides().get(direction).save()));
+    }
+    for (var direction : Direction.values()) {
+      if (!source.sensorDirections.has(direction)) sensorDirections.inherit(direction);
+      else if (sensorDirections.has(direction)) sensorDirections.overrides().get(direction).copyFrom(source.sensorDirections.overrides().get(direction));
+      else sensorDirections.set(direction, EntityFilter.load(source.sensorDirections.overrides().get(direction).save()));
+    }
+    for (var direction : Direction.values()) {
+      if (!source.damageDirections.has(direction)) damageDirections.inherit(direction);
+      else if (damageDirections.has(direction)) damageDirections.overrides().get(direction).copyFrom(source.damageDirections.overrides().get(direction));
+      else damageDirections.set(direction, EntityFilter.load(source.damageDirections.overrides().get(direction).save()));
+    }
+  }
+
   public static ControlSettings load(CompoundTag t) {
     var s = new ControlSettings();
     s.projection = com.zeromods.core.animation.SphereFormation.fromId(t.getString("Projection"));
@@ -259,7 +308,8 @@ public final class ControlSettings {
     s.outputFace = Direction.from3DDataValue(Math.max(0, Math.min(5, t.getInt("OutputFace"))));
     s.inputFace = Direction.from3DDataValue(Math.max(0, Math.min(5, t.getInt("InputFace"))));
     if (s.inputFace == s.outputFace) s.inputFace = s.outputFace.getOpposite();
-    s.inputAny = !t.contains("InputAny") || t.getBoolean("InputAny");
+    // Older saves specify one input face without an any-side flag.
+    s.inputAny = t.contains("InputAny") ? t.getBoolean("InputAny") : !t.contains("InputFace");
     return s;
   }
 }

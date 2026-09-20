@@ -80,3 +80,11 @@ tasks.named('jar', Jar).configure {
         attributes(['Implementation-Title': mod_name, 'Implementation-Version': mod_version])
     }
 }
+
+// Remap the movement hook for Forge's production runtime.
+dependencies { annotationProcessor 'org.spongepowered:mixin:0.8.5:processor' }
+mixin {
+    add sourceSets.main, 'fieldemitters.refmap.json'
+    config 'fieldemitters.mixins.json'
+}
+jar { manifest.attributes('MixinConfigs': 'fieldemitters.mixins.json') }

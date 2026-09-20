@@ -95,7 +95,8 @@ public final class BadgeAccess extends SavedData {
     var result = new ArrayList<ItemStack>();
     for (int i = 0; i < player.getInventory().getContainerSize(); i++)
       result.add(player.getInventory().getItem(i));
-
+    if (net.minecraftforge.fml.ModList.get().isLoaded("curios"))
+      result.addAll(CuriosBridge.equipped(player));
     return result;
   }
 
