@@ -44,15 +44,23 @@ public final class FieldCommands {
       operation.accept(handle(context));
       context.getSource().sendSuccess(() -> Component.translatable("command.fieldemitters.updated"), true);
       return 1;
-    } catch (IllegalArgumentException | IllegalStateException ex) { throw ERROR.create(ex.getMessage()); }
+    } catch (IllegalArgumentException | IllegalStateException ex) { throw error(ex); }
   }
   private static int query(CommandContext<CommandSourceStack> context, boolean export) throws CommandSyntaxException {
     try {
       var field = handle(context);
       var output = export ? Component.literal(field.exportPreset()) : Component.translatable("command.fieldemitters.status",
-          field.getStatus(), field.getCrossings(), field.getSignal(), field.getPreset(), field.isLocked());
+          field.statusText(), field.getCrossings(), field.getSignal(),
+          field.getPreset().isEmpty() ? Component.translatable("message.fieldemitters.detection.none") : field.getPreset(),
+          Component.translatable("screen.fieldemitters.control." + (field.isLocked() ? "yes" : "no")));
       context.getSource().sendSuccess(() -> output, false);
       return export ? 1 : field.getSignal();
-    } catch (IllegalArgumentException | IllegalStateException ex) { throw ERROR.create(ex.getMessage()); }
+    } catch (IllegalArgumentException | IllegalStateException ex) { throw error(ex); }
   }
+  private static CommandSyntaxException error(RuntimeException failure) {
+    if (failure instanceof FieldOperationException known) return ERROR.create(known.text());
+    com.mojang.logging.LogUtils.getLogger().warn("Field command failed", failure);
+    return ERROR.create(Component.translatable("command.fieldemitters.error.unexpected"));
+  }
+
 }
