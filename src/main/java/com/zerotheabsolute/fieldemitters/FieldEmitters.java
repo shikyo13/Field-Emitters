@@ -93,6 +93,7 @@ public final class FieldEmitters implements net.fabricmc.api.ModInitializer {
                   .build());
 
   @Override public void onInitialize() {
+    FieldDataPlatform.register();
     BLOCKS.register(); ITEMS.register(); TYPES.register(); TABS.register();
     fuzs.forgeconfigapiport.api.config.v2.ForgeConfigRegistry.INSTANCE.register(ID, net.minecraftforge.fml.config.ModConfig.Type.SERVER, FieldConfig.SPEC);
     fuzs.forgeconfigapiport.api.config.v2.ForgeConfigRegistry.INSTANCE.register(ID, net.minecraftforge.fml.config.ModConfig.Type.CLIENT, FieldConfig.CLIENT_SPEC);

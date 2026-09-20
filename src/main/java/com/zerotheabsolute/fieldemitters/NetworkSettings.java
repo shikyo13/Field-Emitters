@@ -17,6 +17,8 @@ final class NetworkSettings {
     var tag = new CompoundTag();
     tag.put("Controls", e.controls.save());
     tag.putInt("Color", e.color);
+    tag.putString("Preset", e.presetId);
+    tag.putBoolean("PresetLocked", e.presetLocked);
     tag.putBoolean("Enabled", e.enabled);
     tag.putLong("Revision", e.settingsRevision);
     tag.putLong("Origin", e.getBlockPos().asLong());
@@ -74,10 +76,13 @@ final class NetworkSettings {
   }
 
   private static void apply(EmitterEntity e, CompoundTag tag) {
-    boolean changed = e.adoptPending || e.settingsRevision != tag.getLong("Revision")
+    boolean changed = !e.presetId.equals(tag.getString("Preset")) || e.presetLocked != tag.getBoolean("PresetLocked") || e.adoptPending || e.settingsRevision != tag.getLong("Revision")
         || e.color != tag.getInt("Color") || e.enabled != tag.getBoolean("Enabled")
         || !e.controls.save().equals(tag.getCompound("Controls"));
     if (!changed) return;
+    e.presetId = tag.getString("Preset");
+    e.presetLocked = tag.getBoolean("PresetLocked");
+    if (e.presetLocked) e.overrides.clear();
     e.adoptPending = false;
     e.settingsRevision = tag.getLong("Revision");
     e.controls = ControlSettings.load(tag.getCompound("Controls"));

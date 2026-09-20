@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add datapack field presets, reusable filters, operator commands and optional server-side KubeJS controls/events. Preset locks persist with networks and prevent tuner overrides.
+
 - Prevent an open tuner from overwriting another manager's unrelated changes. Conflicting edits refresh to the server value with an inline notice; instant apply remains enabled.
 
 - Persist shared network settings across joins, reconnects and world loads, including switched-off fields.

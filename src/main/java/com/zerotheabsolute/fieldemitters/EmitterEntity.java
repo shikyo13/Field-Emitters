@@ -32,6 +32,9 @@ public final class EmitterEntity extends BlockEntity {
   public long crossings = 0;
   public int outputSignal = 0;
   public long pulseUntil = 0;
+  public String presetId = "";
+  public boolean presetLocked;
+  CompoundTag scriptPassage = new CompoundTag();
   public net.minecraft.network.chat.Component lastDetection =
       net.minecraft.network.chat.Component.translatable("message.fieldemitters.detection.none");
   final FieldContact.Contacts contactDirections = new FieldContact.Contacts();
@@ -200,6 +203,9 @@ public final class EmitterEntity extends BlockEntity {
         "LastDetectionText",
         net.minecraft.network.chat.Component.Serializer.toJson(lastDetection));
     t.putInt("OutputSignal", outputSignal);
+    t.putString("Preset", presetId);
+    t.putBoolean("PresetLocked", presetLocked);
+    t.put("ScriptPassage", scriptPassage.copy());
     t.putLong("ImpactTime", impactTime);
     FieldImpacts.save(this, t);
     t.putDouble("ImpactX", impact.x);
@@ -292,6 +298,9 @@ public final class EmitterEntity extends BlockEntity {
       lastDetection = net.minecraft.network.chat.Component.literal(t.getString("LastDetection"));
     }
     outputSignal = t.getInt("OutputSignal");
+    presetId = t.getString("Preset");
+    presetLocked = t.getBoolean("PresetLocked");
+    if (getLevel() != null && getLevel().isClientSide) scriptPassage = t.getCompound("ScriptPassage").copy();
     enabled = !t.contains("Enabled") || t.getBoolean("Enabled");
     powered = t.getBoolean("Powered");
     transition = t.getLong("Transition");

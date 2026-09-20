@@ -45,3 +45,10 @@ tasks.named('jar', Jar).configure {
         attributes(['Implementation-Title': mod_name, 'Implementation-Version': mod_version])
     }
 }
+
+// Optional scripting adapter; neither dependency is bundled with Field Emitters.
+repositories { maven { url = 'https://api.modrinth.com/maven' } }
+dependencies {
+    modCompileOnly('maven.modrinth:kubejs:Pu0Ygbq6') { transitive = false }
+    modCompileOnly('maven.modrinth:rhino:MLIu0Tct') { transitive = false }
+}

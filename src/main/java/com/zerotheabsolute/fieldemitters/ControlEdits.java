@@ -76,6 +76,9 @@ public final class ControlEdits {
       return;
     }
     if (edit.getBoolean("Poll")) { respond(player, edit, seed, request, "applied"); return; }
+    if (seed.presetLocked && !edit.getBoolean("Poll")) {
+      respond(player, edit, seed, request, "preset_locked"); return;
+    }
     boolean override = seed.overrides.containsKey(request.target());
     var settings = request.linkOnly() ? seed.overrides.getOrDefault(request.target(), seed.controls) : seed.controls;
     var current = SettingsPatch.snapshot(settings, seed.color, seed.enabled);
