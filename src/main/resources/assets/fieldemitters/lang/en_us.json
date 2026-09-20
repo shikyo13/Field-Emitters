@@ -498,5 +498,11 @@
   "message.fieldemitters.edit.invalid": "These settings are not valid. Your changes were not applied.",
   "message.fieldemitters.edit.unavailable": "This field is unavailable or you no longer have permission to edit it.",
   "message.fieldemitters.edit.update_required": "Update Field Emitters on both the client and server to edit these settings.",
-  "message.fieldemitters.edit.timeout": "The server has not confirmed this edit. Refreshing the settings…"
+  "message.fieldemitters.edit.timeout": "The server has not confirmed this edit. Refreshing the settings…",
+  "message.fieldemitters.edit.preset_locked": "This field uses a locked server preset. Ask an administrator to change or unlock it.",
+  "command.fieldemitters.error": "Field operation failed: %s",
+  "command.fieldemitters.presets": "Available field presets: %s",
+  "command.fieldemitters.updated": "Field settings updated.",
+  "command.fieldemitters.status": "Status: %1$s; crossings: %2$s; redstone: %3$s; preset: %4$s; locked: %5$s",
+  "screen.fieldemitters.control.locked_preset": "Locked by server preset: %s"
 }

@@ -195,6 +195,7 @@ public final class SphereField {
             && now - old.time() <= 2
             && e.controls.detects(entity, e.owner, direction)) {
           e.crossings++;
+          FieldAutomation.emit("crossing", e, entity, direction, 1);
           if (e.controls.sensorMode == 1)
             FieldSensor.pulse(e, now);
           e.lastDetection =

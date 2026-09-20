@@ -107,6 +107,7 @@ public final class FieldSensor {
                         ? item.getItem().getCount()
                         : 1;
                 e.crossings += count;
+                FieldAutomation.emit("crossing", e, entity, direction, count);
                 if (mode == 1) pulse(e, now);
                 e.lastDetection =
                     net.minecraft.network.chat.Component.translatable(

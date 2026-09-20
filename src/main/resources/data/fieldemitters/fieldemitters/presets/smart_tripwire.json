@@ -1,0 +1,14 @@
+{
+  "controls": {
+    "Barrier": {
+      "Groups": 0
+    },
+    "Sensor": {
+      "Groups": 31,
+      "OwnerExempt": false
+    },
+    "SensorMode": 1,
+    "PulseTicks": 4
+  },
+  "enabled": true
+}
