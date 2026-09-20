@@ -9,6 +9,7 @@ import net.minecraft.world.level.block.LeavesBlock;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
 public final class FieldNetwork {
+  private static final int MAX_LINK_DISTANCE = 20;
   private static final Map<Level, Set<BlockPos>> KNOWN = new WeakHashMap<>();
 
   public static void add(EmitterEntity e) {
@@ -16,7 +17,7 @@ public final class FieldNetwork {
   }
 
   public static List<EmitterEntity> connected(EmitterEntity seed) {
-    return connected(seed, false);
+    return connected(seed, true);
   }
 
   public static List<EmitterEntity> configurable(EmitterEntity seed) {
@@ -75,14 +76,14 @@ public final class FieldNetwork {
   /** The closest post in one direction, preferring the closest height when posts are stacked. */
   private static EmitterEntity nearest(EmitterEntity a, List<EmitterEntity> all, Direction d) {
     EmitterEntity best = null;
-    int distance = 21, rise = Integer.MAX_VALUE;
+    int distance = MAX_LINK_DISTANCE + 1, rise = Integer.MAX_VALUE;
     for (var b : all) {
       if (b == a || b.isTower() || b.isRail() || !Objects.equals(a.owner, b.owner)) continue;
       int x = b.getBlockPos().getX() - a.getBlockPos().getX(),
           z = b.getBlockPos().getZ() - a.getBlockPos().getZ(),
           dy = Math.abs(b.getBlockPos().getY() - a.getBlockPos().getY());
       int n = x * d.getStepX() + z * d.getStepZ();
-      if (n <= 0 || x != n * d.getStepX() || z != n * d.getStepZ() || dy > 8) continue;
+      if (n <= 0 || n > MAX_LINK_DISTANCE || x != n * d.getStepX() || z != n * d.getStepZ() || dy > 8) continue;
       if (n < distance || (n == distance && dy < rise)) {
         best = b;
         distance = n;
@@ -201,10 +202,10 @@ public final class FieldNetwork {
               .filter(e -> e.enabled)
               .mapToLong(e -> e.energy.getEnergyStored())
               .sum();
-      boolean allowed =
-          network.stream()
-              .allMatch(
-                  e -> e.controls.inputMode == 0 || (input(l, e) == (e.controls.inputMode == 1)));
+      long capacity = network.stream().mapToLong(e -> e.energy.getMaxEnergyStored()).sum();
+      boolean signal = network.stream().anyMatch(e -> input(l, e));
+      int mode = seed.controls.inputMode;
+      boolean allowed = mode == 0 || signal == (mode == 1);
       // A zero-cost field still needs a span; a lone emitter must stay idle.
       boolean hasField =
           network.stream()
@@ -224,6 +225,17 @@ public final class FieldNetwork {
       }
       for (var e : network) {
         boolean active = on && e.enabled;
+        String status = !e.enabled ? "field_switched_off"
+            : !hasField ? "no_connected_field"
+            : stored < demand ? "not_enough_energy_needs_fe_t"
+            : !allowed ? (mode == 1 ? "waiting_for_signal" : "waiting_for_no_signal")
+            : "field_running";
+        boolean statusChanged = !status.equals(e.operationStatus);
+        e.operationStatus = status;
+        e.networkEnergy = stored;
+        e.networkDemand = demand;
+        e.networkCapacity = capacity;
+        if (statusChanged && active == e.powered) e.sync();
         if (active != e.powered) {
           e.powered = active;
           e.transition = now;
@@ -232,42 +244,6 @@ public final class FieldNetwork {
           FieldSounds.play(l, e, net.minecraft.world.phys.Vec3.atCenterOf(e.getBlockPos()), active ? 0 : 1);
         }
       }
-    }
-  }
-
-  /**
-   * A group of connected emitters and rails shares one set of settings. Whenever a member has been
-   * placed since the last rebuild, every member is brought in line with the member that has been
-   * configured, or with the oldest member when none has. A new post joining a perimeter takes the
-   * perimeter's rules, and a post bridging two configured groups leaves one group with one set of
-   * rules, so it never matters which block of a group a player opens.
-   */
-  private static void adopt(ServerLevel l, List<EmitterEntity> network) {
-    var members = network.stream().filter(e -> !e.isTower()).toList();
-    if (members.size() < 2 || members.stream().noneMatch(e -> e.adoptPending)) return;
-    var template =
-        members.stream()
-            .filter(e -> !e.adoptPending)
-            .min(java.util.Comparator.comparingLong(e -> e.placedAt))
-            .orElseGet(
-                () ->
-                    members.stream()
-                        .min(java.util.Comparator.comparingLong(e -> e.placedAt))
-                        .orElseThrow());
-    String settings = template.controls.save().toString();
-    for (var e : members) {
-      e.adoptPending = false;
-      if (e == template) continue;
-      if (e.color == template.color
-          && e.enabled == template.enabled
-          && e.controls.save().toString().equals(settings)) continue;
-      e.controls = ControlSettings.load(template.controls.save());
-      e.color = template.color;
-      e.enabled = template.enabled;
-      e.mask = e.controls.barrier.groups;
-      e.passages.clear();
-      l.updateNeighborsAt(e.getBlockPos(), e.getBlockState().getBlock());
-      e.sync();
     }
   }
 
@@ -287,7 +263,7 @@ public final class FieldNetwork {
     ManagedFields.refresh(l, all);
     // One adjacency pass per rebuild, shared by the enclosure test and the link pass below.
     Map<BlockPos, List<EmitterEntity>> adjacency = new HashMap<>(all.size());
-    for (var e : all) adjacency.put(e.getBlockPos(), neighbors(e, all));
+    for (var e : all) adjacency.put(e.getBlockPos(), neighbors(e, all, true));
     Map<BlockPos, GroupGeometry> geometry = new HashMap<>(all.size());
     // The root is the lowest position in the group, never the post that happens to hold energy or
     // a redstone signal. Detection output, checkpoint storage and the formation origin therefore
@@ -331,9 +307,12 @@ public final class FieldNetwork {
       for (var e : network) {
         e.root = source.getBlockPos();
         geometry.put(e.getBlockPos(), group);
+        if (e.enclosed != group.closed()) {
+          e.enclosed = group.closed();
+          e.sync();
+        }
         grouped.add(e.getBlockPos());
       }
-      adopt(l, network);
     }
     for (var e : all) {
       if(e.isTower()){SphereField.rebuild(l,e);updateLights(l,e,e.powered);continue;}
@@ -589,7 +568,7 @@ public final class FieldNetwork {
       EmitterEntity a, List<EmitterEntity> all, boolean includeDisabled) {
     var face = a.getBlockState().getValue(RailBlock.FACING);
     EmitterEntity best = null;
-    int distance = 21;
+    int distance = MAX_LINK_DISTANCE + 1;
     for (var b : all) {
       if (!Objects.equals(a.owner, b.owner) || !b.isRail() || !includeDisabled && !b.enabled || a == b)
         continue;

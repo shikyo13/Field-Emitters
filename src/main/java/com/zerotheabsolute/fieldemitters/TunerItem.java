@@ -36,6 +36,7 @@ public final class TunerItem extends Item {
         return InteractionResult.FAIL;
       }
       if (p.isShiftKeyDown()) {
+        ManagedFields.refresh((net.minecraft.server.level.ServerLevel) l, FieldNetwork.loaded(l));
         int index = 0;
         for (int i = 0; i < COLORS.length; i++) if (COLORS[i] == e.color) index = i;
         int color = COLORS[(index + 1) % COLORS.length];
@@ -44,6 +45,7 @@ public final class TunerItem extends Item {
           part.color = color;
           part.sync();
         }
+        NetworkSettings.edited((net.minecraft.server.level.ServerLevel) l, e);
         p.displayClientMessage(
             Component.translatable(
                 "message.fieldemitters.tuneritem.field_color", String.format("%06X", color)),

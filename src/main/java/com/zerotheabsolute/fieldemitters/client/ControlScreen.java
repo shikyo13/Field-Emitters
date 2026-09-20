@@ -19,11 +19,15 @@ public final class ControlScreen extends FittedScreen {
   private int selectedLink = -1;
   private Direction filterDirection;
   private boolean filterEditable = true;
+  private boolean advancedFilters;
   private boolean enabled, reset = false;
   private boolean showGuides = FieldConfig.SHOW_GUIDES.get();
   private String notice = UiText.text("screen.fieldemitters.control.changes_apply_automatically");
   private long textDue;
-  private String lastSent = "";
+  private final ControlEditSession edits;
+  private boolean inheritPending;
+  private int syncTicks;
+  private static final int SYNC_INTERVAL_TICKS = 20;
   private static final int CONTENT_WIDTH = 404, NAV_WIDTH = 106, PANEL_HEIGHT = 306;
 
   public ControlScreen(EmitterEntity e) {
@@ -37,6 +41,8 @@ public final class ControlScreen extends FittedScreen {
     draft = ControlSettings.load(e.controls.save());
     color = e.color;
     enabled = e.enabled;
+    edits = new ControlEditSession(e, PacketDistributor::sendToServer, this::receiveEdit);
+    selectEditScope();
   }
 
   @Override
@@ -52,7 +58,20 @@ public final class ControlScreen extends FittedScreen {
   }
 
   private int panelHeight() {
-    return PANEL_HEIGHT + (tab == ControlTab.APPEARANCE && draft.customAccent ? 57 : 0);
+    if (!tab.hasFilter())
+      return PANEL_HEIGHT + (tab == ControlTab.APPEARANCE && draft.customAccent ? 57 : 0);
+    var filter = tab == ControlTab.BLOCKING ? draft.barrier
+        : tab == ControlTab.SENSOR ? draft.sensor : draft.damage;
+    boolean relative = emitter.enclosed && filter.frame == DirectionFrame.RELATIVE;
+    int height = ScreenMetrics.FILTER_HEADER_HEIGHT + ScreenMetrics.FILTER_FOOTER_HEIGHT
+        + 4 * ScreenMetrics.ROW_HEIGHT + ScreenMetrics.COMPACT_ROW_HEIGHT
+        + ScreenMetrics.BUTTON_HEIGHT;
+    if (!relative) height += ScreenMetrics.ROW_HEIGHT;
+    if (emitter.enclosed) height += ScreenMetrics.COMPACT_ROW_HEIGHT;
+    if (advancedVisible()) height += ScreenMetrics.COMPACT_ROW_HEIGHT;
+    if (tab == ControlTab.SENSOR) height += ScreenMetrics.SENSOR_EXTRA_HEIGHT;
+    if (tab == ControlTab.DAMAGE) height += ScreenMetrics.DAMAGE_EXTRA_HEIGHT;
+    return Math.max(PANEL_HEIGHT, height);
   }
 
   protected void init() {
@@ -164,6 +183,16 @@ public final class ControlScreen extends FittedScreen {
         });
   }
 
+  private boolean advancedVisible() {
+    if (advancedFilters) return true;
+    var shared = tab == ControlTab.BLOCKING ? draft.barrier
+        : tab == ControlTab.SENSOR ? draft.sensor : draft.damage;
+    var rules = tab == ControlTab.BLOCKING ? draft.barrierDirections
+        : tab == ControlTab.SENSOR ? draft.sensorDirections : draft.damageDirections;
+    var filter = filterDirection == null ? shared : rules.resolve(filterDirection, shared);
+    return !filter.identity.isBlank() || !filter.entityTag.isBlank();
+  }
+
   private void filterControls() {
     var shared =
         tab == ControlTab.BLOCKING
@@ -175,7 +204,7 @@ public final class ControlScreen extends FittedScreen {
             : tab == ControlTab.SENSOR ? draft.sensorDirections : draft.damageDirections;
     // A relative rule describes every span at once, so the per-direction overrides, which are
     // written in world directions, are not offered while it is in use.
-    boolean enclosed = emitter.links.stream().anyMatch(link -> link.inward() != null);
+    boolean enclosed = emitter.enclosed;
     boolean relative = enclosed && shared.frame == DirectionFrame.RELATIVE;
     if (relative) filterDirection = null;
     if (!relative) ruleScopeControls(shared, rules);
@@ -378,6 +407,18 @@ public final class ControlScreen extends FittedScreen {
           minecraft.setScreen(new TypeListScreen(this, f, true, tab.purpose(), this::applyChanges));
         });
     row += 27;
+    boolean activeDetails = !f.identity.isBlank() || !f.entityTag.isBlank();
+    button(Control.ADVANCED_FILTERS,
+        activeDetails ? UiText.text("screen.fieldemitters.control.advanced_filters_active")
+            : UiText.text("screen.fieldemitters.control.advanced_filters",
+                UiText.text(advancedFilters ? "screen.fieldemitters.control.hide"
+                    : "screen.fieldemitters.control.show")),
+        () -> {
+          applyPending();
+          advancedFilters = !advancedFilters;
+          rebuildWidgets();
+        });
+    if (advancedVisible()) {
     field(
         Control.SPECIFIC_MOB_PLAYER_UUID,
         UiText.text("screen.fieldemitters.control.specific_mob_player_uuid"),
@@ -395,6 +436,7 @@ public final class ControlScreen extends FittedScreen {
         row,
         185);
     row += 27;
+    }
     directionControls(shared, f, enclosed, relative);
     row += ScreenMetrics.ROW_HEIGHT;
     small(
@@ -703,6 +745,7 @@ public final class ControlScreen extends FittedScreen {
                     emitter.links.get(selectedLink).target().toShortString()))),
         () -> {
           applyPending();
+          if (edits.busy()) return;
           selectedLink++;
           if (selectedLink >= emitter.links.size()) selectedLink = -1;
           if (selectedLink >= 0) {
@@ -716,6 +759,7 @@ public final class ControlScreen extends FittedScreen {
                           ? emitter.controls
                           : emitter.settings(emitter.links.get(selectedLink)))
                       .save());
+          selectEditScope();
           rebuildWidgets();
         });
     if (selectedLink >= 0
@@ -724,24 +768,9 @@ public final class ControlScreen extends FittedScreen {
           Control.USE_GROUP_RULES,
           UiText.text("screen.fieldemitters.control.use_group_rules"),
           () -> {
-            var target = emitter.links.get(selectedLink).target();
-            if (canConfigure())
-              PacketDistributor.sendToServer(
-                  new FieldControls.Update(
-                      emitter.getBlockPos(),
-                      draft.save(),
-                      color,
-                      enabled,
-                      true,
-                      false,
-                      target,
-                      true,
-                      true));
-            emitter.overrides.remove(target);
-            selectedLink = -1;
-            draft = ControlSettings.load(emitter.controls.save());
-            lastSent = "";
-            rebuildWidgets();
+            if (!canConfigure() || edits.busy()) return;
+            inheritPending = true;
+            applyChanges();
           });
     if (emitter.isRail())
       button(
@@ -823,7 +852,15 @@ public final class ControlScreen extends FittedScreen {
       minecraft.setScreen(null);
       return;
     }
+    if (edits.timedOut()) {
+      reset = false; inheritPending = false;
+      notice = UiText.text("message.fieldemitters.edit.timeout");
+    }
     if (textDue != 0 && System.currentTimeMillis() >= textDue) applyPending();
+    if (++syncTicks >= SYNC_INTERVAL_TICKS && textDue == 0 && !edits.busy()) {
+      syncTicks = 0;
+      edits.submit(snapshot(), false, false, true);
+    }
   }
 
   private void applyPending() {
@@ -856,37 +893,48 @@ public final class ControlScreen extends FittedScreen {
       notice = UiText.text("screen.fieldemitters.control.field_disconnected_reopen_settings");
       return;
     }
-    String signature = draft.save().toString() + color + enabled + selectedLink;
-    if (!reset && signature.equals(lastSent)) return;
-    var target =
-        selectedLink < 0 ? emitter.getBlockPos() : emitter.links.get(selectedLink).target();
-    PacketDistributor.sendToServer(
-        new FieldControls.Update(
-            emitter.getBlockPos(),
-            draft.save(),
-            color,
-            enabled,
-            true,
-            reset,
-            target,
-            selectedLink >= 0,
-            false));
-    if (selectedLink < 0) {
-      emitter.controls = ControlSettings.load(draft.save());
-      emitter.color = color;
-      emitter.enabled = enabled;
-    } else emitter.overrides.put(target, ControlSettings.load(draft.save()));
-    lastSent = signature;
-    reset = false;
-    notice = UiText.text("screen.fieldemitters.control.applying_changes");
+    if (!edits.supported()) {
+      notice = UiText.text("message.fieldemitters.edit.update_required");
+      return;
+    }
+    if (edits.submit(snapshot(), reset, inheritPending, false)) {
+      reset = false;
+      inheritPending = false;
+      notice = UiText.text("screen.fieldemitters.control.applying_changes");
+    }
+  }
+
+  private net.minecraft.nbt.CompoundTag snapshot() {
+    return SettingsPatch.snapshot(draft, color, enabled);
+  }
+
+  private void selectEditScope() {
+    var target = selectedLink < 0 ? emitter.getBlockPos() : emitter.links.get(selectedLink).target();
+    edits.select(target, selectedLink >= 0, snapshot());
+  }
+
+  private void receiveEdit(FieldControls.RemoteData reply) {
+    var before = snapshot();
+    var result = edits.acknowledge(reply, before);
+    if (reply.data().getString("Status").equals("scope_changed") || !result.refresh()) {
+      reset = false; inheritPending = false;
+    }
+    if (result.refresh()) {
+      var settings = result.draft();
+      draft.copyFrom(ControlSettings.load(settings.getCompound("Controls")));
+      color = settings.getInt("Color");
+      enabled = settings.getBoolean("Enabled");
+    }
+    if (result.conflict()) notice = reply.data().getString("Status").equals("applied")
+        ? UiText.text("message.fieldemitters.edit.conflict") : reply.message().getString();
+    else if (!result.poll()) notice = reply.message().getString();
+    if (minecraft.screen == this && (result.conflict()
+        || !before.equals(snapshot()) && !(getFocused() instanceof EditBox))) rebuildWidgets();
+    if (!result.conflict() && textDue == 0) applyChanges();
   }
 
   public void acknowledge(Component message) {
     notice = message.getString();
-    if (!(message.getContents()
-            instanceof net.minecraft.network.chat.contents.TranslatableContents translated
-        && translated.getKey().equals("message.fieldemitters.fieldcontrols.changes_applied")))
-      lastSent = "";
   }
 
   private static String sideName(Direction d) {
@@ -1068,7 +1116,7 @@ public final class ControlScreen extends FittedScreen {
             applyPending();
             shared.frame = relative ? DirectionFrame.WORLD : DirectionFrame.RELATIVE;
             if (shared.frame == DirectionFrame.RELATIVE) filterDirection = null;
-            rebuildWidgets();
+            redraw();
           });
       row += ScreenMetrics.COMPACT_ROW_HEIGHT;
     }
@@ -1272,6 +1320,18 @@ public final class ControlScreen extends FittedScreen {
         + ellipsis;
   }
 
+  private boolean renderOverflowTooltip(GuiGraphics g, List<Label> entries, int mx, int my) {
+    for (var label : entries) {
+      if (font.width(label.text) > label.width
+          && mx >= label.x && mx < label.x + label.width
+          && my >= label.y && my < label.y + font.lineHeight) {
+        g.renderTooltip(font, Component.literal(label.text), mx, my);
+        return true;
+      }
+    }
+    return false;
+  }
+
   public void render(GuiGraphics g, int mx, int my, float partial) {
     beginFit(g);
     mx = fitMouse(mx);
@@ -1279,27 +1339,10 @@ public final class ControlScreen extends FittedScreen {
     g.fill(0, 0, width, height, 0xB0101723);
     g.fill(left - NAV_WIDTH, top, left + CONTENT_WIDTH, top + panelHeight(), 0xFF111D2C);
     g.fill(left - NAV_WIDTH + 4, top + 40, left - 4, top + panelHeight() - 28, 0xFF0E1926);
-    g.drawString(
-        font,
-        UiText.text("screen.fieldemitters.control.controls"),
-        left - NAV_WIDTH + 12,
-        top + 26,
-        0x92A9BE,
-        false);
     g.fill(left + 1, top + 2, left + 403, top + 20, 0xFF1B2D3E);
     g.fill(left + 8, top + 40, left + 396, top + panelHeight() - 28, 0xFF0E1926);
     g.fill(left + 8, top + panelHeight() - 26, left + 396, top + panelHeight() - 25, 0xFF354D63);
     g.fill(left - NAV_WIDTH, top, left + 404, top + 2, 0xFF000000 | color);
-    g.drawString(
-        font,
-        selectedLink < 0
-            ? title
-            : Component.literal(
-                UiText.text("screen.fieldemitters.control.editing_one_field_block_detect_damage")),
-        left + 12,
-        top + 7,
-        0xDBF8FF,
-        false);
     String scope =
         tab == ControlTab.ACCESS
             ? UiText.text(
@@ -1310,22 +1353,21 @@ public final class ControlScreen extends FittedScreen {
                     emitter.links.get(selectedLink).target().toShortString())
                 : UiText.text(
                     "screen.fieldemitters.control.changes_affect_your_connected_emitters");
-    g.drawString(font, scope, left + 12, top + 26, 0x92A9BE, false);
+    var headings = List.of(
+        new Label(UiText.text("screen.fieldemitters.control.controls"),
+            left - NAV_WIDTH + ScreenMetrics.CONTENT_INSET, top + 26,
+            NAV_WIDTH - 2 * ScreenMetrics.CONTENT_INSET),
+        new Label(selectedLink < 0 ? title.getString()
+            : UiText.text("screen.fieldemitters.control.editing_one_field_block_detect_damage"),
+            left + ScreenMetrics.CONTENT_INSET, top + 7, ScreenMetrics.CONTENT_WIDTH),
+        new Label(scope, left + ScreenMetrics.CONTENT_INSET, top + 26,
+            ScreenMetrics.CONTENT_WIDTH));
+    for (var heading : headings)
+      g.drawString(font, fitLabel(heading), heading.x, heading.y,
+          heading.y == top + 7 ? 0xDBF8FF : 0x92A9BE, false);
     if (tab == ControlTab.OVERVIEW) {
-      String status =
-          emitter.powered
-              ? UiText.text("screen.fieldemitters.control.field_running")
-              : !emitter.enabled
-                  ? UiText.text("screen.fieldemitters.control.field_switched_off")
-                  : emitter.energy.getEnergyStored() == 0
-                      ? UiText.text("screen.fieldemitters.control.no_energy_connect_fe")
-                      : emitter.energy.getEnergyStored() < emitter.demand
-                          ? UiText.text(
-                              "screen.fieldemitters.control.not_enough_energy_needs_fe_t",
-                              emitter.demand)
-                          : emitter.controls.inputMode != 0
-                              ? UiText.text("screen.fieldemitters.control.waiting_for_redstone_input")
-                              : UiText.text("screen.fieldemitters.control.starting");
+      String status = UiText.text(
+          "screen.fieldemitters.control." + emitter.operationStatus, emitter.networkDemand);
       if (emitter.isTower() && emitter.enabled) {
         if (!SphereField.fitsHeight(emitter))
           status =
@@ -1345,8 +1387,8 @@ public final class ControlScreen extends FittedScreen {
           font,
           UiText.text(
               "screen.fieldemitters.control.energy_stored_fe_used_fe_t",
-              emitter.energy.getEnergyStored(),
-              emitter.demand),
+              emitter.networkEnergy,
+              emitter.networkDemand),
           left + 12,
           top + 56,
           0xCAD6E5,
@@ -1354,8 +1396,8 @@ public final class ControlScreen extends FittedScreen {
       int energyWidth =
           (int)
               (380L
-                  * emitter.energy.getEnergyStored()
-                  / Math.max(1, emitter.energy.getMaxEnergyStored()));
+                  * emitter.networkEnergy
+                  / Math.max(1, emitter.networkCapacity));
       g.fill(left + 12, top + 93, left + 392, top + 96, 0xFF263F53);
       g.fill(left + 12, top + 93, left + 12 + energyWidth, top + 96, 0xFF52E5FF);
       EmitterEntity detector = emitter;
@@ -1365,10 +1407,9 @@ public final class ControlScreen extends FittedScreen {
       g.drawString(
           font,
           UiText.text(
-              "screen.fieldemitters.control.crossings_signals_waiting",
+              "screen.fieldemitters.control.crossings_count",
               (emitter.isRail() ? UiText.text("screen.fieldemitters.control.rail_chain") : ""),
-              detector.crossings,
-              detector.queuedPulses),
+              detector.crossings),
           left + 12,
           top + 68,
           0xCAD6E5,
@@ -1421,16 +1462,8 @@ public final class ControlScreen extends FittedScreen {
         0x92A9BE,
         false);
     super.render(g, mx, my, partial);
-    for (var label : labels) {
-      if (font.width(label.text) > label.width
-          && mx >= label.x
-          && mx < label.x + label.width
-          && my >= label.y
-          && my < label.y + font.lineHeight) {
-        g.renderTooltip(font, Component.literal(label.text), mx, my);
-        break;
-      }
-    }
+    if (!renderOverflowTooltip(g, labels, mx, my))
+      renderOverflowTooltip(g, headings, mx, my);
     g.pose().popPose();
   }
 }

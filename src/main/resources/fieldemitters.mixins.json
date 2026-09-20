@@ -3,7 +3,8 @@
   "package": "com.zerotheabsolute.fieldemitters.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "SableCollisionMixin"
+    "SableCollisionMixin",
+    "PhasingCollisionMixin"
   ],
   "injectors": {
     "defaultRequire": 1

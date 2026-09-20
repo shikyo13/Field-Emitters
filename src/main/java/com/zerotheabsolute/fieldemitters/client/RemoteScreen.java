@@ -32,6 +32,7 @@ public final class RemoteScreen extends FittedScreen {
   public static void receive(FieldControls.RemoteData reply) {
     var mc = Minecraft.getInstance();
     if (mc.level == null) return;
+    if (reply.kind() == ControlEdits.REPLY_KIND) { ControlEditSession.receive(reply); return; }
     if (reply.kind() == 0)
       mc.setScreen(new RemoteScreen(reply.data(), reply.message().getString()));
     else if (reply.kind() == 1) {

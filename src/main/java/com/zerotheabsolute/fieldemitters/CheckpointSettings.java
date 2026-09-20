@@ -71,6 +71,22 @@ public final class CheckpointSettings {
     return t;
   }
 
+  public void copyFrom(CheckpointSettings source) {
+    enabled = source.enabled;
+    detect = source.detect;
+    deny = source.deny;
+    confiscate = source.confiscate;
+    dropOverflow = source.dropOverflow;
+    storageFace = source.storageFace;
+    players.copyFrom(source.players);
+    items.copyFrom(source.items);
+    for (var direction : Direction.values()) {
+      if (!source.directions.has(direction)) directions.inherit(direction);
+      else if (directions.has(direction)) directions.overrides().get(direction).copyFrom(source.directions.overrides().get(direction));
+      else directions.set(direction, EntityFilter.load(source.directions.overrides().get(direction).save()));
+    }
+  }
+
   public static CheckpointSettings load(CompoundTag t) {
     var s = new CheckpointSettings();
     s.enabled = t.getBoolean("Enabled");

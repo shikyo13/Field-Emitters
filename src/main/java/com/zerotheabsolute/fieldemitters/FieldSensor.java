@@ -6,6 +6,11 @@ import net.minecraft.world.entity.item.ItemEntity;
 
 /** A passage completes only after the entire entity clears the far side of the plane. */
 public final class FieldSensor {
+  /** New detections refresh the active pulse without scheduling later output. */
+  public static void pulse(EmitterEntity emitter, long now) {
+    emitter.pulseUntil = now + emitter.controls.pulseTicks;
+  }
+
   public static void tick(ServerLevel level, EmitterEntity e, long now) {
     int mode = e.controls.sensorMode;
     boolean present = e.isTower() && e.spherePresent;
@@ -102,12 +107,7 @@ public final class FieldSensor {
                         ? item.getItem().getCount()
                         : 1;
                 e.crossings += count;
-                // One pulse per crossing, the way a tripwire fires once however much passes over
-                // it. A thrown stack is one entity, so it sends one pulse while the counter above
-                // still records every item. Pending pulses are capped, because the output can only
-                // emit one per pulse length plus two ticks.
-                if (mode == 1)
-                  e.queuedPulses = Math.min(EmitterEntity.MAX_PENDING_PULSES, e.queuedPulses + 1);
+                if (mode == 1) pulse(e, now);
                 e.lastDetection =
                     net.minecraft.network.chat.Component.translatable(
                         "message.fieldemitters.detection.crossing",
@@ -126,24 +126,13 @@ public final class FieldSensor {
           .removeIf(a -> !a.getKey().startsWith("checkpoint:") && now - a.getValue().time() > 2);
     } else {
       e.passages.entrySet().removeIf(a -> !a.getKey().startsWith("checkpoint:"));
-      if (!e.powered || !monitoring) {
-        e.queuedPulses = 0;
-        e.pulseUntil = 0;
-      }
+    }
+    if (!e.powered || !monitoring || mode != 1) {
+      e.pulseUntil = 0;
     }
     int signal = 0;
     if (e.powered && monitoring && mode == 2) signal = present ? 15 : 0;
-    if (e.powered && monitoring) {
-      if (now < e.pulseUntil) signal = 15;
-      else if (e.pulseUntil != 0) {
-        e.pulseUntil = 0;
-        e.gapUntil = now + 2;
-      } else if (e.queuedPulses > 0 && now >= e.gapUntil) {
-        e.queuedPulses--;
-        e.pulseUntil = now + e.controls.pulseTicks;
-        signal = 15;
-      }
-    }
+    if (e.powered && monitoring && mode == 1 && now < e.pulseUntil) signal = 15;
     if (signal != e.outputSignal) {
       e.outputSignal = signal;
       level.updateNeighborsAt(e.getBlockPos(), e.getBlockState().getBlock());

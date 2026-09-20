@@ -128,6 +128,31 @@ public final class EntityFilter {
     return t;
   }
 
+  public void copyFrom(EntityFilter source) {
+    groups = source.groups;
+    playerMode = source.playerMode;
+    mobMode = source.mobMode;
+    itemMode = source.itemMode;
+    age = source.age;
+    directions = source.directions;
+    frame = source.frame;
+    crossings = source.crossings;
+    inverted = source.inverted;
+    exemptOwner = source.exemptOwner;
+    entityType = source.entityType;
+    itemType = source.itemType;
+    identity = source.identity;
+    entityTag = source.entityTag;
+    accessGroups.clear();
+    accessGroups.addAll(source.accessGroups);
+    playerList.clear();
+    playerList.putAll(source.playerList);
+    mobList.clear();
+    mobList.addAll(source.mobList);
+    itemList.clear();
+    itemList.addAll(source.itemList);
+  }
+
   public static EntityFilter load(CompoundTag t) {
     var f = new EntityFilter();
     f.groups = t.getInt("Groups") & 31;
