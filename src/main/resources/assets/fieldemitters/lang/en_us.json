@@ -307,7 +307,7 @@
   "screen.fieldemitters.controlhelp.entities_outside_that_selection_trigger_detection_skip_owner": "%1$sEntities outside that selection trigger detection. Skip owner: Yes always excludes the owner. This does not change what the field blocks.",
   "screen.fieldemitters.controlhelp.hostile_selects_entities_minecraft_classifies_as_monsters_such": "%1$sHostile selects entities Minecraft classifies as monsters, such as zombies and creepers.",
   "screen.fieldemitters.controlhelp.how_long_each_crossing_pulse_stays_on_a": "How long each crossing pulse stays on. Crossings during an active pulse refresh its duration. Pulses never queue. Used with Pulse on crossing.",
-  "screen.fieldemitters.controlhelp.immediately_clear_the_recorded_crossing_count_recent_detection": "Immediately clear the recorded crossing count, recent detection and waiting pulses.",
+  "screen.fieldemitters.controlhelp.immediately_clear_the_recorded_crossing_count_recent_detection": "Immediately clear the recorded crossing count, recent detection and active sensor output.",
   "screen.fieldemitters.controlhelp.immediately_use_this_color_preset_for_the_emitter": "Immediately use this color preset for the emitter(s) selected in Connections.",
   "screen.fieldemitters.controlhelp.inspect_carried_inventory_using_a_separate_player_and": "Inspect carried inventory using a separate player and item filter. Detect contraband, deny passage, drop it, or transfer it to adjacent storage. Badge and management permissions remain separate.",
   "screen.fieldemitters.controlhelp.issue_badges_for_access_groups_and_revoke_them": "Issue badges for access groups and revoke them when needed. Add an access group to a player filter to use its badges. A badge does not grant management permission.",
@@ -504,5 +504,10 @@
   "command.fieldemitters.presets": "Available field presets: %s",
   "command.fieldemitters.updated": "Field settings updated.",
   "command.fieldemitters.status": "Status: %1$s; crossings: %2$s; redstone: %3$s; preset: %4$s; locked: %5$s",
-  "screen.fieldemitters.control.locked_preset": "Locked by server preset: %s"
+  "screen.fieldemitters.control.locked_preset": "Locked by server preset: %s",
+  "command.fieldemitters.error.loaded_emitter": "No loaded field emitter at %s. Use the emitter base coordinates.",
+  "command.fieldemitters.error.server_thread": "Field operations must run on the server thread.",
+  "command.fieldemitters.error.replaced": "The emitter was replaced. Select it again.",
+  "command.fieldemitters.error.unknown_preset": "Unknown field preset: %s",
+  "command.fieldemitters.error.unexpected": "The field operation failed. See the server log for details."
 }
