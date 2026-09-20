@@ -22,7 +22,7 @@ public class FieldPresets extends SimplePreparableReloadListener<Map<ResourceLoc
   public static Preset get(String id) {
     var key = ResourceLocation.tryParse(id);
     var preset = key == null ? null : presets.get(key);
-    if (preset == null) throw new IllegalArgumentException("Unknown field preset: " + id);
+    if (preset == null) throw new FieldOperationException("unknown_preset", id);
     return preset;
   }
 

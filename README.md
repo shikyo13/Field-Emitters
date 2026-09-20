@@ -79,3 +79,7 @@ Support me through [Buy Me a Coffee](https://buymeacoffee.com/zerotheabsolute) o
 Want to translate Field Emitters? All English strings, including the Field Tuner menus and tooltips, are in [en_us.json](src/main/resources/assets/fieldemitters/lang/en_us.json). See the [translation guide](docs/LOCALIZATION.md) for language files, placeholders, and testing instructions.
 
 See [Datapacks and KubeJS](docs/wiki/Automation.md) for field presets, reusable filters, server commands and scripting events.
+
+## Languages
+
+Field Emitters includes 11 translations in addition to English. See the [localization guide](docs/wiki/Localization.md) for supported languages and contribution instructions.

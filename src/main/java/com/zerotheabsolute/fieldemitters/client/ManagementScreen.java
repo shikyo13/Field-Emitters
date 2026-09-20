@@ -209,38 +209,14 @@ final class ManagementScreen extends FittedScreen {
     g.fill(
         left, top, left + ScreenMetrics.PANEL_WIDTH, top + ScreenMetrics.PANEL_HEIGHT, 0xFF0D1D2B);
     g.fill(left, top, left + ScreenMetrics.PANEL_WIDTH, top + 2, 0xFF53BBCB);
-    g.drawString(
-        font,
-        UiText.text("screen.fieldemitters.management.network_management"),
-        left + 12,
-        top + 12,
-        0xFFE0F3FF,
-        false);
-    g.drawWordWrap(
-        font,
-        Component.literal(
+    drawLabel(g, UiText.text("screen.fieldemitters.management.network_management"), left + 12, top + 12, ScreenMetrics.CONTENT_WIDTH, 0xFFE0F3FF);
+    drawParagraph(g, Component.literal(
             UiText.text(
-                "screen.fieldemitters.management.these_permissions_control_field_settings_not_passage_badges")),
-        left + 12,
-        top + 59,
-        ScreenMetrics.CONTENT_WIDTH,
-        0xFFADBED0);
-    g.drawString(
-        font,
-        UiText.text("screen.fieldemitters.management.minecraft_account_name_or_uuid"),
-        left + 12,
-        top + 87,
-        0xFFADBED0,
-        false);
+                "screen.fieldemitters.management.these_permissions_control_field_settings_not_passage_badges")), left + 12, top + 59, ScreenMetrics.CONTENT_WIDTH, 24, 0xFFADBED0);
+    drawLabel(g, UiText.text("screen.fieldemitters.management.minecraft_account_name_or_uuid"), left + 12, top + 87, ScreenMetrics.CONTENT_WIDTH, 0xFFADBED0);
     if (managers.isEmpty())
-      g.drawString(
-          font,
-          UiText.text("screen.fieldemitters.management.no_additional_managers"),
-          left + 12,
-          top + 140,
-          0xFFADBED0,
-          false);
-    g.drawWordWrap(font, Component.literal(notice), left + 12, top + 280, 288, 0xFFADBED0);
+      drawLabel(g, UiText.text("screen.fieldemitters.management.no_additional_managers"), left + 12, top + 140, ScreenMetrics.CONTENT_WIDTH, 0xFFADBED0);
+    drawParagraph(g, Component.literal(notice), left + 12, top + 280, 288, 22, 0xFFADBED0);
     super.render(g, fitMouse(x), fitMouse(y), p);
     g.pose().popPose();
   }
