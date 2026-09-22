@@ -8,7 +8,7 @@ Managers can change field settings. Only the owner and server operators can chan
 
 This protects configuration, not the surrounding land. Emitters remain mineable at their previous hardness. Posts, surface rails and projection towers resist explosions and mob destruction.
 
-## Passage badges
+## Access badges
 
 Open **Power → Access badges**, hold a blank access badge in either hand, choose a group and issue it. A blank player UUID makes the badge transferable; supplying a UUID binds it to that player. Group names belong to the issuing player: another player issuing a badge called `staff` cannot grant access to your `staff` fields.
 
