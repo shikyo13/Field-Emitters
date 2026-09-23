@@ -20,6 +20,7 @@ public final class ControlSettings {
 
   public int sphereRadius = SphereField.DEFAULT_RADIUS;
   public boolean dome = true;
+  public CardPassage cards = new CardPassage();
   public CheckpointSettings checkpoint = new CheckpointSettings();
   public EntityFilter barrier = new EntityFilter(),
       sensor = new EntityFilter(),
@@ -83,7 +84,13 @@ public final class ControlSettings {
       Direction movement,
       Direction inward) {
     var rule = barrierRule(movement, inward);
-    return rule.direction(movement, inward) && rule.matches(entity, owner);
+    return rule.direction(movement, inward) && rule.matches(entity, owner)
+        && !cardPasses(rule, entity, owner);
+  }
+
+  /** A valid card passes blocking, except where the player list names its holder to be blocked. */
+  public boolean cardPasses(EntityFilter rule, net.minecraft.world.entity.Entity entity, java.util.UUID owner) {
+    return cards.allows(entity, owner) && !rule.blocksListed(entity, owner);
   }
 
   /** The blocking rule that governs this crossing, once direction and frame are resolved. */
@@ -151,6 +158,7 @@ public final class ControlSettings {
     t.putInt("SphereRadius", sphereRadius);
     t.putBoolean("Dome", dome);
     t.put("Checkpoint", checkpoint.save());
+    t.put("CardPassage", cards.save());
     t.put("Barrier", barrier.save());
     t.put("Sensor", sensor.save());
     t.put("Damage", damage.save());
@@ -201,6 +209,7 @@ public final class ControlSettings {
     sphereRadius = source.sphereRadius;
     dome = source.dome;
     checkpoint.copyFrom(source.checkpoint);
+    cards.copyFrom(source.cards);
     barrier.copyFrom(source.barrier);
     sensor.copyFrom(source.sensor);
     damage.copyFrom(source.damage);
@@ -256,6 +265,7 @@ public final class ControlSettings {
     s.dome = !t.contains("Dome") || t.getBoolean("Dome");
     if (t.contains("Checkpoint"))
       s.checkpoint = CheckpointSettings.load(t.getCompound("Checkpoint"));
+    s.cards = CardPassage.load(t.getCompound("CardPassage"));
     s.barrier = EntityFilter.load(t.getCompound("Barrier"));
     s.sensor = EntityFilter.load(t.getCompound("Sensor"));
     if (t.contains("Damage", 10)) s.damage = EntityFilter.load(t.getCompound("Damage"));
@@ -286,7 +296,7 @@ public final class ControlSettings {
     s.powerSounds = !t.contains("PowerSounds") || t.getBoolean("PowerSounds");
     s.impactSounds = !t.contains("ImpactSounds") || t.getBoolean("ImpactSounds");
     s.damageSounds = !t.contains("DamageSounds") || t.getBoolean("DamageSounds");
-    s.soundStyle = Math.max(0, Math.min(2, t.getInt("SoundStyle")));
+    s.soundStyle = Math.max(0, Math.min(FieldSounds.PALETTES - 1, t.getInt("SoundStyle")));
     var blocking = t.getCompound("BarrierDirections");
     var detection = t.getCompound("SensorDirections");
     for (var direction : Direction.values()) {

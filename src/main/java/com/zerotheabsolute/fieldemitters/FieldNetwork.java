@@ -114,13 +114,21 @@ public final class FieldNetwork {
     return inside;
   }
 
-  private static boolean ground(Level l, BlockPos p) {
+  /**
+   * Fields stand on floor-like blocks, whose collision covers the whole footprint at the top or
+   * bottom: full blocks, slabs, stairs, carpets. Doors, gates, panes, fences and walls sit inside
+   * the field instead of lifting it, and their positions are closed by gap collision (see
+   * FieldGaps). Where no floor is found, any colliding block is accepted as before.
+   */
+  private static boolean ground(Level l, BlockPos p, boolean floorOnly) {
     if (!l.hasChunkAt(p)) return false;
     var s = l.getBlockState(p);
-    return !s.is(FieldEmitters.EMITTER.get())
-        && !s.is(FieldEmitters.FIELD.get())
-        && !(s.getBlock() instanceof LeavesBlock)
-        && !s.getCollisionShape(l, p).isEmpty();
+    if (s.is(FieldEmitters.EMITTER.get()) || s.is(FieldEmitters.FIELD.get())
+        || s.getBlock() instanceof LeavesBlock) return false;
+    var shape = s.getCollisionShape(l, p);
+    if (shape.isEmpty()) return false;
+    return !floorOnly || net.minecraft.world.level.block.Block.isFaceFull(shape, Direction.UP)
+        || net.minecraft.world.level.block.Block.isFaceFull(shape, Direction.DOWN);
   }
 
   private static EmitterEntity.Link trace(EmitterEntity a, EmitterEntity b) {
@@ -150,13 +158,15 @@ public final class FieldNetwork {
     int y = p.getY();
     for (int i = 1; i < n; i++) {
       boolean found = false;
-      for (int offset = 4; offset >= -4; offset--) {
-        var floor = new BlockPos(p.getX() + dx * i, y + offset - 1, p.getZ() + dz * i);
-        if (ground(a.getLevel(), floor) && !ground(a.getLevel(), floor.above())) {
-          y = floor.getY() + 1;
-          found = true;
-          break;
+      for (boolean floorOnly : new boolean[] {true, false}) {
+        for (int offset = 4; offset >= -4 && !found; offset--) {
+          var floor = new BlockPos(p.getX() + dx * i, y + offset - 1, p.getZ() + dz * i);
+          if (ground(a.getLevel(), floor, floorOnly) && !ground(a.getLevel(), floor.above(), floorOnly)) {
+            y = floor.getY() + 1;
+            found = true;
+          }
         }
+        if (found) break;
       }
       if (!found) return null;
       heights[i] = y;
@@ -349,8 +359,11 @@ public final class FieldNetwork {
                           * FieldConfig.energyPerCell())
               .sum();
       Set<BlockPos> next = new HashSet<>();
+      Set<BlockPos> gaps = new HashSet<>();
+      int clearedPlants = 0;
+      if (e.powered || now - e.transition < FieldShutdown.DURATION_TICKS)
       for (var link : links)
-        for (int i = 1; i < link.length(); i++)
+        for (int i = 1; i < link.length(); i++) {
           for (int h = 0; h < link.height(); h++) {
             BlockPos p =
                 new BlockPos(
@@ -359,6 +372,17 @@ public final class FieldNetwork {
                     e.getBlockPos().getZ() + link.dz() * i);
             if (!l.hasChunkAt(p)) continue;
             var state = l.getBlockState(p);
+            FieldVegetation.Parked parked = null;
+            if (e.powered
+                && now - e.transition >= e.controls.linkFormationTicks(i)
+                && FieldVegetation.canPark(l, p, state)) {
+              parked = FieldVegetation.lift(l, p, state,
+                  clearedPlants < FieldVegetation.EFFECTS_PER_REBUILD);
+              if (clearedPlants++ == 0)
+                FieldSounds.play(l, e, FieldSpace.at(e).world(
+                    net.minecraft.world.phys.Vec3.atCenterOf(p)), 3);
+              state = l.getBlockState(p);
+            }
             if (state.isAir()) {
               l.setBlock(
                   p,
@@ -367,9 +391,10 @@ public final class FieldNetwork {
                       .defaultBlockState()
                       .setValue(FieldBlock.X_AXIS, link.dx() != 0)
                       .setValue(FieldBlock.LIT, e.powered && e.controls.light && l.getGameTime()-e.transition >= e.controls.linkFormationTicks(i)),
-                  3);
+                  parked == null ? 3 : FieldVegetation.QUIET);
               if (l.getBlockEntity(p) instanceof FieldCell cell) {
                 cell.source = e.getBlockPos();
+                cell.parked = parked;
                 cell.setChanged();
                 l.sendBlockUpdated(p, l.getBlockState(p), l.getBlockState(p), 3);
                 l.scheduleTick(p, FieldEmitters.FIELD.get(), 40);
@@ -377,13 +402,21 @@ public final class FieldNetwork {
             }
             if (l.getBlockEntity(p) instanceof FieldCell cell
                 && cell.source.equals(e.getBlockPos())) next.add(p);
+            else if (FieldGaps.open(l, p, l.getBlockState(p), e)) gaps.add(p);
           }
+          // A field standing on a carpet or low snow leaves room to crawl underneath.
+          var base = link.cell(e.getBlockPos(), i, 0).below();
+          if (!link.rail() && l.hasChunkAt(base) && FieldGaps.partial(l, base)) gaps.add(base);
+        }
+      var released = new ArrayList<BlockPos>();
       for (var old : e.cells)
         if (!next.contains(old)
             && l.hasChunkAt(old)
             && l.getBlockEntity(old) instanceof FieldCell cell
-            && cell.source.equals(e.getBlockPos())) l.removeBlock(old, false);
+            && cell.source.equals(e.getBlockPos())) released.add(old);
+      FieldVegetation.release(l, released);
       e.cells = next;
+      FieldGaps.update(e, gaps);
       updateLights(l, e, e.powered);
       if (!before.equals(signature(links))) e.sync();
     }
