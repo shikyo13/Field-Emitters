@@ -68,15 +68,28 @@ public final class SphereField {
 
   public static void rebuild(ServerLevel level, EmitterEntity e) {
     var next = new HashSet<BlockPos>();
-    if (e.enabled && loaded(e))
+    var gaps = new HashSet<BlockPos>();
+    int parkedPlants = 0;
+    if (e.enabled && loaded(e)
+        && (e.powered || level.getGameTime() - e.transition < FieldShutdown.DURATION_TICKS))
       for (var offset : shell(e.controls.sphereRadius, e.controls.dome)) {
         var p = e.getBlockPos().offset(offset);
         if (p.getY() < level.getMinBuildHeight()) continue;
         var state = level.getBlockState(p);
+        FieldVegetation.Parked parked = null;
+        if (e.powered && FieldVegetation.canPark(level, p, state)) {
+          parked = FieldVegetation.lift(level, p, state,
+              parkedPlants < FieldVegetation.EFFECTS_PER_REBUILD);
+          if (parkedPlants++ == 0)
+            FieldSounds.play(level, e, FieldSpace.at(e).world(Vec3.atCenterOf(p)), 3);
+          state = level.getBlockState(p);
+        }
         if (state.isAir()) {
-          level.setBlock(p, FieldEmitters.FIELD.get().defaultBlockState(), 3);
+          level.setBlock(p, FieldEmitters.FIELD.get().defaultBlockState(),
+              parked == null ? 3 : FieldVegetation.QUIET);
           if (level.getBlockEntity(p) instanceof FieldCell cell) {
             cell.source = e.getBlockPos();
+            cell.parked = parked;
             cell.setChanged();
             level.sendBlockUpdated(p, level.getBlockState(p), level.getBlockState(p), 3);
             level.scheduleTick(p, FieldEmitters.FIELD.get(), 40);
@@ -84,13 +97,17 @@ public final class SphereField {
         }
         if (level.getBlockEntity(p) instanceof FieldCell cell
             && cell.source.equals(e.getBlockPos())) next.add(p);
+        else if (FieldGaps.open(level, p, level.getBlockState(p), e)) gaps.add(p);
       }
+    var released = new ArrayList<BlockPos>();
     for (var p : e.cells)
       if (!next.contains(p)
           && level.hasChunkAt(p)
           && level.getBlockEntity(p) instanceof FieldCell cell
-          && cell.source.equals(e.getBlockPos())) level.removeBlock(p, false);
+          && cell.source.equals(e.getBlockPos())) released.add(p);
+    FieldVegetation.release(level, released);
     e.cells = next;
+    FieldGaps.update(e, gaps);
     long area =
         Math.round(
             (e.controls.dome ? 2 : 4)
