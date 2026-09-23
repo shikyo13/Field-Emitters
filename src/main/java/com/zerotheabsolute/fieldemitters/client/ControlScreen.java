@@ -473,6 +473,16 @@ public final class ControlScreen extends FittedScreen {
               new PlayerListScreen(
                   this, emitter.getBlockPos(), f, tab.purpose(), this::applyChanges));
         });
+    if (tab == ControlTab.BLOCKING) {
+      row += 24;
+      button(Control.ISSUE_AND_REVOKE_BADGES,
+          UiText.text("screen.fieldemitters.cards.blocking_summary",
+              UiText.text("screen.fieldemitters.cards." + (draft.cards.enabled ? "enabled" : "disabled"))),
+          () -> {
+            applyPending();
+            minecraft.setScreen(new CardScreen(this, emitter.getBlockPos(), emitter.owner, draft.cards, this::applyChanges));
+          });
+    }
     if (tab == ControlTab.SENSOR) {
       row += 24;
       small(
@@ -703,11 +713,12 @@ public final class ControlScreen extends FittedScreen {
             new String[] {
                   UiText.text("screen.fieldemitters.control.soft_sizzle"),
                   UiText.text("screen.fieldemitters.control.crystal"),
-                  UiText.text("screen.fieldemitters.control.electric")
+                  UiText.text("screen.fieldemitters.control.electric"),
+                  UiText.text("screen.fieldemitters.control.conduit")
                 }
                 [draft.soundStyle]),
         () -> {
-          draft.soundStyle = (draft.soundStyle + 1) % 3;
+          draft.soundStyle = (draft.soundStyle + 1) % FieldSounds.PALETTES;
           redraw();
         });
   }
@@ -803,13 +814,13 @@ public final class ControlScreen extends FittedScreen {
   private void accessControls() {
     labels.add(
         new Label(
-            UiText.text("screen.fieldemitters.control.who_can_change_network_settings"),
+            UiText.text("screen.fieldemitters.cards.management_summary", emitter.managementPublic ? UiText.text("screen.fieldemitters.cards.public") : UiText.text("screen.fieldemitters.cards.private"), emitter.managerIds.size()),
             left + 12,
             row));
     row += 18;
     button(
         Control.MANAGERS_AND_PUBLIC_ACCESS,
-        UiText.text("screen.fieldemitters.control.managers_and_public_access"),
+        UiText.text("screen.fieldemitters.cards.management"),
         () -> {
           applyPending();
           minecraft.setScreen(new ManagementScreen(this, emitter.getBlockPos()));
@@ -817,22 +828,22 @@ public final class ControlScreen extends FittedScreen {
     row += 24;
     labels.add(
         new Label(
-            UiText.text("screen.fieldemitters.control.who_can_pass_using_an_access_badge"),
+            UiText.text("screen.fieldemitters.cards.summary", UiText.text("screen.fieldemitters.cards." + (draft.cards.enabled ? "enabled" : "disabled")), cardGroupSummary()),
             left + 12,
             row));
     row += 18;
     button(
         Control.ISSUE_AND_REVOKE_BADGES,
-        UiText.text("screen.fieldemitters.control.issue_and_revoke_badges"),
+        UiText.text("screen.fieldemitters.cards.title"),
         () -> {
           applyPending();
           minecraft.setScreen(
-              new AccessScreen(this, emitter.getBlockPos(), null, this::applyChanges));
+              new CardScreen(this, emitter.getBlockPos(), emitter.owner, draft.cards, this::applyChanges));
         });
     row += 24;
     labels.add(
         new Label(
-            UiText.text("screen.fieldemitters.control.inspect_items_carried_through_the_field"),
+            UiText.text("screen.fieldemitters.cards.checkpoint_summary", UiText.text("screen.fieldemitters.cards." + (draft.checkpoint.enabled ? "enabled" : "disabled"))),
             left + 12,
             row));
     row += 18;
@@ -1469,5 +1480,13 @@ public final class ControlScreen extends FittedScreen {
     if (!renderOverflowTooltip(g, labels, mx, my))
       renderOverflowTooltip(g, headings, mx, my);
     g.pose().popPose();
+  }
+
+  /** Up to three group names, so a long list cannot run off the summary line. */
+  private String cardGroupSummary() {
+    var groups = new java.util.ArrayList<>(draft.cards.groups);
+    if (groups.isEmpty()) return UiText.text("screen.fieldemitters.cards.no_groups");
+    String shown = String.join(", ", groups.subList(0, Math.min(3, groups.size())));
+    return groups.size() > 3 ? shown + UiText.text("screen.fieldemitters.cards.more_groups", groups.size() - 3) : shown;
   }
 }

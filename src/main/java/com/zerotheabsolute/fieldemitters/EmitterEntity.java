@@ -72,6 +72,8 @@ public final class EmitterEntity extends BlockEntity {
 
   public com.zeromods.core.network.ManagedNetwork<BlockPos> managedNetwork;
   public Set<BlockPos> cells = new HashSet<>();
+  /** Occupied field positions; see {@link FieldGaps}. */
+  public Set<BlockPos> gaps = Set.of();
   public final EmitterEnergyStorage energy =
       new EmitterEnergyStorage(FieldConfig.capacity(), FieldConfig.transfer(), this::setChanged);
 
@@ -104,6 +106,11 @@ public final class EmitterEntity extends BlockEntity {
 
   public boolean isRail() {
     return getBlockState().is(FieldEmitters.RAIL.get());
+  }
+
+  @Override
+  public net.minecraft.world.phys.AABB getRenderBoundingBox() {
+    return renderBounds();
   }
 
   public net.minecraft.world.phys.AABB renderBounds() {
@@ -373,6 +380,10 @@ public final class EmitterEntity extends BlockEntity {
         level.sendBlockUpdated(part, state, state, 3);
       }
     }
+    // Gaps come from the server; a saved emitter recomputes its own.
+    var sentGaps = FieldGaps.read(t);
+    if (level == null) gaps = Set.copyOf(sentGaps);
+    else if (level.isClientSide) FieldGaps.set(this, sentGaps);
   }
 
   private BlockPos relativePosition(CompoundTag tag, String offsetKey, String legacyKey) {
@@ -383,7 +394,21 @@ public final class EmitterEntity extends BlockEntity {
   }
 
   public CompoundTag getUpdateTag() {
-    return saveWithoutMetadata();
+    var tag = saveWithoutMetadata();
+    FieldGaps.save(this, tag);
+    return tag;
+  }
+
+  @Override
+  public void setLevel(net.minecraft.world.level.Level level) {
+    super.setLevel(level);
+    if (level.isClientSide && !gaps.isEmpty()) FieldGaps.set(this, gaps);
+  }
+
+  @Override
+  public void setRemoved() {
+    super.setRemoved();
+    FieldGaps.remove(this);
   }
 
   public ClientboundBlockEntityDataPacket getUpdatePacket() {

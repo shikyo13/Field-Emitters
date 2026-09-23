@@ -113,6 +113,7 @@ final class AccessScreen extends FittedScreen {
   }
 
   static void receive(AccessPackets.Result result) {
+    CardScreen.receive(result);
     if (net.minecraft.client.Minecraft.getInstance().screen instanceof AccessScreen screen
         && screen.pos.equals(result.pos())) screen.notice = result.message().getString();
   }

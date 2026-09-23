@@ -32,8 +32,11 @@ final class NetworkSettings {
       if (value == null) continue;
       try {
         var tag = TagParser.parseTag(value);
-        if (tag.contains("Controls", Tag.TAG_COMPOUND))
-          for (var pos : network.nodes()) result.put(pos, tag);
+        if (!tag.contains("Controls", Tag.TAG_COMPOUND)) continue;
+        // Copies saved by earlier versions lack newer settings. Normalise them, or they never
+        // equal a member's settings and are re-applied on every rebuild.
+        tag.put("Controls", ControlSettings.load(tag.getCompound("Controls")).save());
+        for (var pos : network.nodes()) result.put(pos, tag);
       } catch (com.mojang.brigadier.exceptions.CommandSyntaxException ex) {
         LOGGER.warn("Cannot read settings for field network {}", network.id(), ex);
       }
