@@ -1209,7 +1209,8 @@ public final class ControlScreen extends FittedScreen {
             && control != Control.DAMAGE
             && control != Control.HIT_INTERVAL
             && control != Control.FIZZLE_PARTICLES;
-    button.active = !fieldOnly && !inherited;
+    button.active = !fieldOnly && !inherited
+        && !(control == Control.RULE_SOURCE && filterDirection == null);
     button.setTooltip(
         Tooltip.create(
             Component.literal(
@@ -1240,7 +1241,7 @@ public final class ControlScreen extends FittedScreen {
       int y,
       int w) {
     labels.add(new Label(label, x, y, w));
-    var box = new EditBox(font, x, y + 9, w, 16, Component.literal(label));
+    var box = new FieldEditBox(font, x, y + 9, w, 16, Component.literal(label));
     box.setMaxLength(EntityFilter.MAX_TYPE_LENGTH);
     box.setValue(value);
     box.setTooltip(Tooltip.create(Component.literal(ControlHelp.field(control))));
