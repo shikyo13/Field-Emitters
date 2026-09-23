@@ -92,7 +92,7 @@ public final class RemoteScreen extends FittedScreen {
     page = Math.min(page, pages - 1);
     if (selected != null) {
       nameBox =
-          new EditBox(
+          new FieldEditBox(
               font,
               left + 48,
               top + 39,

@@ -49,7 +49,7 @@ final class AccessScreen extends FittedScreen {
       String label, String value, int y, int max, java.util.function.Consumer<String> change) {
     var w =
         addRenderableWidget(
-            new EditBox(
+            new FieldEditBox(
                 font,
                 left + 12,
                 top + y,
