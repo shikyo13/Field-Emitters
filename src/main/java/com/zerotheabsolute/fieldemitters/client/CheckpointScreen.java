@@ -25,8 +25,8 @@ final class CheckpointScreen extends FittedScreen {
     this.apply = apply;
   }
 
-  private void button(String text, int y, Runnable action) {
-    addRenderableWidget(
+  private FieldButton button(String text, int y, Runnable action) {
+    return addRenderableWidget(
         new FieldButton(
             left + 12,
             top + y,
@@ -55,9 +55,9 @@ final class CheckpointScreen extends FittedScreen {
         () -> s.enabled = !s.enabled);
     button(
         UiText.text(
-            "screen.fieldemitters.checkpoint.players_moving",
+            "screen.fieldemitters.control.rules_for",
             (direction == null
-                ? UiText.text("screen.fieldemitters.checkpoint.any_direction")
+                ? UiText.text("screen.fieldemitters.control.all_directions")
                 : UiText.direction(direction))),
         52,
         () ->
@@ -70,19 +70,19 @@ final class CheckpointScreen extends FittedScreen {
     var f = direction == null ? s.players : s.directions.resolve(direction, s.players);
     button(
         UiText.text(
-            "screen.fieldemitters.checkpoint.this_direction",
+            "screen.fieldemitters.control.rule_source",
             (direction == null
-                ? UiText.text("screen.fieldemitters.checkpoint.shared_rules")
+                ? UiText.text("screen.fieldemitters.control.shared")
                 : s.directions.has(direction)
-                    ? UiText.text("screen.fieldemitters.checkpoint.custom_rules")
-                    : UiText.text("screen.fieldemitters.checkpoint.shared_rules"))),
+                    ? UiText.text("screen.fieldemitters.control.custom")
+                    : UiText.text("screen.fieldemitters.control.shared"))),
         74,
         () -> {
           if (direction != null) {
             if (s.directions.has(direction)) s.directions.inherit(direction);
             else s.directions.set(direction, EntityFilter.load(s.players.save()));
           }
-        });
+        }).active = direction != null;
     var inspect =
         addRenderableWidget(
             new FieldButton(

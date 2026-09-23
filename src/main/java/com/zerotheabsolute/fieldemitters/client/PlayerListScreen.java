@@ -73,7 +73,7 @@ final class PlayerListScreen extends FittedScreen {
         () -> minecraft.setScreen(new AccessScreen(this, pos, filter, apply)));
     input =
         addRenderableWidget(
-            new EditBox(
+            new FieldEditBox(
                 font,
                 left + 12,
                 top + 110,

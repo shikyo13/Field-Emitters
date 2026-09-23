@@ -98,7 +98,7 @@ public final class TypeListScreen extends FittedScreen {
                     UiText.text(
                         "screen.fieldemitters.typelist.general_filter_preserves_the_existing_category_and_single"))));
     var legacy =
-        new EditBox(
+        new FieldEditBox(
             font,
             left + 12,
             top + 76,
@@ -123,7 +123,7 @@ public final class TypeListScreen extends FittedScreen {
     addRenderableWidget(legacy);
     var input =
         addRenderableWidget(
-            new EditBox(
+            new FieldEditBox(
                 font,
                 left + 12,
                 top + 106,

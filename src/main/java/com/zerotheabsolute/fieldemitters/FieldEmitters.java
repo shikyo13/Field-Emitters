@@ -13,9 +13,10 @@ public final class FieldEmitters implements net.fabricmc.api.ModInitializer {
    * Mod version, read from the jar manifest so it works on every loader. Empty in a development
    * run, where the classes are not loaded from a built jar.
    */
+  /** Fabric's class loader does not expose the jar manifest, so ask the loader for the mod version. */
   public static String version() {
-    String version = FieldEmitters.class.getPackage().getImplementationVersion();
-    return version == null ? "" : version;
+    return net.fabricmc.loader.api.FabricLoader.getInstance().getModContainer(ID)
+        .map(mod -> mod.getMetadata().getVersion().getFriendlyString()).orElse("");
   }
 
   public static final Registration<Block> BLOCKS = new Registration<>(net.minecraft.core.registries.BuiltInRegistries.BLOCK);
