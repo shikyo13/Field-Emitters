@@ -63,7 +63,7 @@ final class ManagementScreen extends FittedScreen {
         owner;
     var input =
         addRenderableWidget(
-            new EditBox(
+            new FieldEditBox(
                 font,
                 left + 12,
                 top + 100,
