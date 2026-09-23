@@ -2,6 +2,7 @@ package com.zerotheabsolute.fieldemitters.client;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
 
 /** Shared controls for emitter settings and remote field management. */
@@ -9,6 +10,7 @@ final class FieldButton extends Button {
   private final boolean selected;
   private final Integer swatch;
   private String subtitle;
+  private Tooltip hoverTooltip;
 
   FieldButton(int x, int y, int w, int h, Component title, OnPress action, boolean selected) {
     this(x, y, w, h, title, action, selected, null);
@@ -35,7 +37,14 @@ final class FieldButton extends Button {
   }
 
   @Override
+  public void setTooltip(Tooltip tooltip) {
+    hoverTooltip = tooltip;
+    super.setTooltip(isHovered() ? tooltip : null);
+  }
+
+  @Override
   protected void renderWidget(GuiGraphics g, int mx, int my, float partial) {
+    super.setTooltip(isHovered() ? hoverTooltip : null);
     int border =
         !active
             ? 0xFF243441
