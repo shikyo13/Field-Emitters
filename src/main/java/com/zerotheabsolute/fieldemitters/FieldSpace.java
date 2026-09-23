@@ -23,6 +23,9 @@ final class FieldSpace {
     }
   }
 
+  /** Whether this field sits in the world itself rather than on a moving Sable structure. */
+  boolean isWorld() { return pose == null; }
+
   Vec3 local(Vec3 point) { return transform(point, true); }
   Vec3 world(Vec3 point) { return transform(point, false); }
 

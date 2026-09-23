@@ -63,7 +63,8 @@ public final class FieldBlock extends BaseEntityBlock implements LiquidBlockCont
   }
 
   public static boolean blocks(EmitterEntity e, Entity entity) {
-    return e.controls.barrier.matches(entity, e.owner);
+    return e.controls.barrier.matches(entity, e.owner)
+        && !e.controls.cardPasses(e.controls.barrier, entity, e.owner);
   }
 
   public VoxelShape getCollisionShape(BlockState s, BlockGetter l, BlockPos p, CollisionContext c) {
@@ -115,7 +116,7 @@ public final class FieldBlock extends BaseEntityBlock implements LiquidBlockCont
       }
     if (!stopped) return false;
     var rule = settings.barrierRule(movement, inward);
-    for (var rider : riders) if (permitted(rule, rider, e.owner)) return false;
+    for (var rider : riders) if (settings.cardPasses(rule, rider, e.owner) || permitted(rule, rider, e.owner)) return false;
     return true;
   }
 
@@ -161,7 +162,7 @@ public final class FieldBlock extends BaseEntityBlock implements LiquidBlockCont
       var expected = link.cell(e.getBlockPos(), index, 0);
       if (p.getX() != expected.getX()
           || p.getZ() != expected.getZ()
-          || p.getY() < expected.getY()
+          || p.getY() < expected.getY() - (link.rail() ? 0 : 1)
           || p.getY() >= expected.getY() + link.height()) continue;
       if (e.getLevel().getGameTime() - e.transition < e.controls.linkFormationTicks(index)) continue;
       var movement = FieldContact.movement(e, link, entity, center);
@@ -176,10 +177,27 @@ public final class FieldBlock extends BaseEntityBlock implements LiquidBlockCont
   }
 
   public void tick(BlockState s, ServerLevel l, BlockPos p, RandomSource random) {
-    if (!(l.getBlockEntity(p) instanceof FieldCell c)
-        || !l.hasChunkAt(c.source)
-        || !(l.getBlockEntity(c.source) instanceof EmitterEntity e)
-        || !e.cells.contains(p)) l.removeBlock(p, false);
-    else l.scheduleTick(p, this, 40);
+    if (!(l.getBlockEntity(p) instanceof FieldCell)) {
+      l.removeBlock(p, false);
+      return;
+    }
+    if (!abandoned(l, p)) {
+      l.scheduleTick(p, this, 40);
+      return;
+    }
+    // Release the abandoned column at once so stacked and two-block plants come back intact.
+    var column = new java.util.ArrayList<BlockPos>();
+    column.add(p);
+    for (var direction : new Direction[] {Direction.UP, Direction.DOWN})
+      for (var q = p.relative(direction); l.isInWorldBounds(q) && abandoned(l, q); q = q.relative(direction))
+        column.add(q);
+    FieldVegetation.release(l, column);
+  }
+
+  private static boolean abandoned(ServerLevel l, BlockPos p) {
+    return l.getBlockEntity(p) instanceof FieldCell c
+        && (!l.hasChunkAt(c.source)
+            || !(l.getBlockEntity(c.source) instanceof EmitterEntity e)
+            || !e.cells.contains(p));
   }
 }

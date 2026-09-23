@@ -3,6 +3,7 @@
   "package": "com.zerotheabsolute.fieldemitters.mixin",
   "compatibilityLevel": "JAVA_17",
   "client": [
+    "EmitterSectionMixin",
     "LivingRendererMixin"
   ],
   "injectors": {

@@ -33,6 +33,16 @@ public final class EntityFilter {
   public boolean inverted = false, exemptOwner = false;
   public String entityType = "", itemType = "", identity = "", entityTag = "";
 
+  /** Whether this rule blocks listed players and lists this one, by name or by card group. */
+  public boolean blocksListed(Entity entity, UUID owner) {
+    return playerMode == 1
+        && entity instanceof net.minecraft.world.entity.player.Player player
+        && !player.isSpectator()
+        && !(exemptOwner && player.getUUID().equals(owner))
+        && (playerList.containsKey(player.getUUID())
+            || BadgeAccess.matches(player, owner, accessGroups));
+  }
+
   public boolean matches(Entity entity, UUID owner) {
     if (entity == null) return false;
     if (entity instanceof net.minecraft.world.entity.player.Player && playerMode != 0) {
