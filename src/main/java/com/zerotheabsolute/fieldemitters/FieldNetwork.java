@@ -558,10 +558,10 @@ public final class FieldNetwork {
               Math.max(p.getY(), t.getY()) + 5,
               Math.max(p.getZ(), t.getZ()) + 1.8);
       for (var entity :
-          l.getEntitiesOfClass(
-              net.minecraft.world.entity.LivingEntity.class,
+          l.getEntities(
+              (net.minecraft.world.entity.Entity) null,
               area,
-              entity -> true)) {
+              entity -> entity.isAlive() && !entity.isSpectator())) {
         var feet = space.local(entity.position());
         double u =
             (feet.x - p.getX() - .5) * link.dx()
