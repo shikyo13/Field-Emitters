@@ -183,6 +183,7 @@ public final class FieldNetwork {
     }
     long now = l.getGameTime();
     for (var e : all) {
+      clampFutureTicks(e, now);
       e.impactWaves.removeIf(wave -> now - wave.time() >= FieldImpacts.LIFETIME);
       e.spherePresent=false;
       if(e.isTower())SphereField.tick(l,e,now);
@@ -256,6 +257,25 @@ public final class FieldNetwork {
         }
       }
     }
+  }
+
+  /**
+   * Structures and copied saves carry game times from the world they were saved in. A time ahead of
+   * this world's clock would hold the field in formation, and suppress impacts, until the clock
+   * caught up, so such a field forms again from now.
+   */
+  static void clampFutureTicks(EmitterEntity e, long now) {
+    boolean changed = false;
+    if (e.transition > now) {
+      e.transition = now;
+      changed = true;
+    }
+    if (e.impactTime > now) {
+      e.impactTime = -1000;
+      e.impactWaves.clear();
+      changed = true;
+    }
+    if (changed) e.sync();
   }
 
   /** Axis-aligned spans need four posts to close a ring, and every post must continue it. */
