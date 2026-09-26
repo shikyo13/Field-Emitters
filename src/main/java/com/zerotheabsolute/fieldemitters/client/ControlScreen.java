@@ -1,27 +1,70 @@
 package com.zerotheabsolute.fieldemitters.client;
 
 import com.zeromods.core.client.FittedScreen;
-
+import com.zeromods.core.filter.CrossingSense;
+import com.zeromods.core.filter.DirectionFrame;
 import com.zerotheabsolute.fieldemitters.*;
+import com.zerotheabsolute.fieldemitters.network.ForgePacketDistributor;
 import java.util.*;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.*;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import com.zeromods.core.filter.CrossingSense;
-import com.zeromods.core.filter.DirectionFrame;
-import com.zerotheabsolute.fieldemitters.network.ForgePacketDistributor;
 
 /** Changes are sent immediately; text is validated after a short typing pause. */
 public final class ControlScreen extends FittedScreen {
   private final EmitterEntity emitter;
+  private boolean tutorialPreview;
+  private final Map<Control, AbstractWidget> tutorialControls = new EnumMap<>(Control.class);
+
+  static ControlScreen tutorialPreview(EmitterEntity emitter) {
+    var screen = new ControlScreen(emitter);
+    screen.tutorialPreview = true;
+    return screen;
+  }
+
+  void tutorialTab(ControlTab selected) {
+    if (!tutorialPreview) throw new IllegalStateException("Not a tutorial preview");
+    if (tab != selected) {
+      tab = selected;
+      detailPage = DetailPage.MAIN;
+      rebuildWidgets();
+    }
+  }
+
+  AbstractWidget tutorialControl(Control control) {
+    if (!tutorialControls.containsKey(control)) {
+      detailPage =
+          switch (control) {
+            case RULES_FOR, RULE_SOURCE, MOVEMENT, CROSSING, DIRECTION_FRAME ->
+                DetailPage.DIRECTIONS;
+            case OUTPUT_SIDE,
+                    PULSE_LENGTH,
+                    ITEMS,
+                    RESET_CROSSING,
+                    HIT_INTERVAL,
+                    DAMAGE_PER_HIT_HP_2_1_HEART,
+                    FIZZLE_PARTICLES ->
+                DetailPage.OUTPUT;
+            case EFFECT_COLOR, EFFECT_COLOR_6_DIGIT_HEX, CUSTOM_COLOR_6_DIGIT_HEX_CODE ->
+                DetailPage.COLORS;
+            default -> detailPage;
+          };
+      rebuildWidgets();
+    }
+    return tutorialControls.get(control);
+  }
+
+  int[] tutorialBounds() {
+    return new int[] {left - NAV_WIDTH, top, CONTENT_WIDTH + NAV_WIDTH, panelHeight()};
+  }
+
   private ControlSettings draft;
   private int color, left, top, row;
   private ControlTab tab = ControlTab.OVERVIEW;
   private int selectedLink = -1;
   private Direction filterDirection;
   private boolean filterEditable = true;
-  private boolean advancedFilters;
   private boolean enabled, reset = false;
   private boolean showGuides = FieldConfig.SHOW_GUIDES.get();
   private String notice = UiText.text("screen.fieldemitters.control.changes_apply_automatically");
@@ -60,23 +103,11 @@ public final class ControlScreen extends FittedScreen {
   }
 
   private int panelHeight() {
-    if (!tab.hasFilter())
-      return PANEL_HEIGHT + (tab == ControlTab.APPEARANCE && draft.customAccent ? 57 : 0);
-    var filter = tab == ControlTab.BLOCKING ? draft.barrier
-        : tab == ControlTab.SENSOR ? draft.sensor : draft.damage;
-    boolean relative = emitter.enclosed && filter.frame == DirectionFrame.RELATIVE;
-    int height = ScreenMetrics.FILTER_HEADER_HEIGHT + ScreenMetrics.FILTER_FOOTER_HEIGHT
-        + 4 * ScreenMetrics.ROW_HEIGHT + ScreenMetrics.COMPACT_ROW_HEIGHT
-        + ScreenMetrics.BUTTON_HEIGHT;
-    if (!relative) height += ScreenMetrics.ROW_HEIGHT;
-    if (emitter.enclosed) height += ScreenMetrics.COMPACT_ROW_HEIGHT;
-    if (advancedVisible()) height += ScreenMetrics.COMPACT_ROW_HEIGHT;
-    if (tab == ControlTab.SENSOR) height += ScreenMetrics.SENSOR_EXTRA_HEIGHT;
-    if (tab == ControlTab.DAMAGE) height += ScreenMetrics.DAMAGE_EXTRA_HEIGHT;
-    return Math.max(PANEL_HEIGHT, height);
+    return PANEL_HEIGHT;
   }
 
   protected void init() {
+    tutorialControls.clear();
     fit(CONTENT_WIDTH + NAV_WIDTH, panelHeight());
     if (selectedLink >= emitter.links.size()) selectedLink = -1;
     left = (width - CONTENT_WIDTH - NAV_WIDTH) / 2 + NAV_WIDTH;
@@ -95,10 +126,37 @@ public final class ControlScreen extends FittedScreen {
               b -> {
                 applyPending();
                 tab = ControlTab.values()[index];
+                detailPage = DetailPage.MAIN;
+                filterDirection = null;
                 rebuildWidgets();
               },
               tab.ordinal() == index));
     }
+    addRenderableWidget(
+            new FieldButton(
+                left - NAV_WIDTH + 8,
+                top + panelHeight() - 23,
+                NAV_WIDTH - 16,
+                18,
+                com.zerotheabsolute.fieldemitters.client.tutorial.FieldTutorial.text("open"),
+                b -> {
+                  applyPending();
+                  com.zerotheabsolute.fieldemitters.client.tutorial.FieldTutorial.open(
+                      this,
+                      switch (tab) {
+                        case OVERVIEW -> "setup";
+                        case BLOCKING -> "blocking";
+                        case SENSOR -> "sensor";
+                        case DAMAGE -> "damage";
+                        case APPEARANCE, SOUNDS -> "appearance";
+                        case CONNECTIONS -> "rails";
+                        case ACCESS -> "cards";
+                      });
+                },
+                false))
+        .setTooltip(
+            Tooltip.create(
+                com.zerotheabsolute.fieldemitters.client.tutorial.FieldTutorial.text("open_help")));
     if (tab == ControlTab.OVERVIEW) overviewControls();
     if (tab.hasFilter()) filterControls();
     if (tab == ControlTab.APPEARANCE) appearanceControls();
@@ -165,147 +223,177 @@ public final class ControlScreen extends FittedScreen {
           draft.inputMode = (draft.inputMode + 1) % 3;
           redraw();
         });
-    button(
-        Control.READ_REDSTONE_FROM,
-        UiText.text(
-            "screen.fieldemitters.control.read_redstone_from",
-            draft.inputAny
-                ? UiText.text("screen.fieldemitters.control.any_side")
-                : sideName(draft.inputFace)),
-        () -> {
-          if (draft.inputAny) {
-            draft.inputAny = false;
-            draft.inputFace = Direction.DOWN == draft.outputFace ? Direction.UP : Direction.DOWN;
-          } else {
-            var next = nextFace(draft.inputFace, draft.outputFace);
-            if (next.ordinal() <= draft.inputFace.ordinal()) draft.inputAny = true;
-            else draft.inputFace = next;
-          }
-          redraw();
-        });
+    if (draft.inputMode != 0)
+      button(
+          Control.READ_REDSTONE_FROM,
+          UiText.text(
+              "screen.fieldemitters.control.read_redstone_from",
+              draft.inputAny
+                  ? UiText.text("screen.fieldemitters.control.any_side")
+                  : sideName(draft.inputFace)),
+          () -> {
+            if (draft.inputAny) {
+              draft.inputAny = false;
+              draft.inputFace = Direction.DOWN == draft.outputFace ? Direction.UP : Direction.DOWN;
+            } else {
+              var next = nextFace(draft.inputFace, draft.outputFace);
+              if (next.ordinal() <= draft.inputFace.ordinal()) draft.inputAny = true;
+              else draft.inputFace = next;
+            }
+            redraw();
+          });
   }
 
-  private boolean advancedVisible() {
-    if (advancedFilters) return true;
-    var shared = tab == ControlTab.BLOCKING ? draft.barrier
+  private enum DetailPage {
+    MAIN,
+    DIRECTIONS,
+    OUTPUT,
+    COLORS,
+    DISPLAY
+  }
+
+  private DetailPage detailPage = DetailPage.MAIN;
+
+  private EntityFilter sharedFilter() {
+    return tab == ControlTab.BLOCKING
+        ? draft.barrier
         : tab == ControlTab.SENSOR ? draft.sensor : draft.damage;
-    var rules = tab == ControlTab.BLOCKING ? draft.barrierDirections
+  }
+
+  private com.zeromods.core.filter.DirectionalRules<Direction, EntityFilter> filterRules() {
+    return tab == ControlTab.BLOCKING
+        ? draft.barrierDirections
         : tab == ControlTab.SENSOR ? draft.sensorDirections : draft.damageDirections;
-    var filter = filterDirection == null ? shared : rules.resolve(filterDirection, shared);
-    return !filter.identity.isBlank() || !filter.entityTag.isBlank();
   }
 
   private void filterControls() {
-    var shared =
-        tab == ControlTab.BLOCKING
-            ? draft.barrier
-            : tab == ControlTab.SENSOR ? draft.sensor : draft.damage;
-    var rules =
-        tab == ControlTab.BLOCKING
-            ? draft.barrierDirections
-            : tab == ControlTab.SENSOR ? draft.sensorDirections : draft.damageDirections;
-    // A relative rule describes every span at once, so the per-direction overrides, which are
-    // written in world directions, are not offered while it is in use.
-    boolean enclosed = emitter.enclosed;
-    boolean relative = enclosed && shared.frame == DirectionFrame.RELATIVE;
+    var shared = sharedFilter();
+    var rules = filterRules();
+    boolean relative = emitter.enclosed && shared.frame == DirectionFrame.RELATIVE;
     if (relative) filterDirection = null;
-    if (!relative) ruleScopeControls(shared, rules);
     filterEditable = relative || filterDirection == null || rules.has(filterDirection);
-    var f = filterDirection == null ? shared : rules.resolve(filterDirection, shared);
-    if (tab == ControlTab.SENSOR) {
-      small(
-          Control.SIGNAL,
-          UiText.text(
-              "screen.fieldemitters.control.signal",
-              new String[] {
-                    UiText.text("screen.fieldemitters.control.off"),
-                    UiText.text("screen.fieldemitters.control.pulse_on_crossing"),
-                    UiText.text("screen.fieldemitters.control.on_while_touching")
-                  }
-                  [draft.sensorMode]),
-          left + 12,
-          row,
-          185,
-          () -> {
-            draft.sensorMode = (draft.sensorMode + 1) % 3;
-            redraw();
-          });
-      small(
-          Control.ITEMS,
-          UiText.text(
-              "screen.fieldemitters.control.items",
-              (draft.countItems
-                  ? UiText.text("screen.fieldemitters.control.count_each_item")
-                  : UiText.text("screen.fieldemitters.control.count_each_stack"))),
-          left + 207,
-          row,
-          185,
-          () -> {
-            draft.countItems = !draft.countItems;
-            redraw();
-          });
-      row += ScreenMetrics.ROW_HEIGHT;
+    var filter = filterDirection == null ? shared : rules.resolve(filterDirection, shared);
+    if (detailPage == DetailPage.DIRECTIONS) {
+      detailHeader(pageText("directions"));
+      if (!relative) ruleScopeControls(shared, rules);
+      directionControls(shared, filter, emitter.enclosed, relative);
+      row += ScreenMetrics.COMPACT_ROW_HEIGHT;
+      navigation(pageText("edit_targets"), ruleSummary(), DetailPage.MAIN);
+      return;
     }
-    if (tab == ControlTab.DAMAGE) {
-      small(
-          Control.DAMAGE,
-          UiText.text(
-              "screen.fieldemitters.control.damage",
-              (draft.damageEnabled
-                  ? UiText.text("screen.fieldemitters.control.on")
-                  : UiText.text("screen.fieldemitters.control.off"))),
-          left + 12,
-          row,
-          185,
-          () -> {
-            draft.damageEnabled = !draft.damageEnabled;
-            redraw();
-          });
-      small(
-          Control.HIT_INTERVAL,
-          UiText.text(
-              "screen.fieldemitters.control.hit_interval", UiText.seconds(draft.damageInterval)),
-          left + 207,
-          row,
-          185,
-          () -> {
-            draft.damageInterval =
-                draft.damageInterval >= ScreenMetrics.DAMAGE_INTERVAL_CYCLE_MAX
-                    ? ControlSettings.MIN_DAMAGE_INTERVAL
-                    : draft.damageInterval + ScreenMetrics.DAMAGE_INTERVAL_STEP;
-            redraw();
-          });
-      row += ScreenMetrics.ROW_HEIGHT;
-      field(
-          Control.DAMAGE_PER_HIT_HP_2_1_HEART,
-          UiText.text("screen.fieldemitters.control.damage_per_hit_hp_2_1_heart"),
-          Float.toString(draft.damageAmount),
-          v -> {
-            try {
-              draft.damageAmount = Float.parseFloat(v);
-            } catch (NumberFormatException ex) {
-              draft.damageAmount = Float.NaN;
-            }
-          },
-          left + 12,
-          row,
-          185);
-      small(
-          Control.FIZZLE_PARTICLES,
-          UiText.text(
-              "screen.fieldemitters.control.fizzle_particles",
-              (draft.fizzleEffects
-                  ? UiText.text("screen.fieldemitters.control.on")
-                  : UiText.text("screen.fieldemitters.control.off"))),
-          left + 207,
-          row + 8,
-          185,
-          () -> {
-            draft.fizzleEffects = !draft.fizzleEffects;
-            redraw();
-          });
-      row += 29;
+    if (detailPage == DetailPage.OUTPUT) {
+      detailHeader(pageText(tab == ControlTab.SENSOR ? "output" : "damage"));
+      if (tab == ControlTab.SENSOR) sensorOutputControls();
+      else damageControls();
+      return;
     }
+    if (tab == ControlTab.SENSOR) signalControl();
+    if (tab == ControlTab.DAMAGE) damageToggle();
+    if (filterDirection != null) ruleScopeControls(shared, rules);
+    filterTargets(filter);
+    row += ScreenMetrics.COLUMN_GAP;
+    navigation(pageText("directions"), directionSummary(filter, relative), DetailPage.DIRECTIONS);
+    ageControl(filter);
+    if (tab == ControlTab.SENSOR)
+      navigation(
+          pageText("output"),
+          UiText.text("screen.fieldemitters.control.output_side", sideName(draft.outputFace)),
+          DetailPage.OUTPUT);
+    if (tab == ControlTab.DAMAGE)
+      navigation(
+          pageText("damage"),
+          pageText("damage_summary", draft.damageAmount, UiText.seconds(draft.damageInterval)),
+          DetailPage.OUTPUT);
+  }
+
+  private void signalControl() {
+    small(
+        Control.SIGNAL,
+        UiText.text(
+            "screen.fieldemitters.control.signal",
+            new String[] {
+                  UiText.text("screen.fieldemitters.control.off"),
+                  UiText.text("screen.fieldemitters.control.pulse_on_crossing"),
+                  UiText.text("screen.fieldemitters.control.on_while_touching")
+                }
+                [draft.sensorMode]),
+        left + 12,
+        row,
+        ScreenMetrics.CONTENT_WIDTH,
+        () -> {
+          draft.sensorMode = (draft.sensorMode + 1) % 3;
+          redraw();
+        });
+    row += ScreenMetrics.ROW_HEIGHT;
+  }
+
+  private void damageToggle() {
+    small(
+        Control.DAMAGE,
+        UiText.text(
+            "screen.fieldemitters.control.damage",
+            (draft.damageEnabled
+                ? UiText.text("screen.fieldemitters.control.on")
+                : UiText.text("screen.fieldemitters.control.off"))),
+        left + 12,
+        row,
+        ScreenMetrics.CONTENT_WIDTH,
+        () -> {
+          draft.damageEnabled = !draft.damageEnabled;
+          redraw();
+        });
+    row += ScreenMetrics.ROW_HEIGHT;
+  }
+
+  private void damageControls() {
+    damageToggle();
+    small(
+        Control.HIT_INTERVAL,
+        UiText.text(
+            "screen.fieldemitters.control.hit_interval", UiText.seconds(draft.damageInterval)),
+        left + 12,
+        row,
+        ScreenMetrics.CONTENT_WIDTH,
+        () -> {
+          draft.damageInterval =
+              draft.damageInterval >= ScreenMetrics.DAMAGE_INTERVAL_CYCLE_MAX
+                  ? ControlSettings.MIN_DAMAGE_INTERVAL
+                  : draft.damageInterval + ScreenMetrics.DAMAGE_INTERVAL_STEP;
+          redraw();
+        });
+    row += ScreenMetrics.ROW_HEIGHT;
+    field(
+        Control.DAMAGE_PER_HIT_HP_2_1_HEART,
+        UiText.text("screen.fieldemitters.control.damage_per_hit_hp_2_1_heart"),
+        Float.toString(draft.damageAmount),
+        v -> {
+          try {
+            draft.damageAmount = Float.parseFloat(v);
+          } catch (NumberFormatException ex) {
+            draft.damageAmount = Float.NaN;
+          }
+        },
+        left + 12,
+        row,
+        185);
+    small(
+        Control.FIZZLE_PARTICLES,
+        UiText.text(
+            "screen.fieldemitters.control.fizzle_particles",
+            (draft.fizzleEffects
+                ? UiText.text("screen.fieldemitters.control.on")
+                : UiText.text("screen.fieldemitters.control.off"))),
+        left + 207,
+        row + 8,
+        185,
+        () -> {
+          draft.fizzleEffects = !draft.fizzleEffects;
+          redraw();
+        });
+    row += 29;
+  }
+
+  private void filterTargets(EntityFilter f) {
     Control[] categoryControls = {
       Control.HOSTILE, Control.PASSIVE, Control.PLAYERS, Control.DROPS, Control.NONLIVING
     };
@@ -318,17 +406,20 @@ public final class ControlScreen extends FittedScreen {
     };
     for (int i = 0; i < categoryControls.length; i++) {
       final int bit = 1 << i;
-      small(
-          categoryControls[i],
-          ((f.groups & bit) != 0 ? "✓ " : "○ ") + groups[i],
-          left + 12 + i * 77,
-          row,
-          74,
-          () -> {
-            f.groups ^= bit;
-            redraw();
-          },
-          (f.groups & bit) != 0);
+      var category =
+          small(
+              categoryControls[i],
+              ((f.groups & bit) != 0 ? "✓ " : "○ ") + groups[i],
+              left + 12 + i * 77,
+              row,
+              74,
+              () -> {
+                f.groups ^= bit;
+                redraw();
+              },
+              (f.groups & bit) != 0);
+      if (i < 2 && f.mobMode != 0 || i == 2 && f.playerMode != 0 || i == 3 && f.itemMode != 0)
+        category.active = false;
     }
     row += ScreenMetrics.ROW_HEIGHT;
     small(
@@ -350,11 +441,82 @@ public final class ControlScreen extends FittedScreen {
                     : UiText.text("screen.fieldemitters.control.damage_selected"))),
         left + 12,
         row,
-        126,
+        ScreenMetrics.HALF_CONTENT_WIDTH,
         () -> {
           f.inverted = !f.inverted;
           redraw();
         });
+    small(
+        Control.SKIP_OWNER,
+        UiText.text(
+            "screen.fieldemitters.control.skip_owner",
+            (f.exemptOwner
+                ? UiText.text("screen.fieldemitters.control.yes")
+                : UiText.text("screen.fieldemitters.control.no"))),
+        left + 205,
+        row,
+        ScreenMetrics.HALF_CONTENT_WIDTH,
+        () -> {
+          f.exemptOwner = !f.exemptOwner;
+          redraw();
+        });
+    row += ScreenMetrics.ROW_HEIGHT;
+    var controls = new Control[] {Control.MOB_LIST, Control.ITEM_LIST, Control.PLAYER_LIST};
+    var keys = new String[] {"mob_list", "item_list", "player_list"};
+    int[] modes = {f.mobMode, f.itemMode, f.playerMode};
+    int[] counts = {
+      f.mobList.size(), f.itemList.size(), f.playerList.size() + f.accessGroups.size()
+    };
+    for (int i = 0; i < controls.length; i++) {
+      final int list = i;
+      var button =
+          small(
+              controls[i],
+              UiText.text("screen.fieldemitters.control." + keys[i]),
+              left + ScreenMetrics.CONTENT_INSET + i * ScreenMetrics.THIRD_COLUMN_STEP,
+              row,
+              ScreenMetrics.THIRD_CONTENT_WIDTH,
+              ScreenMetrics.MENU_HEIGHT,
+              () -> {
+                applyPending();
+                minecraft.setScreen(
+                    list == 2
+                        ? new PlayerListScreen(
+                            this, emitter.getBlockPos(), f, tab.purpose(), this::applyChanges)
+                        : new TypeListScreen(this, f, list == 1, tab.purpose(), this::applyChanges)
+                            .withEntityDetails(
+                                individual -> {
+                                  sample(f, individual);
+                                  return notice;
+                                }));
+              },
+              false);
+      String summary = listSummary(modes[i], counts[i]);
+      button.detail(summary);
+      if (filterEditable)
+        button.setTooltip(
+            Tooltip.create(
+                Component.literal(
+                    button.getMessage().getString()
+                        + " — "
+                        + summary
+                        + "\n\n"
+                        + ControlHelp.button(controls[i], "", tab))));
+    }
+    row += ScreenMetrics.MENU_STEP;
+  }
+
+  private String listSummary(int mode, int count) {
+    if (mode == 0) return pageText("categories");
+    String action =
+        tab == ControlTab.BLOCKING
+            ? (mode == 1 ? "block" : "allow")
+            : tab == ControlTab.SENSOR ? "detect" : "damage";
+    return pageText(
+        "list_" + action + (mode == 1 || tab == ControlTab.BLOCKING ? "" : "_except"), count);
+  }
+
+  private void ageControl(EntityFilter f) {
     small(
         Control.AGE,
         UiText.text(
@@ -365,136 +527,29 @@ public final class ControlScreen extends FittedScreen {
                   UiText.text("screen.fieldemitters.control.adults_only")
                 }
                 [f.age]),
-        left + 142,
+        left + 12,
         row,
-        126,
+        ScreenMetrics.CONTENT_WIDTH,
         () -> {
           f.age = (f.age + 1) % 3;
           redraw();
         });
+    row += ScreenMetrics.COMPACT_ROW_HEIGHT;
+  }
+
+  private void sensorOutputControls() {
+    signalControl();
     small(
-        Control.SKIP_OWNER,
-        UiText.text(
-            "screen.fieldemitters.control.skip_owner",
-            (f.exemptOwner
-                ? UiText.text("screen.fieldemitters.control.yes")
-                : UiText.text("screen.fieldemitters.control.no"))),
-        left + 272,
-        row,
-        126,
-        () -> {
-          f.exemptOwner = !f.exemptOwner;
-          redraw();
-        });
-    row += ScreenMetrics.ROW_HEIGHT;
-    small(
-        Control.MOB_LIST,
-        UiText.text("screen.fieldemitters.control.mob_list"),
+        Control.OUTPUT_SIDE,
+        UiText.text("screen.fieldemitters.control.output_side", sideName(draft.outputFace)),
         left + 12,
         row,
         185,
         () -> {
-          applyPending();
-          minecraft.setScreen(
-              new TypeListScreen(this, f, false, tab.purpose(), this::applyChanges));
-        });
-    small(
-        Control.ITEM_LIST,
-        UiText.text("screen.fieldemitters.control.item_list"),
-        left + 207,
-        row,
-        185,
-        () -> {
-          applyPending();
-          minecraft.setScreen(new TypeListScreen(this, f, true, tab.purpose(), this::applyChanges));
-        });
-    row += 27;
-    boolean activeDetails = !f.identity.isBlank() || !f.entityTag.isBlank();
-    button(Control.ADVANCED_FILTERS,
-        activeDetails ? UiText.text("screen.fieldemitters.control.advanced_filters_active")
-            : UiText.text("screen.fieldemitters.control.advanced_filters",
-                UiText.text(advancedFilters ? "screen.fieldemitters.control.hide"
-                    : "screen.fieldemitters.control.show")),
-        () -> {
-          applyPending();
-          advancedFilters = !advancedFilters;
-          rebuildWidgets();
-        });
-    if (advancedVisible()) {
-    field(
-        Control.SPECIFIC_MOB_PLAYER_UUID,
-        UiText.text("screen.fieldemitters.control.specific_mob_player_uuid"),
-        f.identity,
-        v -> f.identity = v,
-        left + 12,
-        row,
-        185);
-    field(
-        Control.CUSTOM_ENTITY_LABEL_TAG,
-        UiText.text("screen.fieldemitters.control.custom_entity_label_tag"),
-        f.entityTag,
-        v -> f.entityTag = v,
-        left + 207,
-        row,
-        185);
-    row += 27;
-    }
-    directionControls(shared, f, enclosed, relative);
-    row += ScreenMetrics.ROW_HEIGHT;
-    small(
-        Control.SAMPLE_INDIVIDUAL,
-        UiText.text("screen.fieldemitters.control.sample_individual"),
-        left + 12,
-        row,
-        124,
-        () -> {
-          sample(f, true);
+          draft.outputFace = nextFace(draft.outputFace, draft.inputFace);
           redraw();
         });
-    small(
-        Control.SAMPLE_TYPE,
-        UiText.text("screen.fieldemitters.control.sample_type"),
-        left + 140,
-        row,
-        124,
-        () -> {
-          sample(f, false);
-          redraw();
-        });
-    small(
-        Control.PLAYER_LIST,
-        UiText.text("screen.fieldemitters.control.player_list"),
-        left + 268,
-        row,
-        124,
-        () -> {
-          applyPending();
-          minecraft.setScreen(
-              new PlayerListScreen(
-                  this, emitter.getBlockPos(), f, tab.purpose(), this::applyChanges));
-        });
-    if (tab == ControlTab.BLOCKING) {
-      row += 24;
-      button(Control.ISSUE_AND_REVOKE_BADGES,
-          UiText.text("screen.fieldemitters.cards.blocking_summary",
-              UiText.text("screen.fieldemitters.cards." + (draft.cards.enabled ? "enabled" : "disabled"))),
-          () -> {
-            applyPending();
-            minecraft.setScreen(new CardScreen(this, emitter.getBlockPos(), emitter.owner, draft.cards, this::applyChanges));
-          });
-    }
-    if (tab == ControlTab.SENSOR) {
-      row += 24;
-      small(
-          Control.OUTPUT_SIDE,
-          UiText.text("screen.fieldemitters.control.output_side", sideName(draft.outputFace)),
-          left + 12,
-          row,
-          185,
-          () -> {
-            draft.outputFace = nextFace(draft.outputFace, draft.inputFace);
-            redraw();
-          });
+    if (draft.sensorMode == 1)
       small(
           Control.PULSE_LENGTH,
           UiText.text(
@@ -506,20 +561,171 @@ public final class ControlScreen extends FittedScreen {
             draft.pulseTicks = draft.pulseTicks >= 20 ? 2 : draft.pulseTicks + 2;
             redraw();
           });
-      row += ScreenMetrics.ROW_HEIGHT;
-      button(
-          Control.RESET_CROSSING,
-          UiText.text("screen.fieldemitters.control.reset_crossing_count_now"),
-          () -> {
-            reset = true;
-            applyChanges();
-          });
+    row += ScreenMetrics.COMPACT_ROW_HEIGHT;
+    small(
+        Control.ITEMS,
+        UiText.text(
+            "screen.fieldemitters.control.items",
+            (draft.countItems
+                ? UiText.text("screen.fieldemitters.control.count_each_item")
+                : UiText.text("screen.fieldemitters.control.count_each_stack"))),
+        left + 12,
+        row,
+        ScreenMetrics.CONTENT_WIDTH,
+        () -> {
+          draft.countItems = !draft.countItems;
+          redraw();
+        });
+    row += ScreenMetrics.ROW_HEIGHT;
+
+    button(
+        Control.RESET_CROSSING,
+        UiText.text("screen.fieldemitters.control.reset_crossing_count_now"),
+        () -> {
+          reset = true;
+          applyChanges();
+        });
+  }
+
+  private String ruleSummary() {
+    return UiText.text(
+        "screen.fieldemitters.control.rules_for",
+        filterDirection == null
+            ? UiText.text("screen.fieldemitters.control.all_directions")
+            : travelName(filterDirection));
+  }
+
+  private String directionSummary(EntityFilter filter, boolean relative) {
+    if (relative) {
+      var selected =
+          Arrays.stream(CrossingSense.values())
+              .filter(sense -> sense.selected(filter.crossings))
+              .map(UiText::crossing)
+              .toList();
+      return selected.isEmpty()
+          ? UiText.text("message.fieldemitters.detection.none")
+          : String.join(" / ", selected);
     }
+    long directions = Arrays.stream(Direction.values()).filter(filter::direction).count();
+    return pageText("direction_summary", directions, filterRules().overrides().size());
+  }
+
+  private static String pageText(String key, Object... args) {
+    return UiText.text("screen.fieldemitters.pages." + key, args);
+  }
+
+  private void navigation(String title, String summary, DetailPage destination) {
+    var button =
+        new FieldButton(
+                left + ScreenMetrics.CONTENT_INSET,
+                row,
+                ScreenMetrics.CONTENT_WIDTH,
+                ScreenMetrics.MENU_HEIGHT,
+                Component.literal(title),
+                b -> {
+                  applyPending();
+                  detailPage = destination;
+                  rebuildWidgets();
+                },
+                false)
+            .detail(summary);
+    button.setTooltip(Tooltip.create(Component.literal(title + "\n" + summary)));
+    addRenderableWidget(button);
+    row += ScreenMetrics.MENU_STEP;
+  }
+
+  private void detailHeader(String title) {
+    addRenderableWidget(
+        new FieldButton(
+            left + ScreenMetrics.CONTENT_INSET,
+            row,
+            ScreenMetrics.BACK_WIDTH,
+            ScreenMetrics.BUTTON_HEIGHT,
+            Component.translatable("screen.fieldemitters.access.back"),
+            b -> {
+              applyPending();
+              detailPage = DetailPage.MAIN;
+              rebuildWidgets();
+            },
+            false));
+    labels.add(
+        new Label(
+            title,
+            left
+                + ScreenMetrics.CONTENT_INSET
+                + ScreenMetrics.BACK_WIDTH
+                + ScreenMetrics.COLUMN_GAP,
+            row + 5,
+            ScreenMetrics.CONTENT_WIDTH - ScreenMetrics.BACK_WIDTH - ScreenMetrics.COLUMN_GAP));
+    row += ScreenMetrics.DETAIL_HEADER_HEIGHT;
   }
 
   private void appearanceControls() {
+    if (detailPage == DetailPage.COLORS) {
+      detailHeader(pageText("colors"));
+      colorControls();
+      return;
+    }
+    if (detailPage == DetailPage.DISPLAY) {
+      detailHeader(pageText("display"));
+      displayControls();
+      return;
+    }
     colorPresets(
         UiText.text("screen.fieldemitters.control.field_color_presets"), color, c -> color = c);
+    row += ScreenMetrics.COLUMN_GAP;
+    button(
+        Control.PATTERN,
+        UiText.text(
+            "screen.fieldemitters.control.pattern",
+            new String[] {
+                  UiText.text("screen.fieldemitters.control.hex_lattice"),
+                  UiText.text("screen.fieldemitters.control.smooth_glow"),
+                  UiText.text("screen.fieldemitters.control.drifting_pixels"),
+                  UiText.text("screen.fieldemitters.control.plasma")
+                }
+                [draft.pattern]),
+        () -> {
+          draft.pattern = (draft.pattern + 1) % 4;
+          redraw();
+        });
+    if (emitter.isTower())
+      button(
+          Control.PROJECTION,
+          UiText.text(
+              "screen.fieldemitters.control.projection", UiText.formation(draft.projection)),
+          () -> {
+            draft.projection = draft.projection.next();
+            redraw();
+          });
+    else
+      button(
+          Control.FORMATION,
+          UiText.text("screen.fieldemitters.control.formation", UiText.formation(draft.formation)),
+          () -> {
+            draft.formation =
+                (draft.formation + 1) % com.zeromods.core.animation.PlanarProjection.PRESET_COUNT;
+            redraw();
+          });
+    row += ScreenMetrics.COLUMN_GAP;
+    navigation(
+        pageText("colors"),
+        UiText.text(
+            "screen.fieldemitters.control.effect_color",
+            UiText.text(
+                "screen.fieldemitters.control."
+                    + (draft.customAccent ? "custom_accent" : "matches_field"))),
+        DetailPage.COLORS);
+    navigation(
+        pageText("display"),
+        UiText.text(
+            "screen.fieldemitters.control.show_forcefield",
+            UiText.text(
+                "screen.fieldemitters.control." + (draft.visible ? "yes" : "no_still_works"))),
+        DetailPage.DISPLAY);
+  }
+
+  private void colorControls() {
     field(
         Control.CUSTOM_COLOR_6_DIGIT_HEX_CODE,
         UiText.text("screen.fieldemitters.control.custom_color_6_digit_hex_code"),
@@ -580,39 +786,9 @@ public final class ControlScreen extends FittedScreen {
           draft.pattern = 2;
           redraw();
         });
-    button(
-        Control.PATTERN,
-        UiText.text(
-            "screen.fieldemitters.control.pattern",
-            new String[] {
-                  UiText.text("screen.fieldemitters.control.hex_lattice"),
-                  UiText.text("screen.fieldemitters.control.smooth_glow"),
-                  UiText.text("screen.fieldemitters.control.drifting_pixels"),
-                  UiText.text("screen.fieldemitters.control.plasma")
-                }
-                [draft.pattern]),
-        () -> {
-          draft.pattern = (draft.pattern + 1) % 4;
-          redraw();
-        });
-    if (emitter.isTower())
-      button(
-          Control.PROJECTION,
-          UiText.text(
-              "screen.fieldemitters.control.projection", UiText.formation(draft.projection)),
-          () -> {
-            draft.projection = draft.projection.next();
-            redraw();
-          });
-    else
-      button(
-          Control.FORMATION,
-          UiText.text("screen.fieldemitters.control.formation", UiText.formation(draft.formation)),
-          () -> {
-            draft.formation =
-                (draft.formation + 1) % com.zeromods.core.animation.PlanarProjection.PRESET_COUNT;
-            redraw();
-          });
+  }
+
+  private void displayControls() {
     button(
         Control.LIGHT_NEARBY_BLOCKS,
         UiText.text(
@@ -673,6 +849,7 @@ public final class ControlScreen extends FittedScreen {
           draft.sounds = !draft.sounds;
           redraw();
         });
+    row += ScreenMetrics.COLUMN_GAP;
     button(
         Control.POWER_ON_OFF_SOUNDS,
         UiText.text(
@@ -814,7 +991,12 @@ public final class ControlScreen extends FittedScreen {
   private void accessControls() {
     labels.add(
         new Label(
-            UiText.text("screen.fieldemitters.cards.management_summary", emitter.managementPublic ? UiText.text("screen.fieldemitters.cards.public") : UiText.text("screen.fieldemitters.cards.private"), emitter.managerIds.size()),
+            UiText.text(
+                "screen.fieldemitters.cards.management_summary",
+                emitter.managementPublic
+                    ? UiText.text("screen.fieldemitters.cards.public")
+                    : UiText.text("screen.fieldemitters.cards.private"),
+                emitter.managerIds.size()),
             left + 12,
             row));
     row += 18;
@@ -828,7 +1010,11 @@ public final class ControlScreen extends FittedScreen {
     row += 24;
     labels.add(
         new Label(
-            UiText.text("screen.fieldemitters.cards.summary", UiText.text("screen.fieldemitters.cards." + (draft.cards.enabled ? "enabled" : "disabled")), cardGroupSummary()),
+            UiText.text(
+                "screen.fieldemitters.cards.summary",
+                UiText.text(
+                    "screen.fieldemitters.cards." + (draft.cards.enabled ? "enabled" : "disabled")),
+                cardGroupSummary()),
             left + 12,
             row));
     row += 18;
@@ -838,12 +1024,17 @@ public final class ControlScreen extends FittedScreen {
         () -> {
           applyPending();
           minecraft.setScreen(
-              new CardScreen(this, emitter.getBlockPos(), emitter.owner, draft.cards, this::applyChanges));
+              new CardScreen(
+                  this, emitter.getBlockPos(), emitter.owner, draft.cards, this::applyChanges));
         });
     row += 24;
     labels.add(
         new Label(
-            UiText.text("screen.fieldemitters.cards.checkpoint_summary", UiText.text("screen.fieldemitters.cards." + (draft.checkpoint.enabled ? "enabled" : "disabled"))),
+            UiText.text(
+                "screen.fieldemitters.cards.checkpoint_summary",
+                UiText.text(
+                    "screen.fieldemitters.cards."
+                        + (draft.checkpoint.enabled ? "enabled" : "disabled"))),
             left + 12,
             row));
     row += 18;
@@ -860,13 +1051,15 @@ public final class ControlScreen extends FittedScreen {
 
   @Override
   public void tick() {
+    if (tutorialPreview) return;
     if (!canConfigure()) {
       textDue = 0;
       minecraft.setScreen(null);
       return;
     }
     if (edits.timedOut()) {
-      reset = false; inheritPending = false;
+      reset = false;
+      inheritPending = false;
       notice = UiText.text("message.fieldemitters.edit.timeout");
     }
     if (textDue != 0 && System.currentTimeMillis() >= textDue) applyPending();
@@ -895,6 +1088,7 @@ public final class ControlScreen extends FittedScreen {
   }
 
   private void applyChanges() {
+    if (tutorialPreview) return;
     textDue = 0;
     if (!canConfigure()) return;
     Component error = FieldControls.validate(draft);
@@ -922,7 +1116,8 @@ public final class ControlScreen extends FittedScreen {
   }
 
   private void selectEditScope() {
-    var target = selectedLink < 0 ? emitter.getBlockPos() : emitter.links.get(selectedLink).target();
+    var target =
+        selectedLink < 0 ? emitter.getBlockPos() : emitter.links.get(selectedLink).target();
     edits.select(target, selectedLink >= 0, snapshot());
   }
 
@@ -930,7 +1125,8 @@ public final class ControlScreen extends FittedScreen {
     var before = snapshot();
     var result = edits.acknowledge(reply, before);
     if (reply.data().getString("Status").equals("scope_changed") || !result.refresh()) {
-      reset = false; inheritPending = false;
+      reset = false;
+      inheritPending = false;
     }
     if (result.refresh()) {
       var settings = result.draft();
@@ -938,11 +1134,15 @@ public final class ControlScreen extends FittedScreen {
       color = settings.getInt("Color");
       enabled = settings.getBoolean("Enabled");
     }
-    if (result.conflict()) notice = reply.data().getString("Status").equals("applied")
-        ? UiText.text("message.fieldemitters.edit.conflict") : reply.message().getString();
+    if (result.conflict())
+      notice =
+          reply.data().getString("Status").equals("applied")
+              ? UiText.text("message.fieldemitters.edit.conflict")
+              : reply.message().getString();
     else if (!result.poll()) notice = reply.message().getString();
-    if (minecraft.screen == this && (result.conflict()
-        || !before.equals(snapshot()) && !(getFocused() instanceof EditBox))) rebuildWidgets();
+    if (minecraft.screen == this
+        && (result.conflict() || !before.equals(snapshot()) && !(getFocused() instanceof EditBox)))
+      rebuildWidgets();
     if (!result.conflict() && textDue == 0) applyChanges();
   }
 
@@ -1185,21 +1385,18 @@ public final class ControlScreen extends FittedScreen {
     }
   }
 
-  private void small(Control control, String text, int x, int y, int w, Runnable action) {
-    small(control, text, x, y, w, action, false);
+  private FieldButton small(Control control, String text, int x, int y, int w, Runnable action) {
+    return small(control, text, x, y, w, action, false);
   }
 
-  private void small(
+  private FieldButton small(
       Control control, String text, int x, int y, int w, Runnable action, boolean selected) {
-    var button =
-        new FieldButton(
-            x,
-            y,
-            w,
-            ScreenMetrics.BUTTON_HEIGHT,
-            Component.literal(text),
-            b -> action.run(),
-            selected);
+    return small(control, text, x, y, w, ScreenMetrics.BUTTON_HEIGHT, action, selected);
+  }
+
+  private FieldButton small(
+      Control control, String text, int x, int y, int w, int h, Runnable action, boolean selected) {
+    var button = new FieldButton(x, y, w, h, Component.literal(text), b -> action.run(), selected);
     String help = text + "\n\n" + ControlHelp.button(control, text, tab);
     boolean fieldOnly =
         selectedLink >= 0
@@ -1216,12 +1413,15 @@ public final class ControlScreen extends FittedScreen {
     boolean inherited =
         !filterEditable
             && (tab.hasFilter())
+            && control != Control.RULES_FOR
+            && control != Control.RULE_SOURCE
+            && control != Control.DIRECTION_FRAME
             && !sensorSetting(control)
             && control != Control.DAMAGE
             && control != Control.HIT_INTERVAL
             && control != Control.FIZZLE_PARTICLES;
-    button.active = !fieldOnly && !inherited
-        && !(control == Control.RULE_SOURCE && filterDirection == null);
+    button.active =
+        !fieldOnly && !inherited && !(control == Control.RULE_SOURCE && filterDirection == null);
     button.setTooltip(
         Tooltip.create(
             Component.literal(
@@ -1233,6 +1433,8 @@ public final class ControlScreen extends FittedScreen {
                             "screen.fieldemitters.control.this_setting_belongs_to_the_emitter_in_connections")
                         : help)));
     addRenderableWidget(button);
+    if (tutorialPreview) tutorialControls.put(control, button);
+    return button;
   }
 
   private final List<Label> labels = new ArrayList<>();
@@ -1337,8 +1539,10 @@ public final class ControlScreen extends FittedScreen {
   private boolean renderOverflowTooltip(GuiGraphics g, List<Label> entries, int mx, int my) {
     for (var label : entries) {
       if (font.width(label.text) > label.width
-          && mx >= label.x && mx < label.x + label.width
-          && my >= label.y && my < label.y + font.lineHeight) {
+          && mx >= label.x
+          && mx < label.x + label.width
+          && my >= label.y
+          && my < label.y + font.lineHeight) {
         g.renderTooltip(font, Component.literal(label.text), mx, my);
         return true;
       }
@@ -1367,22 +1571,37 @@ public final class ControlScreen extends FittedScreen {
                     emitter.links.get(selectedLink).target().toShortString())
                 : UiText.text(
                     "screen.fieldemitters.control.changes_affect_your_connected_emitters");
-    if (emitter.presetLocked) scope = UiText.text("screen.fieldemitters.control.locked_preset", emitter.presetId);
-    var headings = List.of(
-        new Label(UiText.text("screen.fieldemitters.control.controls"),
-            left - NAV_WIDTH + ScreenMetrics.CONTENT_INSET, top + 26,
-            NAV_WIDTH - 2 * ScreenMetrics.CONTENT_INSET),
-        new Label(selectedLink < 0 ? title.getString()
-            : UiText.text("screen.fieldemitters.control.editing_one_field_block_detect_damage"),
-            left + ScreenMetrics.CONTENT_INSET, top + 7, ScreenMetrics.CONTENT_WIDTH),
-        new Label(scope, left + ScreenMetrics.CONTENT_INSET, top + 26,
-            ScreenMetrics.CONTENT_WIDTH));
+    if (emitter.presetLocked)
+      scope = UiText.text("screen.fieldemitters.control.locked_preset", emitter.presetId);
+    var headings =
+        List.of(
+            new Label(
+                UiText.text("screen.fieldemitters.control.controls"),
+                left - NAV_WIDTH + ScreenMetrics.CONTENT_INSET,
+                top + 26,
+                NAV_WIDTH - 2 * ScreenMetrics.CONTENT_INSET),
+            new Label(
+                selectedLink < 0
+                    ? title.getString()
+                    : UiText.text(
+                        "screen.fieldemitters.control.editing_one_field_block_detect_damage"),
+                left + ScreenMetrics.CONTENT_INSET,
+                top + 7,
+                ScreenMetrics.CONTENT_WIDTH),
+            new Label(
+                scope, left + ScreenMetrics.CONTENT_INSET, top + 26, ScreenMetrics.CONTENT_WIDTH));
     for (var heading : headings)
-      g.drawString(font, fitLabel(heading), heading.x, heading.y,
-          heading.y == top + 7 ? 0xDBF8FF : 0x92A9BE, false);
+      g.drawString(
+          font,
+          fitLabel(heading),
+          heading.x,
+          heading.y,
+          heading.y == top + 7 ? 0xDBF8FF : 0x92A9BE,
+          false);
     if (tab == ControlTab.OVERVIEW) {
-      String status = UiText.text(
-          "screen.fieldemitters.control." + emitter.operationStatus, emitter.networkDemand);
+      String status =
+          UiText.text(
+              "screen.fieldemitters.control." + emitter.operationStatus, emitter.networkDemand);
       if (emitter.isTower() && emitter.enabled) {
         if (!SphereField.fitsHeight(emitter))
           status =
@@ -1396,7 +1615,7 @@ public final class ControlScreen extends FittedScreen {
           font.plainSubstrByWidth(status, ScreenMetrics.CONTENT_WIDTH),
           left + 12,
           top + 44,
-          0x77FFBD,
+          emitter.powered ? 0x77FFBD : 0xF2C879,
           false);
       g.drawString(
           font,
@@ -1408,11 +1627,7 @@ public final class ControlScreen extends FittedScreen {
           top + 56,
           0xCAD6E5,
           false);
-      int energyWidth =
-          (int)
-              (380L
-                  * emitter.networkEnergy
-                  / Math.max(1, emitter.networkCapacity));
+      int energyWidth = (int) (380L * emitter.networkEnergy / Math.max(1, emitter.networkCapacity));
       g.fill(left + 12, top + 93, left + 392, top + 96, 0xFF263F53);
       g.fill(left + 12, top + 93, left + 12 + energyWidth, top + 96, 0xFF52E5FF);
       EmitterEntity detector = emitter;
@@ -1477,8 +1692,7 @@ public final class ControlScreen extends FittedScreen {
         0x92A9BE,
         false);
     super.render(g, mx, my, partial);
-    if (!renderOverflowTooltip(g, labels, mx, my))
-      renderOverflowTooltip(g, headings, mx, my);
+    if (!renderOverflowTooltip(g, labels, mx, my)) renderOverflowTooltip(g, headings, mx, my);
     g.pose().popPose();
   }
 
@@ -1487,6 +1701,8 @@ public final class ControlScreen extends FittedScreen {
     var groups = new java.util.ArrayList<>(draft.cards.groups);
     if (groups.isEmpty()) return UiText.text("screen.fieldemitters.cards.no_groups");
     String shown = String.join(", ", groups.subList(0, Math.min(3, groups.size())));
-    return groups.size() > 3 ? shown + UiText.text("screen.fieldemitters.cards.more_groups", groups.size() - 3) : shown;
+    return groups.size() > 3
+        ? shown + UiText.text("screen.fieldemitters.cards.more_groups", groups.size() - 3)
+        : shown;
   }
 }

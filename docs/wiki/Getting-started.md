@@ -17,7 +17,7 @@ All three items are in the Field Emitters creative tab. Emitters and rails need 
 3. The field between two posts follows the terrain. It steps up or down with the ground, up to four blocks per step, and is five blocks high above the ground at every point. A link fails when the ground between the posts rises or drops more than four blocks in one step, or when the far post stands more than four blocks above or below the path.
 4. Feed Forge Energy into any post with a cable, generator or energy cell from another mod. Field Emitters ships no generator, and redstone switches fields but never powers them. Connected posts pool their stored energy, so one input can run the whole perimeter.
 
-The field switches on as soon as enough energy is stored for one tick of operation and projects outward along each link from the same end every time, so detection output and storage stay put no matter which post you feed. Turn the whole perimeter off from any post with **Field: Off** on the Power tab.
+The field switches on as soon as enough energy is stored for one tick of operation and projects outward along each link from the same end every time, so detection output and storage stay put no matter which post you feed. Turn the whole perimeter off from any post with **Field: Off** on the Overview tab.
 
 ## Seal an opening
 
@@ -25,6 +25,6 @@ Field Rails cover doorways, pits and shafts. See [Rails](Rails.md).
 
 ## Choose what passes
 
-Right-click a post or rail with an empty hand or with the Field Tuner to open its controls. The Blocking tab picks the categories the field stops; the Detection tab picks what it reports over redstone. See [Blocking filters](Filters.md) and [Detection and redstone](Detection.md).
+Right-click a post or rail with an empty hand or with the Field Tuner to open its controls. The Blocking tab picks the categories the field stops; the Sensor tab picks what it reports over redstone. See [Blocking filters](Filters.md) and [Detection and redstone](Detection.md).
 
-The player who placed an emitter owns it. Other players cannot change its settings unless they are server operators. With the default filters the owner passes through their own fields.
+The player who placed an emitter owns it. Other players need management permission or server operator access to change its settings. Invite managers under **Access → Field management**. With the default filters the owner passes through their own fields.

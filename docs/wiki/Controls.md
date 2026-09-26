@@ -1,42 +1,49 @@
 # Controls and the tuner
 
-Right-click an emitter or rail with an empty hand or with the Field Tuner to open its controls. Settings apply as you change them. Buttons apply immediately; text fields apply after a short pause in typing or when you leave the field. Invalid IDs and UUIDs stay in the editor for correction and are not sent. Closing the screen does not undo applied changes.
-
-Hover over any control for a description with examples.
+Right-click an emitter with an empty hand or the Field Tuner to open its controls. Settings save as you change them. Text fields save after a short pause in typing. Hover over a control for help.
 
 ## Tabs
 
-- **Power:** switch the field on or off, read stored energy and demand, see the crossing counter and the most recent detection, reset the counter, and choose the redstone input face and mode (always on, on while the input is high, or on while it is low).
-- **Blocking:** choose which entities the field stops. See [Blocking filters](Filters.md).
-- **Detection:** choose which entities the field reports and how. See [Detection and redstone](Detection.md).
-- **Appearance:** pick a color preset or enter a six-digit hex color, show or hide the field graphics, toggle the animated pattern, add or remove block light, and show or hide the direction guides on your client.
-- **Connections:** select one outgoing link to give it its own blocking and detection rules, and choose the detection output face, the pulse length in seconds and the field shape for rail spans.
+- **Overview:** turn the network on or off, check its energy and status, and choose when it responds to redstone.
+- **Blocking:** choose what the field stops, including travel directions, categories and lists.
+- **Sensor:** choose what triggers detection, the signal type, output side and pulse length. You can also reset the crossing counter here.
+- **Damage:** turn contact damage on or off, choose what it affects, and set damage per hit, hit interval and particles.
+- **Appearance:** choose colors, patterns and formation animations. This page also controls field visibility, nearby lighting and direction guides.
+- **Sounds:** choose a sound set or turn off individual sound types.
+- **Connections:** edit network defaults or one connection. For rails, choose the field shape or apply **Bridge mode**. For towers, choose the shape and radius.
+- **Access:** open Field management, Access cards or Inventory checkpoint.
 
-Connected emitters and rails form one group with one set of settings. Every change applies to all connected emitters you are allowed to edit, whichever block you opened, and a newly placed post or rail takes the group's settings when it links up. Only a link selected on the Connections tab keeps rules of its own, and **Use the group rules for this field** returns it to the group.
+## Filter details
 
-Turning off world lighting on the Appearance tab keeps the field visible and solid without adding light, which suits dark mob farms. Hiding the field graphics keeps blocking and detection running.
+Blocking, Sensor and Damage keep the category buttons and mob, item and player lists together. Each list shows its current mode and entry count. When a list replaces category matching, the affected category buttons are disabled.
 
-## Per-link rules
+Open **Travel directions** to restrict movement or edit a particular direction. Choosing a direction only changes the view; choose **Custom filter** to give it separate rules. **Age** is on the main filter page. In Mob list or Item list, **Entity details** opens UUID and scoreboard-label restrictions shared by the target categories. Mob list also provides the sampling buttons. Returning from these screens keeps the restrictions active.
 
-On the Connections tab, **Editing** chooses the emitter's default rules or one outgoing link. A link's own blocking and detection filters take priority over the defaults and apply from both ends of that link. Energy, color and redstone settings always belong to the group.
+In Sensor, **Redstone & counting** contains the output side, pulse length and crossing counter. Pulse length appears only in pulse mode. In Damage, **Damage settings** contains the amount and hit interval.
+
+Appearance keeps color presets, pattern and formation on the main page. **Custom colors** contains the hex fields and separate effect colors; **Display options** contains visibility, lighting and direction guides.
+
+Inventory checkpoint separates **Players & directions** from **When contraband is found**. Storage controls appear when confiscation is set to send items to adjacent storage.
+
+## Networks and individual connections
+
+Connected emitters share settings. A newly linked emitter inherits the network's settings, even when the field is off.
+
+In **Connections**, select **Network defaults** to edit the whole network. Select a particular connection to give it different Blocking, Sensor or Damage filters. **Use network defaults** removes that connection's custom filters. Appearance, power and redstone settings apply to the network.
+
+Settings survive world reloads. If two networks reconnect, the most recently edited settings are used. Connection-specific filters remain attached to their connections.
 
 ## The Field Tuner
 
-- **Right-click a post or rail** to open its controls.
-- **Right-click the air** to open the Field Manager. Every connected, loaded chain you may edit in the current dimension appears as one field. Select a field to rename it or to open any of its emitters remotely. Names are stored on the emitters, and the oldest loaded member anchors the field's displayed location.
-- **Sneak-right-click a mob or player** to sample it, or **sneak-right-click the air** to sample yourself. The Blocking and Detection tabs can then match that individual by UUID or its entity type.
-- **Sneak-right-click a post or rail** to cycle the field color through the six presets.
+- **Right-click an emitter** to open its controls.
+- **Right-click the air** to open the Field Manager. Select a loaded field to rename it or open its controls remotely.
+- **Sneak-right-click a mob or player** to sample it, or sneak-right-click the air to sample yourself. In Mob list → Entity details, use **Sample individual** for that entity or **Sample type** for its type.
+- **Sneak-right-click an emitter** to cycle its color.
 
-While you hold the tuner, arrows on the field show the movement directions: amber where blocking is enabled, green where entities may pass. The Appearance tab or the client config can hide the guides.
+Set an **Open Field Tuner** key in Minecraft's Controls menu to open it from your inventory. With Curios installed on a supported loader, you can also equip it in a Curios slot.
 
-Unloaded chunks are never loaded by the manager. A chain that is partly unloaded can appear as separate fields until its chunks load again.
+While holding the tuner, arrows show the blocked and allowed travel directions. Amber means blocking is enabled; green means it is disabled. The filters still decide which entities are affected. Turn the arrows off with **Direction guides** under Appearance → Display options.
 
-Effect color defaults to **Matches field**, so changing the field color also changes its effects. Choose **Custom accent** to reveal separate presets and a hex color box. The **Purple field / magenta effects** preset enables a contrasting accent intentionally.
+## Editing together
 
-Group settings persist across world loads and chunk unloads. Switched-off emitters remain connected and new members inherit their settings without projecting a field. If previously separate groups reconnect, the most recently edited group settings win. Older saves without edit history use the oldest configured member. Link-specific filter overrides remain explicit exceptions.
-
-## Multiple managers editing
-
-Tuner changes apply immediately. Editing a color does not resend old filter or power settings from an already-open screen. Independent category and direction toggles can merge. If someone changes the same setting while you edit it, the tuner shows the current server value and asks you to retry. Each player, mob or item list is treated as one setting; simultaneous edits to that same list are not combined automatically. Presets apply together or are rejected together.
-
-Clients and servers must use matching mod builds for this settings protocol.
+Managers can edit different settings at the same time. If someone changes the same setting while you are editing it, the tuner refreshes it and asks you to retry. A player, mob or item list is saved as one setting, so two edits to the same list cannot be combined automatically.

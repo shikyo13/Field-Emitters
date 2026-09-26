@@ -1,39 +1,47 @@
 # Troubleshooting
 
-## Two posts do not link
+## Emitters will not connect
 
-- Posts link only to the north, south, east and west, up to 20 blocks apart, and only to the nearest post in each direction.
-- The ground between them must not rise or drop more than four blocks in a single step, and the far post must stand within four blocks of the path's height.
-- A post needs a clear five-block column. Blocks inside the field path do not stop a link; the field runs over the terrain.
-- Posts link only to posts and rails only to rails.
+- Posts connect north, south, east or west to the nearest compatible post in range. The default maximum range is 20 blocks.
+- Check the height of the terrain between posts. The field can follow changes of up to four blocks per step.
+- Posts need five clear blocks of height; Projection Towers need seven.
+- Posts connect to posts and rails to rails. Rails must face each other.
+- Both emitters must be loaded and have compatible ownership.
 
-## The field is not running
+## The field will not turn on
 
-1. Open the Power tab and read the stored energy and demand. A field needs enough energy for one tick of operation before it starts.
-2. Confirm that the energy mod's cable or generator outputs on the side touching the emitter or rail.
-3. Read the redstone mode. *On while high* waits for a signal and *On while low* stops while a signal is present.
-4. Check that **Field** is *On* for every emitter in the chain. Any emitter switched off drops its links.
+1. Read the status in **Overview** and check the stored energy. The network needs enough energy for one tick of operation.
+2. Make sure the connected cable or generator is supplying energy.
+3. Check **Field: On** and **Turn on** in Overview. A network set to redstone ON needs a signal; one set to redstone OFF needs all its inputs off.
+4. Check **Read redstone from**. The sensor output side cannot also read the control signal.
 
-## Mobs walk through the field
+Switched-off emitters stay connected. You do not need a separate energy or redstone input on every rail.
 
-- Check the Blocking tab: the category must be checked and any details must match. Details combine with AND.
-- Check the direction boxes. An unchecked direction lets entities pass that way.
-- A mount and its riders are checked together, and the field stops the group when it stops either one. A rule that blocks passive mobs therefore also stops a player riding a horse, unless that player has passage rights. The exempt owner, and a listed player or access badge holder while the filter lets listed players pass, take their mount through with them.
+## A player or mob passes through
 
-## A gap appears where the field crosses a slab or carpet
+- Check **Blocking**, the selected travel direction and any custom filters for that direction or connection.
+- **Block selected** stops matches. **Allow selected only** lets matches through and stops everything else.
+- **Skip owner: Yes** lets the owner through, including through a bridge.
+- Access cards can allow passage. A player specifically named in a blocking blacklist is still stopped.
+- Check enabled mob, item and player lists; they replace the general filters for their own category.
+- Wait for the formation animation to finish before using the field as a barrier.
 
-The field fills whole blocks. Where a slab, carpet, snow layer or fence stands in the field path, that block is already occupied and the field cannot fill it, leaving a partial gap at that spot. Clear the path or raise the posts so the field crosses full blocks or open air.
-- In *Allow selected only* mode, everything outside the selection is blocked and the selection passes.
-- The field projects outward from the powered post over a few ticks after it switches on.
+Sensor settings control detection, not blocking. Damage and inventory checkpoints have separate settings too.
 
-## I cannot edit an emitter
+## The field crosses plants, doors or snow
 
-The player who placed an emitter owns it. Other players need operator permission. The Field Manager lists only the fields you may edit.
+Plants in the field's path are stored while it is active and restored when it switches off or is removed. The field also blocks at occupied positions such as doors, gates, carpets and snow layers. You should not need to clear these by hand. Report a reproducible gap with your Minecraft version, loader, mod version and the block arrangement.
 
-## Detection does not pulse
+## I cannot change settings
 
-A crossing counts only when the whole entity passes completely through the field. Contact and impacts do not count. Confirm the output face on the Connections tab is next to the redstone you expect, and that the input face is a different side.
+The owner, invited managers and server operators can manage a private network. The owner can add managers under **Access → Field management**, or allow public management. An access card grants passage, not management permission. A locked server preset can also prevent changes.
 
-## The field pattern is missing or dark
+## The sensor does not send a pulse
 
-Ambient animation, field visibility and block light are separate options on the Appearance tab. Hidden graphics still block and detect.
+Use **Sensor → Pulse on crossing** and check its filter. The whole entity must pass through; touching the field does not count. Use **On while touching** to detect contact instead.
+
+Connect your circuit to **Output side**. For connected rails, use the rail at the displayed **Redstone output at** coordinates. Another crossing during a pulse extends it without turning the output off and on again.
+
+## The field looks dark or invisible
+
+In **Appearance**, check **Show forcefield**, **Animate field pattern** and **Light nearby blocks**. Hiding the field or disabling its light does not turn off its blocking, detection or damage.
