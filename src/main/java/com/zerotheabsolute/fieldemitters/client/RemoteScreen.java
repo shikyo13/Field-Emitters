@@ -171,6 +171,12 @@ public final class RemoteScreen extends FittedScreen {
                       : UiText.text(
                           "screen.fieldemitters.remote.open_this_emitter_s_controls_connections_selects_one"))));
     }
+    addRenderableWidget(new FieldButton(left + 137, top + 201, 98, 18,
+        com.zerotheabsolute.fieldemitters.client.tutorial.FieldTutorial.text("open"), b -> {
+          rename();
+          com.zerotheabsolute.fieldemitters.client.tutorial.FieldTutorial.open(this);
+        }, false)).setTooltip(Tooltip.create(
+            com.zerotheabsolute.fieldemitters.client.tutorial.FieldTutorial.text("open_help")));
     var prev =
         addRenderableWidget(
             new FieldButton(

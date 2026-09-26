@@ -16,6 +16,12 @@ final class ScreenMetrics {
   static final int HALF_CONTENT_WIDTH = (CONTENT_WIDTH - COLUMN_GAP) / 2;
   static final int DIRECTION_COLUMN_STEP = 64;
   static final int DIRECTION_BUTTON_WIDTH = 61;
+  static final int MENU_HEIGHT = 30;
+  static final int MENU_STEP = MENU_HEIGHT + COLUMN_GAP;
+  static final int THIRD_CONTENT_WIDTH = (CONTENT_WIDTH - 2 * COLUMN_GAP) / 3;
+  static final int THIRD_COLUMN_STEP = THIRD_CONTENT_WIDTH + COLUMN_GAP;
+  static final int BACK_WIDTH = 70;
+  static final int DETAIL_HEADER_HEIGHT = 32;
   static final int PLAYER_ROWS = 6;
   static final int TYPE_SLOTS = 24;
   static final int DAMAGE_INTERVAL_STEP = 10;

@@ -25,6 +25,12 @@ public final class FieldRenderer implements BlockEntityRenderer<EmitterEntity> {
     return e.renderBounds();
   }
 
+  public void renderPreview(EmitterEntity emitter, float ticks, PoseStack pose,
+      MultiBufferSource buffers) {
+    FieldRenderClock.preview(emitter, ticks, () -> render(emitter, 0, pose, buffers,
+        LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY));
+  }
+
   public void render(
       EmitterEntity e,
       float partial,
@@ -34,7 +40,7 @@ public final class FieldRenderer implements BlockEntityRenderer<EmitterEntity> {
       int overlay) {
     if (e.getLevel() == null) return;
     if (e.isTower()) {
-      float time = e.getLevel().getGameTime() + partial;
+      float time = FieldRenderClock.time(e, partial);
       float age = time - e.transition;
       float charge = e.powered ? Mth.clamp(age / 12, 0, 1) : FieldShutdown.remaining(age);
       HardwareRenderer.render(e, time, charge, pose, buffers, light);
@@ -42,15 +48,15 @@ public final class FieldRenderer implements BlockEntityRenderer<EmitterEntity> {
       return;
     }
     if (e.isRail()) {
-      FieldGuide.render(e, pose, buffers);
+      if (!FieldRenderClock.preview(e)) FieldGuide.render(e, pose, buffers);
       RailRenderer.render(e, partial, pose, buffers);
       return;
     }
-    float time = e.getLevel().getGameTime() + partial;
+    float time = FieldRenderClock.time(e, partial);
     float age = time - e.transition;
     float charge = e.powered ? Mth.clamp(age / 12, 0, 1) : FieldShutdown.remaining(age);
     HardwareRenderer.render(e, time, charge, pose, buffers, light);
-    FieldGuide.render(e, pose, buffers);
+    if (!FieldRenderClock.preview(e)) FieldGuide.render(e, pose, buffers);
     var v = buffers.getBuffer(FieldRenderType.ENERGY);
     var m = pose.last().pose();
     int color = e.color;
