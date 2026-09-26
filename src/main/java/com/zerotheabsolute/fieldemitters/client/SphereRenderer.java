@@ -42,7 +42,7 @@ final class SphereRenderer {
   private SphereRenderer() {}
 
   static void render(EmitterEntity e, float partial, PoseStack pose, MultiBufferSource buffers) {
-    if (e.controls.pattern == 3) {
+    if (e.controls.pattern == 3 && !com.zeromods.core.client.ShaderPackCompat.active()) {
       PlasmaDomeRenderer.render(e, partial, pose, buffers);
       return;
     }
