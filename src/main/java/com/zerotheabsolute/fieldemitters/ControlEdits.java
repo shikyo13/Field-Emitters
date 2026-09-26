@@ -115,8 +115,8 @@ public final class ControlEdits {
           respond(player, edit, seed, request, "invalid"); return;
         }
         if (!current.equals(merged)) {
-          seed.overrides.put(request.target(), validated);
-          other.overrides.put(request.pos(), ControlSettings.load(validated.save()));
+          seed.overrides.put(request.target(), validated.foldLegacyWrites());
+          other.overrides.put(request.pos(), ControlSettings.load(validated.save()).foldLegacyWrites());
           seed.passages.clear(); other.passages.clear();
           seed.sync(); other.sync();
         }
@@ -125,7 +125,7 @@ public final class ControlEdits {
           if (!FieldControls.editable(emitter, player)) continue;
           if (emitter.isTower() && (emitter.controls.sphereRadius != validated.sphereRadius || emitter.controls.dome != validated.dome))
             emitter.transition = level.getGameTime();
-          emitter.controls = ControlSettings.load(validated.save());
+          emitter.controls = ControlSettings.load(validated.save()).foldLegacyWrites();
           emitter.color = merged.getInt("Color");
           emitter.enabled = merged.getBoolean("Enabled");
           emitter.mask = emitter.controls.barrier.groups;

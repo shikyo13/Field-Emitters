@@ -88,7 +88,7 @@ final class NetworkSettings {
     if (e.presetLocked) e.overrides.clear();
     e.adoptPending = false;
     e.settingsRevision = tag.getLong("Revision");
-    e.controls = ControlSettings.load(tag.getCompound("Controls"));
+    e.controls = ControlSettings.load(tag.getCompound("Controls")).foldLegacyWrites();
     e.color = tag.getInt("Color");
     e.enabled = tag.getBoolean("Enabled");
     e.mask = e.controls.barrier.groups;

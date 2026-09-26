@@ -3,7 +3,9 @@ package com.zerotheabsolute.fieldemitters.client;
 import com.zeromods.core.client.FittedScreen;
 
 import com.zerotheabsolute.fieldemitters.*;
-import com.zerotheabsolute.fieldemitters.client.emi.EmiScreenBridge;
+import com.zeromods.core.client.browser.RecipeBrowsers;
+import com.zeromods.core.client.browser.StackDropScreen;
+import com.zeromods.core.client.browser.StackDropTarget;
 import java.util.*;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
@@ -15,20 +17,26 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.*;
 
 /** Ghost slots store type references only; inventory stacks never move or shrink. */
-public final class TypeListScreen extends FittedScreen {
+public final class TypeListScreen extends FittedScreen implements StackDropScreen {
+  private static final int LIST_STATUS_WIDTH = 288;
   private final net.minecraft.client.gui.screens.Screen parent;
   private final EntityFilter filter;
   private final boolean items;
   private final FilterPurpose purpose;
   private final Runnable apply;
   private int left, top, page;
-  private final boolean emi = net.neoforged.fml.ModList.get().isLoaded("emi");
-  private final int browserInset = emi || net.neoforged.fml.ModList.get().isLoaded("jei") ? 24 : 0;
+  private final int browserInset = RecipeBrowsers.bottomInset();
   private String query = "",
       status =
           UiText.text("screen.fieldemitters.typelist.drag_from_your_inventory_jei_or_emi_into");
   private long legacyChanged;
   private ItemStack dragging = ItemStack.EMPTY;
+  private java.util.function.Function<Boolean, String> sample;
+
+  TypeListScreen withEntityDetails(java.util.function.Function<Boolean, String> sample) {
+    this.sample = sample;
+    return this;
+  }
 
   TypeListScreen(
       net.minecraft.client.gui.screens.Screen parent,
@@ -168,8 +176,13 @@ public final class TypeListScreen extends FittedScreen {
                 })
             .active =
         page + 1 < pages;
+    if (sample != null) {
+      button(UiText.text("screen.fieldemitters.pages.entity_details"), 312, 178, 80,
+          () -> minecraft.setScreen(new EntityMatchScreen(this, filter, apply, items ? null : sample)))
+          .setTooltip(Tooltip.create(Component.literal(UiText.text(
+              "screen.fieldemitters.pages.entity_details_help"))));
+    }
     button(UiText.text("screen.fieldemitters.access.back"), 312, 284, 80, this::onClose);
-    if (emi) EmiScreenBridge.init(this);
   }
 
   private FieldButton button(String text, int x, int y, int w, Runnable action) {
@@ -234,29 +247,24 @@ public final class TypeListScreen extends FittedScreen {
                 .toString());
   }
 
-  private Rect2i physical(int x, int y, int w, int h) {
-    // CanvasFit can truncate the logical height; derive the exact scale from its shared model.
-    double s =
-        com.zeromods.core.ui.CanvasFit.fit(
-                minecraft.getWindow().getGuiScaledWidth(),
-                minecraft.getWindow().getGuiScaledHeight() - (browserInset),
-                ScreenMetrics.PANEL_WIDTH,
-                ScreenMetrics.PANEL_HEIGHT,
-                4)
-            .scale();
-    return new Rect2i(
-        (int) Math.ceil(x * s),
-        (int) Math.ceil(y * s),
-        (int) Math.floor(w * s),
-        (int) Math.floor(h * s));
+  public Rect2i dropArea() {
+    return screenRect(left + 12, top + 132, 288, 44);
   }
 
-  public Rect2i dropArea() {
-    return physical(left + 12, top + 132, 288, 44);
+  @Override
+  public List<StackDropTarget> dropTargets(ItemStack stack) {
+    return canAcceptDrop(stack)
+        ? List.of(new StackDropTarget(dropArea(), 0x5553BBCB, this::acceptDrop))
+        : List.of();
+  }
+
+  @Override
+  public Rect2i browserExclusion() {
+    return panelArea();
   }
 
   public Rect2i panelArea() {
-    return physical(left, top, ScreenMetrics.PANEL_WIDTH, ScreenMetrics.PANEL_HEIGHT);
+    return screenRect(left, top, ScreenMetrics.PANEL_WIDTH, ScreenMetrics.PANEL_HEIGHT);
   }
 
   private boolean inside(int x, int y, int bx, int by, int w, int h) {
@@ -264,7 +272,6 @@ public final class TypeListScreen extends FittedScreen {
   }
 
   public boolean mouseClicked(double x, double y, int button) {
-    if (emi && EmiScreenBridge.click(x, y, button)) return true;
     int mx = fitMouse((int) x), my = fitMouse((int) y);
     if (button == 0 && inside(mx, my, left + 12, top + 208, 162, 72)) {
       int slot = (my - top - 208) / 18 * 9 + (mx - left - 12) / 18;
@@ -287,7 +294,6 @@ public final class TypeListScreen extends FittedScreen {
   }
 
   public boolean mouseReleased(double x, double y, int button) {
-    if (emi && EmiScreenBridge.release(x, y, button)) return true;
     if (button == 0 && !dragging.isEmpty()) {
       var stack = dragging;
       dragging = ItemStack.EMPTY;
@@ -298,23 +304,7 @@ public final class TypeListScreen extends FittedScreen {
     return super.mouseReleased(x, y, button);
   }
 
-  public boolean mouseDragged(double x, double y, int button, double dx, double dy) {
-    if (emi && EmiScreenBridge.drag(x, y, button, dx, dy)) return true;
-    return super.mouseDragged(x, y, button, dx, dy);
-  }
-
-  public boolean mouseScrolled(double x, double y, double dx, double dy) {
-    if (emi && EmiScreenBridge.scroll(x, y, dy)) return true;
-    return super.mouseScrolled(x, y, dx, dy);
-  }
-
-  public boolean charTyped(char value, int modifiers) {
-    if (emi && EmiScreenBridge.character(value, modifiers)) return true;
-    return super.charTyped(value, modifiers);
-  }
-
   public boolean keyPressed(int key, int scan, int modifiers) {
-    if (emi && EmiScreenBridge.key(key, scan, modifiers)) return true;
     if (key == 257 || key == 335) {
       if (!query.isBlank()) add(query);
       else apply.run();
@@ -394,7 +384,7 @@ public final class TypeListScreen extends FittedScreen {
       }
     }
     drawLabel(g, UiText.text("screen.fieldemitters.typelist.page", (page + 1)), left + 12, top + 178, ScreenMetrics.CONTENT_WIDTH, 0xFFADBED0);
-    drawLabel(g, status, left + 12, top + 190, ScreenMetrics.CONTENT_WIDTH, 0xFF8DE0CF);
+    drawLabel(g, status, left + 12, top + 190, LIST_STATUS_WIDTH, 0xFF8DE0CF);
     drawLabel(g, UiText.text("screen.fieldemitters.typelist.your_inventory_drag_a_copy_into_the_boxes"), left + 12, top + 199, ScreenMetrics.CONTENT_WIDTH, 0xFFADBED0);
     for (int i = 0; i < 36; i++) {
       int sx = left + 12 + i % 9 * 18, sy = top + 208 + i / 9 * 18;
@@ -423,7 +413,6 @@ public final class TypeListScreen extends FittedScreen {
               .toList(),
           x,
           y);
-    g.pose().popPose();
-    if (emi) EmiScreenBridge.render(g, mx, my, partial);
+    endFit(g);
   }
 }

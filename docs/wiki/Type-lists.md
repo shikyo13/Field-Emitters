@@ -1,6 +1,6 @@
 # Mob and item lists
 
-Open **Block**, **Detect**, or **Damage**, choose the travel direction to edit, then open **Mob list** or **Item list**. A custom directional rule has its own lists. Shared rules continue to apply in directions without an override.
+Open **Blocking**, **Sensor**, or **Damage**, choose the travel direction to edit, then open **Mob list** or **Item list**. A custom directional rule has its own lists. Shared rules continue to apply in directions without an override.
 
 Each list holds up to 64 IDs or tags. Entries match with OR: any listed type or tag is enough.
 

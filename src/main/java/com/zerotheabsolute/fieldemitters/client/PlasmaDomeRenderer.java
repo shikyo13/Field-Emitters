@@ -21,7 +21,7 @@ final class PlasmaDomeRenderer {
 
   private static List<Ripple> ripples(EmitterEntity emitter, float partial) {
     var result = new ArrayList<Ripple>();
-    double now = emitter.getLevel().getGameTime() + partial;
+    double now = FieldRenderClock.time(emitter, partial);
     var center = SphereField.center(emitter);
     for (var wave : emitter.impactWaves) {
       double seconds = (now - wave.time()) / 20.0;
@@ -42,7 +42,7 @@ final class PlasmaDomeRenderer {
 
   static void render(EmitterEntity e, float partial, PoseStack pose, MultiBufferSource buffers) {
     if (!e.controls.visible) return;
-    float age = e.getLevel().getGameTime() + partial - e.transition;
+    float age = FieldRenderClock.time(e, partial) - e.transition;
     float progress = e.powered ? Mth.clamp(age / SphereField.FORMATION_TICKS, 0, 1) : 1;
     float opacity = e.powered ? 1 : FieldShutdown.remaining(age);
     if (opacity <= 0) return;

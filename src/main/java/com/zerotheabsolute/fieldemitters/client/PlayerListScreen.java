@@ -210,6 +210,7 @@ final class PlayerListScreen extends FittedScreen {
   }
 
   public static void receive(PlayerLookup.Result result) {
+    if (TargetEntryScreen.receive(result)) return;
     if (!(Minecraft.getInstance().screen instanceof PlayerListScreen screen)
         || screen.pending != result.requestId()) return;
     screen.pending = -1;

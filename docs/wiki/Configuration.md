@@ -12,7 +12,7 @@ Every emitter and rail accepts Forge Energy on any side from cables, generators 
 
 A link between two posts costs (distance − 1) × 5 × `energyPerCellTick` FE/t. A twenty-block side costs 190 FE/t and a 20 by 16 rectangle costs 680 FE/t with default settings. A rail span costs (distance + 1) × `energyPerCellTick` FE/t per strip.
 
-A field starts when the pool holds enough energy for one tick and stops when it runs dry. The Power tab shows stored energy, demand and whether the field is running.
+A field starts when the pool holds enough energy for one tick and stops when it runs dry. The Overview tab shows stored energy, demand and whether the field is running.
 
 ## Files
 

@@ -32,13 +32,6 @@ versionRange="[0.1.2,0.2.0)"
 ordering="AFTER"
 side="BOTH"
 
-[[dependencies.${mod_id}]]
-modId="emi"
-type="optional"
-versionRange="[1.1.24,)"
-ordering="AFTER"
-side="CLIENT"
-
 [[dependencies.fieldemitters]]
 modId="curios"
 type="optional"

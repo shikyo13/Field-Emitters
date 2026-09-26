@@ -77,7 +77,8 @@ public final class TunerItem extends Item {
       net.minecraft.world.entity.LivingEntity entity,
       InteractionHand hand) {
     if (!player.isShiftKeyDown()) return InteractionResult.PASS;
-    if (!player.level().isClientSide) sample(stack, player, entity);
+    // Creative entity interaction supplies a copy; keep the sample on the held tuner.
+    if (!player.level().isClientSide) sample(player.getItemInHand(hand), player, entity);
     return InteractionResult.SUCCESS;
   }
 

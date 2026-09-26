@@ -56,7 +56,7 @@ public final class FieldHandle {
     var emitter = emitter();
     ManagedFields.refresh(level, FieldNetwork.loaded(level));
     var controls = emitter.controls.save(); controls.merge(preset.controls().copy());
-    var updated = ControlSettings.load(controls);
+    var updated = ControlSettings.load(controls).foldLegacyWrites();
     if (updated.sphereRadius != emitter.controls.sphereRadius || updated.dome != emitter.controls.dome)
       emitter.transition = level.getGameTime();
     emitter.controls = updated;

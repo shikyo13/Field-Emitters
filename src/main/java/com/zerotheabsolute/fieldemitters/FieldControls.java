@@ -301,6 +301,12 @@ public final class FieldControls {
   }
 
   public static Component validate(EntityFilter f) {
+    if (f.included.size() > EntityFilter.MAX_TYPES || f.excluded.size() > EntityFilter.MAX_TYPES)
+      return Component.translatable("message.fieldemitters.fieldcontrols.mob_and_item_lists_support_at_most_64");
+    for (var target : java.util.stream.Stream.concat(f.included.stream(), f.excluded.stream()).toList()) {
+      Component error = target.validate();
+      if (error != null) return error;
+    }
     if (f.mobMode < 0
         || f.mobMode > 2
         || f.itemMode < 0

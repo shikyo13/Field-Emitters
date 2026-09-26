@@ -125,6 +125,21 @@ public final class ControlSettings {
     return filter.relative(inward);
   }
 
+  /**
+   * Folds legacy list settings written into blocking, sensor and damage rules that are already
+   * edited as categories and exceptions. Applied wherever settings reach an emitter, so the server
+   * and every client agree. Checkpoint rules keep their list editor.
+   */
+  public ControlSettings foldLegacyWrites() {
+    barrier.foldLegacyWrites();
+    sensor.foldLegacyWrites();
+    damage.foldLegacyWrites();
+    barrierDirections.overrides().values().forEach(EntityFilter::foldLegacyWrites);
+    sensorDirections.overrides().values().forEach(EntityFilter::foldLegacyWrites);
+    damageDirections.overrides().values().forEach(EntityFilter::foldLegacyWrites);
+    return this;
+  }
+
   public java.util.List<EntityFilter> filters() {
     var result = new java.util.ArrayList<EntityFilter>();
     result.add(barrier);

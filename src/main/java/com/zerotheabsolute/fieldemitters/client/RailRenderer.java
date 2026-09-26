@@ -9,19 +9,27 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 
 public final class RailRenderer {
+  // The rail lens projects 3.5 model pixels from its mounting face.
+  private static final float RAIL_DEPTH = 3.5f / 16;
+  private static final float FIELD_START = -.5f + RAIL_DEPTH;
+
+  private static float fieldEnd(EmitterEntity.Link link) {
+    return link.length() + .5f - RAIL_DEPTH;
+  }
+
   public static void render(
       EmitterEntity e, float partial, PoseStack pose, MultiBufferSource buffers) {
     if (!e.controls.visible) return;
-    float age = e.getLevel().getGameTime() + partial - e.transition;
+    float age = FieldRenderClock.time(e, partial) - e.transition;
     var v = buffers.getBuffer(FieldRenderType.ENERGY);
     var m = pose.last().pose();
     for (var l : e.links) {
       float end =
           e.powered
-              ? Math.min(l.length() + .5f, age / 2)
-              : -.5f + (l.length() + 1) * FieldShutdown.remaining(age);
-      if (e.controls.formation != 0) end = l.length() + .5f;
-      if (end <= -.5 || FieldPattern.progress(e, age) <= 0) continue;
+              ? Math.min(fieldEnd(l), age / 2)
+              : FIELD_START + (fieldEnd(l) - FIELD_START) * FieldShutdown.remaining(age);
+      if (e.controls.formation != 0) end = fieldEnd(l);
+      if (end <= FIELD_START || FieldPattern.progress(e, age) <= 0) continue;
       var along = new Vec3(l.dx(), l.dy(), l.dz());
       var normal =
           Vec3.atLowerCornerOf(
@@ -35,7 +43,7 @@ public final class RailRenderer {
             m,
             along,
             across,
-            -.5f,
+            FIELD_START,
             -.49f,
             end,
             -.49f,
@@ -48,7 +56,7 @@ public final class RailRenderer {
             m,
             along,
             across,
-            -.5f,
+            FIELD_START,
             .49f,
             end,
             .49f,
@@ -56,17 +64,17 @@ public final class RailRenderer {
             e.color,
             .75f * FieldPattern.progress(e, age));
       // The same world-space lattice and clock are used by every coplanar strip.
-      float time = e.controls.animation ? e.getLevel().getGameTime() + partial : 0;
+      float time = e.controls.animation ? FieldRenderClock.time(e, partial) : 0;
       var origin = l.origin(e.getBlockPos()).subtract(Vec3.atLowerCornerOf(e.root));
       var uAxis = l.normal() == Direction.Axis.X ? new Vec3(0, 0, 1) : new Vec3(1, 0, 0);
       var vAxis = l.normal() == Direction.Axis.Y ? new Vec3(0, 0, 1) : new Vec3(0, 1, 0);
       float u0 = (float) origin.dot(uAxis), v0 = (float) origin.dot(vAxis);
       float au = (float) along.dot(uAxis), av = (float) along.dot(vAxis);
       float bu = (float) across.dot(uAxis), bv = (float) across.dot(vAxis);
-      float left = u0 + Math.min(-.5f * au, end * au) - .5f * Math.abs(bu);
-      float right = u0 + Math.max(-.5f * au, end * au) + .5f * Math.abs(bu);
-      float bottom = v0 + Math.min(-.5f * av, end * av) - .5f * Math.abs(bv);
-      float top = v0 + Math.max(-.5f * av, end * av) + .5f * Math.abs(bv);
+      float left = u0 + Math.min(FIELD_START * au, end * au) - .5f * Math.abs(bu);
+      float right = u0 + Math.max(FIELD_START * au, end * au) + .5f * Math.abs(bu);
+      float bottom = v0 + Math.min(FIELD_START * av, end * av) - .5f * Math.abs(bv);
+      float top = v0 + Math.max(FIELD_START * av, end * av) + .5f * Math.abs(bv);
       final float projectedEnd = end;
       FieldPattern.Stroke stroke =
           (x1, y1, x2, y2, w, color, alpha) ->
@@ -82,7 +90,7 @@ public final class RailRenderer {
                   w,
                   color,
                   alpha,
-                  -.5f,
+                  FIELD_START,
                   projectedEnd,
                   -.5f,
                   .5f);
@@ -173,9 +181,9 @@ public final class RailRenderer {
     while (joined(e, link, across.scale(high + 1))) high++;
     Vec3 origin = link.origin(e.getBlockPos()).subtract(Vec3.atLowerCornerOf(e.root)),
         along = new Vec3(link.dx(), link.dy(), link.dz());
-    Vec3 a = origin.add(along.scale(-.5)).add(across.scale(low - .5));
-    Vec3 b = origin.add(along.scale(link.length() + .5)).add(across.scale(high + .5));
-    Vec3 source = origin.add(along.scale(-.5)).add(across.scale((low + high) / 2.0));
+    Vec3 a = origin.add(along.scale(FIELD_START)).add(across.scale(low - .5));
+    Vec3 b = origin.add(along.scale(fieldEnd(link))).add(across.scale(high + .5));
+    Vec3 source = origin.add(along.scale(FIELD_START)).add(across.scale((low + high) / 2.0));
     return new com.zeromods.core.animation.PlanarProjection.Frame(
         (float) Math.min(a.dot(uAxis), b.dot(uAxis)),
         (float) Math.max(a.dot(uAxis), b.dot(uAxis)),
@@ -191,7 +199,11 @@ public final class RailRenderer {
         new net.minecraft.core.BlockPos(
             (int) Math.round(offset.x), (int) Math.round(offset.y), (int) Math.round(offset.z));
     var pos = e.getBlockPos().offset(delta);
-    return e.getLevel().getBlockEntity(pos) instanceof EmitterEntity other
+    var neighbor = FieldRenderClock.preview(e)
+        ? e.network == null ? null : e.network.stream()
+            .filter(candidate -> candidate.getBlockPos().equals(pos)).findFirst().orElse(null)
+        : e.getLevel().getBlockEntity(pos);
+    return neighbor instanceof EmitterEntity other
         && other.powered == e.powered
         && other.controls.visible
         && other.color == e.color
