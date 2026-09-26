@@ -39,6 +39,11 @@ public final class FieldRenderer implements BlockEntityRenderer<EmitterEntity> {
       int light,
       int overlay) {
     if (e.getLevel() == null) return;
+    if (!FieldRenderClock.preview(e) && com.zeromods.core.client.ShaderPackCompat.active()) {
+      if (com.zeromods.core.client.ShaderPackCompat.shadowPass()) return;
+      if (FieldEffects.defer(e, pose,
+          (copy, target) -> render(e, partial, copy, target, light, overlay))) return;
+    }
     if (e.isTower()) {
       float time = FieldRenderClock.time(e, partial);
       float age = time - e.transition;
