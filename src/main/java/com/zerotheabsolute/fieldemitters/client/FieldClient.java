@@ -5,6 +5,7 @@ import com.zerotheabsolute.fieldemitters.*;
 public final class FieldClient implements net.fabricmc.api.ClientModInitializer {
   private static void run(Runnable action) { action.run(); }
   @Override public void onInitializeClient() {
+    FieldEffects.register();
     net.fabricmc.fabric.api.client.rendering.v1.CoreShaderRegistrationCallback.EVENT.register(context ->
         context.register(net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("zeromodscore", "energy_surface"), com.mojang.blaze3d.vertex.DefaultVertexFormat.NEW_ENTITY,
             com.zeromods.core.client.EnergyRenderTypes::surfaceShader));
