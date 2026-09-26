@@ -8,23 +8,21 @@ Terrain-following forcefields for Minecraft. Place Field Emitter posts around an
 
 **[Watch the 30-second showcase](https://youtu.be/HvTZJLOWlAM)**
 
-The showcase combines studio views of the shipped models with gameplay captures.
-
-| Posts link, the field follows | Rails seal the openings |
+| Emitter posts | Field Rails |
 |---|---|
 | ![Four posts around a stepped hillside](docs/images/perimeter-day.png) | ![Rails sealing a doorway, a shaft and a walkway](docs/images/rails-doorway.png) |
 
-## New in 1.1.0
+## Fields and controls
 
-Projection towers add hollow spheres and domes, and horizontal rails make walkable bridges. Choose the formation animation separately from the field texture, configure contact damage, issue passage badges, invite network managers, or set up an inventory checkpoint that drops or stores contraband. The tuner groups these controls into dedicated pages and applies changes immediately.
+Projection towers add hollow spheres and domes, and horizontal rails make walkable bridges. Choose the formation animation separately from the field texture, configure contact damage, issue access cards, invite network managers, or set up an inventory checkpoint that drops or stores contraband. The tuner groups these controls into dedicated pages and applies changes immediately.
 
 ## Features
 
 - Emitter posts link to other posts up to 20 blocks away in the four cardinal directions and project a field that climbs and descends with the terrain.
 - Rails mount on any block face, span up to 20 blocks to an opposing rail, and join side by side into one wall, floor or ceiling.
 - Blocking filters by category: hostile, passive, players, dropped items and other entities. Narrow a filter with age, entity type or tag, item, UUID or scoreboard tag, choose the movement directions it applies to, invert it, and exempt the owner.
-- Detection output on a redstone face: one pulse per completed crossing, or a steady signal while a matching entity touches the field. Counts dropped items per stack or per item.
-- Separate rules for each link, redstone enable modes, six color presets or any hex color, an animated field pattern, and optional block light.
+- Detection output on a redstone face: an immediate pulse on crossing, extended by further crossings, or a steady signal while a matching entity touches the field. Counts dropped items per stack or per item.
+- Separate rules for each link, redstone enable modes, color presets or any hex color, an animated field pattern, and optional block light.
 - A handheld Field Tuner that opens controls, manages every loaded field from anywhere in the dimension, samples mobs and players for filters, and cycles colors.
 - Energy input on every emitter and rail: Forge Energy on Forge/NeoForge and Team Reborn Energy on Fabric. Connected emitters pool their stored energy.
 
