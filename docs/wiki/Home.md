@@ -18,6 +18,6 @@ Download the mod from [CurseForge](https://www.curseforge.com/minecraft/mc-mods/
 
 [Report a bug](https://github.com/shikyo13/Field-Emitters/issues) · [Discord](https://discord.gg/NrdXnbWzGC) · [Source code](https://github.com/shikyo13/Field-Emitters)
 
-Include your Minecraft version, NeoForge version, Field Emitters version and the energy mod involved when reporting a problem. A screenshot of the emitter's Power tab often helps.
+Include your Minecraft version, NeoForge version, Field Emitters version and the energy mod involved when reporting a problem. A screenshot of the emitter's Overview tab often helps.
 
 You can support ZeroTheAbsolute through [Buy Me a Coffee](https://buymeacoffee.com/zerotheabsolute) or [Patreon](https://www.patreon.com/cw/ZeroTheAbsolute/membership).

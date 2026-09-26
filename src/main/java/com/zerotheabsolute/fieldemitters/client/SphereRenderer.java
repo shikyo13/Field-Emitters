@@ -25,7 +25,7 @@ final class SphereRenderer {
 
   private static List<Ripple> ripples(EmitterEntity emitter, float partial) {
     var result = new ArrayList<Ripple>();
-    double now = emitter.getLevel().getGameTime() + partial;
+    double now = FieldRenderClock.time(emitter, partial);
     var center = SphereField.center(emitter);
     for (var wave : emitter.impactWaves) {
       double seconds = (now - wave.time()) / 20.0;
@@ -47,7 +47,7 @@ final class SphereRenderer {
       return;
     }
     if (!e.controls.visible) return;
-    float age = e.getLevel().getGameTime() + partial - e.transition;
+    float age = FieldRenderClock.time(e, partial) - e.transition;
     float progress = e.powered ? Mth.clamp(age / SphereField.FORMATION_TICKS, 0, 1) : 1;
     float opacity = e.powered ? 1 : FieldShutdown.remaining(age);
     if (opacity <= 0) return;
@@ -59,7 +59,7 @@ final class SphereRenderer {
     double minLatitude = e.controls.dome ? Math.asin(-depth / radius) : -Math.PI / 2;
     double range = Math.PI / 2 - minLatitude;
     var waves = (e.controls.pattern == 0 || e.controls.pattern == 2) ? List.<Ripple>of() : ripples(e, partial);
-    float time = e.controls.animation ? (e.getLevel().getGameTime() + partial) / 20 : 0;
+    float time = e.controls.animation ? (FieldRenderClock.time(e, partial)) / 20 : 0;
     var mesh = MESHES.computeIfAbsent(new MeshKey(radius, minLatitude), key -> {
       var points = new Vec3[LONGITUDES + 1][LATITUDES + 1];
       for (int x = 0; x <= LONGITUDES; x++)
@@ -184,7 +184,7 @@ final class SphereRenderer {
     float right = (float) (Math.PI * 2 * PATTERN_RADIUS);
     float bottom = (float) (minLatitude * PATTERN_RADIUS);
     float top = (float) (Math.PI / 2 * PATTERN_RADIUS);
-    float time = e.controls.animation ? e.getLevel().getGameTime() + partial : 0;
+    float time = e.controls.animation ? FieldRenderClock.time(e, partial) : 0;
     com.zeromods.core.animation.HexFieldPattern.Stroke stroke =
         (x1, y1, x2, y2, width, color, alpha) -> {
           // The curved shell above supplies the broad fill. Keep the detailed strokes and tiles.

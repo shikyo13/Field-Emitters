@@ -18,7 +18,7 @@ final class FieldPattern {
       Vec3 uAxis, Vec3 vAxis, float partial) {
     var result = new ArrayList<ImpactWaves.Wave>();
     double plane = link.normalCoordinate(link.origin(emitter.getBlockPos()));
-    double now = emitter.getLevel().getGameTime() + partial;
+    double now = FieldRenderClock.time(emitter, partial);
     for (var wave : emitter.impactWaves) {
       float age = (float) (now - wave.time());
       if (age < 0 || age >= 32 || Math.abs(link.normalCoordinate(wave.position()) - plane) >= .15) continue;

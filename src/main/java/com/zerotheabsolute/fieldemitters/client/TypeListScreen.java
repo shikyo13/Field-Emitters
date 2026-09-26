@@ -15,6 +15,7 @@ import net.minecraft.world.item.*;
 
 /** Ghost slots store type references only; inventory stacks never move or shrink. */
 public final class TypeListScreen extends FittedScreen {
+  private static final int LIST_STATUS_WIDTH = 288;
   private final net.minecraft.client.gui.screens.Screen parent;
   private final EntityFilter filter;
   private final boolean items;
@@ -27,6 +28,12 @@ public final class TypeListScreen extends FittedScreen {
           UiText.text("screen.fieldemitters.typelist.drag_from_your_inventory_jei_or_emi_into");
   private long legacyChanged;
   private ItemStack dragging = ItemStack.EMPTY;
+  private java.util.function.Function<Boolean, String> sample;
+
+  TypeListScreen withEntityDetails(java.util.function.Function<Boolean, String> sample) {
+    this.sample = sample;
+    return this;
+  }
 
   TypeListScreen(
       net.minecraft.client.gui.screens.Screen parent,
@@ -166,6 +173,12 @@ public final class TypeListScreen extends FittedScreen {
                 })
             .active =
         page + 1 < pages;
+    if (sample != null) {
+      button(UiText.text("screen.fieldemitters.pages.entity_details"), 312, 178, 80,
+          () -> minecraft.setScreen(new EntityMatchScreen(this, filter, apply, items ? null : sample)))
+          .setTooltip(Tooltip.create(Component.literal(UiText.text(
+              "screen.fieldemitters.pages.entity_details_help"))));
+    }
     button(UiText.text("screen.fieldemitters.access.back"), 312, 284, 80, this::onClose);
   }
 
@@ -385,7 +398,7 @@ public final class TypeListScreen extends FittedScreen {
       }
     }
     drawLabel(g, UiText.text("screen.fieldemitters.typelist.page", (page + 1)), left + 12, top + 178, ScreenMetrics.CONTENT_WIDTH, 0xFFADBED0);
-    drawLabel(g, status, left + 12, top + 190, ScreenMetrics.CONTENT_WIDTH, 0xFF8DE0CF);
+    drawLabel(g, status, left + 12, top + 190, LIST_STATUS_WIDTH, 0xFF8DE0CF);
     drawLabel(g, UiText.text("screen.fieldemitters.typelist.your_inventory_drag_a_copy_into_the_boxes"), left + 12, top + 199, ScreenMetrics.CONTENT_WIDTH, 0xFFADBED0);
     for (int i = 0; i < 36; i++) {
       int sx = left + 12 + i % 9 * 18, sy = top + 208 + i / 9 * 18;

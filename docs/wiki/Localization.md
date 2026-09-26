@@ -6,7 +6,7 @@ Choose your language in Minecraft's language settings. Field Emitters uses that 
 
 English (`en_us`), Spanish (`es_es`), French (`fr_fr`), German (`de_de`), Japanese (`ja_jp`), Simplified Chinese (`zh_cn`), Traditional Chinese (`zh_tw`), Brazilian Portuguese (`pt_br`), Russian (`ru_ru`), Korean (`ko_kr`), Polish (`pl_pl`) and Italian (`it_it`).
 
-The catalogs cover every current Field Emitters translation key. Native-speaker corrections and terminology suggestions are welcome. Coverage and formatting validation do not substitute for linguistic review.
+Some recent guide text is available in English only. Missing translations fall back to English. Corrections and additional translations are welcome.
 
 ## Contributing a translation
 
