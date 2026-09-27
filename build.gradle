@@ -77,7 +77,6 @@ repositories {
 }
 dependencies {
  implementation 'com.zeromods:zeromods-core-forge-1.21.1:0.1.2'
- compileOnly 'mezz.jei:jei-1.21.1-common-api:19.21.0.247'
 }
 
 dependencies {

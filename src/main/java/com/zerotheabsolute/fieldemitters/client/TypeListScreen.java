@@ -3,6 +3,9 @@ package com.zerotheabsolute.fieldemitters.client;
 import com.zeromods.core.client.FittedScreen;
 
 import com.zerotheabsolute.fieldemitters.*;
+import com.zeromods.core.client.browser.RecipeBrowsers;
+import com.zeromods.core.client.browser.StackDropScreen;
+import com.zeromods.core.client.browser.StackDropTarget;
 import java.util.*;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
@@ -14,7 +17,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.*;
 
 /** Ghost slots store type references only; inventory stacks never move or shrink. */
-public final class TypeListScreen extends FittedScreen {
+public final class TypeListScreen extends FittedScreen implements StackDropScreen {
   private static final int LIST_STATUS_WIDTH = 288;
   private final net.minecraft.client.gui.screens.Screen parent;
   private final EntityFilter filter;
@@ -22,7 +25,7 @@ public final class TypeListScreen extends FittedScreen {
   private final FilterPurpose purpose;
   private final Runnable apply;
   private int left, top, page;
-  private final int browserInset = net.minecraftforge.fml.ModList.get().isLoaded("jei") ? 24 : 0;
+  private final int browserInset = RecipeBrowsers.bottomInset();
   private String query = "",
       status =
           UiText.text("screen.fieldemitters.typelist.drag_from_your_inventory_jei_or_emi_into");
@@ -244,29 +247,24 @@ public final class TypeListScreen extends FittedScreen {
                 .toString());
   }
 
-  private Rect2i physical(int x, int y, int w, int h) {
-    // CanvasFit can truncate the logical height; derive the exact scale from its shared model.
-    double s =
-        com.zeromods.core.ui.CanvasFit.fit(
-                minecraft.getWindow().getGuiScaledWidth(),
-                minecraft.getWindow().getGuiScaledHeight() - (browserInset),
-                ScreenMetrics.PANEL_WIDTH,
-                ScreenMetrics.PANEL_HEIGHT,
-                4)
-            .scale();
-    return new Rect2i(
-        (int) Math.ceil(x * s),
-        (int) Math.ceil(y * s),
-        (int) Math.floor(w * s),
-        (int) Math.floor(h * s));
+  public Rect2i dropArea() {
+    return screenRect(left + 12, top + 132, 288, 44);
   }
 
-  public Rect2i dropArea() {
-    return physical(left + 12, top + 132, 288, 44);
+  @Override
+  public List<StackDropTarget> dropTargets(ItemStack stack) {
+    return canAcceptDrop(stack)
+        ? List.of(new StackDropTarget(dropArea(), 0x5553BBCB, this::acceptDrop))
+        : List.of();
+  }
+
+  @Override
+  public Rect2i browserExclusion() {
+    return panelArea();
   }
 
   public Rect2i panelArea() {
-    return physical(left, top, ScreenMetrics.PANEL_WIDTH, ScreenMetrics.PANEL_HEIGHT);
+    return screenRect(left, top, ScreenMetrics.PANEL_WIDTH, ScreenMetrics.PANEL_HEIGHT);
   }
 
   private boolean inside(int x, int y, int bx, int by, int w, int h) {
@@ -304,18 +302,6 @@ public final class TypeListScreen extends FittedScreen {
       return true;
     }
     return super.mouseReleased(x, y, button);
-  }
-
-  public boolean mouseDragged(double x, double y, int button, double dx, double dy) {
-    return super.mouseDragged(x, y, button, dx, dy);
-  }
-
-  public boolean mouseScrolled(double x, double y, double dx, double dy) {
-    return super.mouseScrolled(x, y, dx, dy);
-  }
-
-  public boolean charTyped(char value, int modifiers) {
-    return super.charTyped(value, modifiers);
   }
 
   public boolean keyPressed(int key, int scan, int modifiers) {
@@ -427,6 +413,6 @@ public final class TypeListScreen extends FittedScreen {
               .toList(),
           x,
           y);
-    g.pose().popPose();
+    endFit(g);
   }
 }

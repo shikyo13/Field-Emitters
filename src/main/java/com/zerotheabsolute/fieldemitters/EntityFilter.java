@@ -1,10 +1,15 @@
 package com.zerotheabsolute.fieldemitters;
 
+import com.zeromods.core.filter.EntityCategories;
+import com.zeromods.core.filter.FilterTarget;
+import com.zeromods.core.filter.FilterTargetTags;
+import com.zeromods.core.filter.LegacyLists;
+import com.zeromods.core.filter.TargetExceptions;
 import java.util.UUID;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.*;
 
-/** Categories are ORed; optional constraints are ANDed. Inversion applies last. */
+/** Category selection with explicit inclusions and exclusions; legacy rules remain readable. */
 public final class EntityFilter {
   public static final int MAX_TYPE_LENGTH = 128;
   public static final int MAX_ACCESS_GROUPS = 64;
@@ -36,8 +41,62 @@ public final class EntityFilter {
   public boolean inverted = false, exemptOwner = false;
   public String entityType = "", itemType = "", identity = "", entityTag = "";
 
+  public boolean categoryLists;
+  public final TargetExceptions exceptions = new TargetExceptions();
+  public final java.util.LinkedHashSet<FilterTarget> included = exceptions.included(),
+      excluded = exceptions.excluded();
+
+  /** Move a target between lists instead of letting identical entries conflict. */
+  public void addTarget(FilterTarget target, boolean exclude) {
+    exceptions.add(target, exclude);
+  }
+
+  /** Convert only rules exactly expressible as categories and exceptions. */
+  public boolean useCategoryLists() {
+    if (categoryLists) return true;
+    if (age != 0 || !identity.isEmpty() || !entityTag.isEmpty()
+        || !entityType.isEmpty() || !itemType.isEmpty() || !listsFit()) return false;
+    foldLegacyLists();
+    categoryLists = true;
+    return true;
+  }
+
+  /**
+   * A rule edited as categories and exceptions ignores the legacy list settings. When a command,
+   * script or preset writes them into such a rule, fold them into its exceptions instead.
+   */
+  public void foldLegacyWrites() {
+    if (categoryLists && (inverted || mobMode != 0 || itemMode != 0 || playerMode != 0) && listsFit())
+      foldLegacyLists();
+  }
+
+  private LegacyLists legacyLists() {
+    var players = new java.util.ArrayList<FilterTarget>();
+    playerList.forEach((id, name) -> players.add(new FilterTarget(FilterTarget.PLAYER, id.toString(), name)));
+    for (String id : accessGroups) players.add(new FilterTarget(FieldTargets.CARD_GROUP, id, ""));
+    return new LegacyLists(groups, inverted, mobMode, mobList, itemMode, itemList, playerMode, players);
+  }
+
+  private boolean listsFit() {
+    return legacyLists().fits(MAX_TYPES);
+  }
+
+  private void foldLegacyLists() {
+    groups = legacyLists().foldInto(exceptions);
+    inverted = false;
+    mobMode = itemMode = playerMode = 0;
+    mobList.clear();
+    itemList.clear();
+    playerList.clear();
+    accessGroups.clear();
+  }
+
   /** Whether this rule blocks listed players and lists this one, by name or by card group. */
   public boolean blocksListed(Entity entity, UUID owner) {
+    if (categoryLists) return entity instanceof net.minecraft.world.entity.player.Player
+        && matches(entity, owner)
+        && exceptions.includes(selection(), new com.zeromods.core.forge.MinecraftEntitySubject(entity),
+            owner, FieldTargets.MATCHER);
     return playerMode == 1
         && entity instanceof net.minecraft.world.entity.player.Player player
         && !player.isSpectator()
@@ -48,6 +107,9 @@ public final class EntityFilter {
 
   public boolean matches(Entity entity, UUID owner) {
     if (entity == null) return false;
+    if (categoryLists)
+      return exceptions.matches(selection(), new com.zeromods.core.forge.MinecraftEntitySubject(entity),
+          owner, FieldTargets.MATCHER);
     if (entity instanceof net.minecraft.world.entity.player.Player && playerMode != 0) {
       if (entity.isSpectator() || exemptOwner && entity.getUUID().equals(owner)) return false;
       return com.zeromods.core.filter.PlayerListMode.values()[Math.max(0, Math.min(2, playerMode))]
@@ -85,6 +147,13 @@ public final class EntityFilter {
     return selection.matches(new com.zeromods.core.forge.MinecraftEntitySubject(entity), owner);
   }
 
+  /** The category selection and entity details, without inversion or lists. */
+  private com.zeromods.core.filter.EntitySelection selection() {
+    return new com.zeromods.core.filter.EntitySelection(groups,
+        com.zeromods.core.filter.EntitySelection.Age.values()[Math.max(0, Math.min(2, age))],
+        false, exemptOwner, identity, entityTag, entityType, itemType);
+  }
+
   public boolean direction(net.minecraft.core.Direction movement) {
     return (directions & (1 << movement.ordinal())) != 0;
   }
@@ -112,6 +181,11 @@ public final class EntityFilter {
 
   public CompoundTag save() {
     var t = new CompoundTag();
+    {
+      t.putBoolean("CategoryLists", categoryLists);
+      t.put("IncludedTargets", FilterTargetTags.saveAll(included));
+      t.put("ExcludedTargets", FilterTargetTags.saveAll(excluded));
+    }
     t.putInt("Groups", groups);
     t.putInt("CategoryVersion", CATEGORY_VERSION);
     t.putInt("PlayerMode", playerMode);
@@ -143,6 +217,8 @@ public final class EntityFilter {
   }
 
   public void copyFrom(EntityFilter source) {
+    categoryLists = source.categoryLists;
+    exceptions.copyFrom(source.exceptions);
     groups = source.groups;
     playerMode = source.playerMode;
     mobMode = source.mobMode;
@@ -169,9 +245,14 @@ public final class EntityFilter {
 
   public static EntityFilter load(CompoundTag t) {
     var f = new EntityFilter();
+    f.categoryLists = t.getBoolean("CategoryLists");
+    FilterTargetTags.loadAll(t.getList("IncludedTargets", 10), MAX_TYPES, MAX_TYPE_LENGTH,
+        FieldTargets::known, f.included);
+    FilterTargetTags.loadAll(t.getList("ExcludedTargets", 10), MAX_TYPES, MAX_TYPE_LENGTH,
+        FieldTargets::known, f.excluded);
     f.groups = t.contains("CategoryVersion")
-        ? t.getInt("Groups") & com.zeromods.core.filter.EntityCategories.ALL
-        : com.zeromods.core.filter.EntityCategories.fromLegacy(t.getInt("Groups"));
+        ? t.getInt("Groups") & EntityCategories.ALL
+        : EntityCategories.fromLegacy(t.getInt("Groups"));
     f.playerMode = Math.max(0, Math.min(2, t.getInt("PlayerMode")));
     loadTypes(t, "AccessGroups", f.accessGroups);
     var players = t.getList("PlayerList", 10);

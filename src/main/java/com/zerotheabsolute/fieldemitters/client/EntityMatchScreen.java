@@ -58,7 +58,11 @@ final class EntityMatchScreen extends FittedScreen {
         Component.literal(UiText.text("screen.fieldemitters.control." + key)));
     box.setMaxLength(EntityFilter.MAX_TYPE_LENGTH);
     box.setValue(value);
-    box.setTooltip(Tooltip.create(Component.literal(ControlHelp.field(control))));
+    // Rules edited as lists have no player list mode and sample from the + screen instead.
+    box.setTooltip(Tooltip.create(Component.literal(
+        control == Control.SPECIFIC_MOB_PLAYER_UUID && filter.categoryLists
+            ? UiText.text("screen.fieldemitters.targets.details_identity_help")
+            : ControlHelp.field(control))));
     box.setResponder(text -> {
       save.accept(text.trim());
       changedAt = net.minecraft.Util.getMillis();
@@ -108,7 +112,7 @@ final class EntityMatchScreen extends FittedScreen {
     beginFit(g);
     g.fill(left, top, left + ScreenMetrics.PANEL_WIDTH, top + ScreenMetrics.PANEL_HEIGHT, 0xFF0D1D2B);
     g.fill(left, top, left + ScreenMetrics.PANEL_WIDTH, top + 2, 0xFF53BBCB);
-    drawLabel(g, getTitle().getString(), left + ScreenMetrics.CONTENT_INSET,
+    drawLabel(g, getTitle().getString().toUpperCase(java.util.Locale.ROOT), left + ScreenMetrics.CONTENT_INSET,
         top + ScreenMetrics.CONTENT_INSET, ScreenMetrics.CONTENT_WIDTH, 0xFFE0F3FF);
     drawLabel(g, UiText.text("screen.fieldemitters.control.specific_mob_player_uuid"),
         left + ScreenMetrics.CONTENT_INSET, top + FIRST_FIELD_Y - ScreenMetrics.CONTENT_INSET,
@@ -116,7 +120,7 @@ final class EntityMatchScreen extends FittedScreen {
     drawLabel(g, UiText.text("screen.fieldemitters.control.custom_entity_label_tag"),
         left + ScreenMetrics.CONTENT_INSET, top + FIRST_FIELD_Y + FIELD_STEP - ScreenMetrics.CONTENT_INSET,
         ScreenMetrics.CONTENT_WIDTH, 0xFFADBED0);
-    drawParagraph(g, Component.literal(UiText.text("screen.fieldemitters.pages.entity_details_help")),
+    drawParagraph(g, Component.literal(UiText.text(filter.categoryLists ? "screen.fieldemitters.targets.details_help" : "screen.fieldemitters.pages.entity_details_help")),
         left + ScreenMetrics.CONTENT_INSET, top + HELP_Y, ScreenMetrics.CONTENT_WIDTH,
         HELP_HEIGHT, 0xFFADBED0);
     drawLabel(g, status, left + ScreenMetrics.CONTENT_INSET,

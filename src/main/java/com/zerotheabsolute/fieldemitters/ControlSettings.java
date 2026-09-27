@@ -152,6 +152,21 @@ public final class ControlSettings {
     sensor.groups = com.zeromods.core.filter.EntityCategories.ALL;
   }
 
+  /**
+   * Folds legacy list settings written into blocking, sensor and damage rules that are already
+   * edited as categories and exceptions. Applied wherever settings reach an emitter, so the server
+   * and every client agree. Checkpoint rules keep their list editor.
+   */
+  public ControlSettings foldLegacyWrites() {
+    barrier.foldLegacyWrites();
+    sensor.foldLegacyWrites();
+    damage.foldLegacyWrites();
+    barrierDirections.overrides().values().forEach(EntityFilter::foldLegacyWrites);
+    sensorDirections.overrides().values().forEach(EntityFilter::foldLegacyWrites);
+    damageDirections.overrides().values().forEach(EntityFilter::foldLegacyWrites);
+    return this;
+  }
+
   public CompoundTag save() {
     var t = new CompoundTag();
     t.putString("Projection", projection.name());

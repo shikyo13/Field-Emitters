@@ -15,9 +15,9 @@ Right-click an emitter with an empty hand or the Field Tuner to open its control
 
 ## Filter details
 
-Blocking, Sensor and Damage keep the category buttons and mob, item and player lists together. Each list shows its current mode and entry count. When a list replaces category matching, the affected category buttons are disabled.
+Blocking, Sensor and Damage show the category buttons above two exception lists, such as **Always allow** and **Always block**. See [Blocking filters](Filters.md).
 
-Open **Travel directions** to restrict movement or edit a particular direction. Choosing a direction only changes the view; choose **Custom filter** to give it separate rules. **Age** is on the main filter page. In Mob list or Item list, **Entity details** opens UUID and scoreboard-label restrictions shared by the target categories. Mob list also provides the sampling buttons. Returning from these screens keeps the restrictions active.
+Open **Travel directions** to restrict movement or edit a particular direction. Choosing a direction only changes the view; choose **Custom filter** to give it separate rules. **Age** and **Details** are on the main filter page; Details opens UUID and scoreboard-label restrictions for the checked categories. Press **+** on a list to add entries, including sampled mobs and players. Returning from these screens keeps the restrictions active.
 
 In Sensor, **Redstone & counting** contains the output side, pulse length and crossing counter. Pulse length appears only in pulse mode. In Damage, **Damage settings** contains the amount and hit interval.
 
@@ -37,7 +37,7 @@ Settings survive world reloads. If two networks reconnect, the most recently edi
 
 - **Right-click an emitter** to open its controls.
 - **Right-click the air** to open the Field Manager. Select a loaded field to rename it or open its controls remotely.
-- **Sneak-right-click a mob or player** to sample it, or sneak-right-click the air to sample yourself. In Mob list → Entity details, use **Sample individual** for that entity or **Sample type** for its type.
+- **Sneak-right-click a mob or player** to sample it, or sneak-right-click the air to sample yourself. Then press **+** on a filter list and choose **Add sampled individual** for that entity or **Add sampled type** for its type.
 - **Sneak-right-click an emitter** to cycle its color.
 
 Set an **Open Field Tuner** key in Minecraft's Controls menu to open it from your inventory. Curios equipment slots are not supported on this build.

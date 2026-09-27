@@ -10,6 +10,9 @@ import net.minecraftforge.client.event.EntityRenderersEvent;
 public final class FieldClient {
   @SubscribeEvent
   public static void setup(net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent event) {
+    // Core's JEI and EMI plugins serve these screens' drop targets.
+    com.zeromods.core.client.browser.RecipeBrowsers.register(ControlScreen.class);
+    com.zeromods.core.client.browser.RecipeBrowsers.register(TypeListScreen.class);
     event.enqueueWork(() -> FizzleNotice.receive = FizzleDeaths::receive);
     event.enqueueWork(
         () ->

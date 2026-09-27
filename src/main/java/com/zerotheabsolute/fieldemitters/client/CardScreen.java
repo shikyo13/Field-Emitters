@@ -23,7 +23,7 @@ final class CardScreen extends FittedScreen {
   private final Runnable apply;
   private Page page = Page.GROUPS;
   private int left, top, groupPage;
-  private String group = "staff", notice = "";
+  private String group = "", notice = "";
   private UUID bound;
   private boolean allowIssued = true, pending;
   private String pendingGroup;
@@ -217,7 +217,8 @@ final class CardScreen extends FittedScreen {
     beginFit(g);
     g.fill(left, top, left + ScreenMetrics.PANEL_WIDTH, top + ScreenMetrics.PANEL_HEIGHT, 0xFF0D1D2B);
     g.fill(left, top, left + ScreenMetrics.PANEL_WIDTH, top + 2, 0xFF53BBCB);
-    label(g, text(page == Page.GROUPS ? "title" : page == Page.ISSUE ? "issue" : "revoke"), 12);
+    drawLabel(g, text(page == Page.GROUPS ? "title" : page == Page.ISSUE ? "issue" : "revoke").toUpperCase(java.util.Locale.ROOT),
+        left + 12, top + 12, ScreenMetrics.CONTENT_WIDTH, 0xFFE0F3FF);
     label(g, text("scope"), 33);
     if (page == Page.GROUPS && cards.enabled) label(g, text(cards.groups.isEmpty() ? "empty" : "groups"), 79);
     if (page != Page.GROUPS) label(g, text("group"), 65);

@@ -57,6 +57,7 @@ final class ControlEditSession {
 
   boolean submit(CompoundTag desired, boolean reset, boolean inherit, boolean poll) {
     if (busy() || !supported() || timedOut && !poll) return false;
+    desired = storedForms(baseline, desired);
     var changes = SettingsPatch.between(baseline, desired);
     if (!poll && !reset && !inherit && changes.isEmpty()) return false;
     var edit = new CompoundTag();
@@ -77,6 +78,33 @@ final class ControlEditSession {
     return true;
   }
 
+  private static final List<String> RULES = List.of("Barrier", "Sensor", "Damage");
+  private static final List<String> DIRECTIONAL_RULES = List.of("BarrierDirections", "SensorDirections", "DamageDirections");
+
+  /**
+   * The editor shows convertible rules as categories and exceptions. Showing a rule is not an edit,
+   * so a rule the player has not changed keeps the form the network stored it in. A changed rule is
+   * sent in its new form.
+   */
+  private static CompoundTag storedForms(CompoundTag stored, CompoundTag desired) {
+    var result = desired.copy();
+    var before = stored.getCompound("Controls");
+    var after = result.getCompound("Controls");
+    for (String key : RULES) keepStoredForm(before, after, key);
+    for (String key : DIRECTIONAL_RULES)
+      if (before.contains(key, 10) && after.contains(key, 10))
+        for (String direction : after.getCompound(key).getAllKeys())
+          keepStoredForm(before.getCompound(key), after.getCompound(key), direction);
+    return result;
+  }
+
+  private static void keepStoredForm(CompoundTag before, CompoundTag after, String key) {
+    if (!before.contains(key, 10) || !after.contains(key, 10)) return;
+    var shown = EntityFilter.load(before.getCompound(key));
+    if (shown.categoryLists || !shown.useCategoryLists()) return;
+    if (shown.save().equals(after.getCompound(key))) after.put(key, before.getCompound(key).copy());
+  }
+
   record Reconciled(CompoundTag draft, boolean refresh, boolean conflict, boolean poll) {}
 
   Reconciled acknowledge(FieldControls.RemoteData reply, CompoundTag draft) {
@@ -85,18 +113,18 @@ final class ControlEditSession {
     var data = reply.data();
     if (!data.contains("Snapshot", 10)) return new Reconciled(draft, false, true, polling);
     boolean scopeChanged = !scope.equals(data.getCompound("Scope"));
-    var pending = SettingsPatch.between(sent, draft);
+    var pending = SettingsPatch.between(sent, storedForms(sent, draft));
     baseline = data.getCompound("Snapshot").copy();
     scope = data.getCompound("Scope").copy();
     override = data.getBoolean("Override");
     emitter.editScope = data.getCompound("EmitterScope").copy();
     if (data.getLong("Revision") >= emitter.settingsRevision) {
       emitter.settingsRevision = data.getLong("Revision");
-      emitter.controls = ControlSettings.load(data.getCompound("SharedControls"));
+      emitter.controls = ControlSettings.load(data.getCompound("SharedControls")).foldLegacyWrites();
       emitter.color = baseline.getInt("Color");
       emitter.enabled = baseline.getBoolean("Enabled");
       if (link) {
-        if (override) emitter.overrides.put(target, ControlSettings.load(baseline.getCompound("Controls")));
+        if (override) emitter.overrides.put(target, ControlSettings.load(baseline.getCompound("Controls")).foldLegacyWrites());
         else emitter.overrides.remove(target);
       }
     }
