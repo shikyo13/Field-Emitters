@@ -130,7 +130,7 @@ final class AccessScreen extends FittedScreen {
     g.fill(left, top, left + ScreenMetrics.PANEL_WIDTH, top + 2, 0xFF53BBCB);
     drawLabel(
         g,
-        UiText.text("screen.fieldemitters.pages.card_filter"),
+        UiText.text("screen.fieldemitters.pages.card_filter").toUpperCase(java.util.Locale.ROOT),
         left + 12,
         top + 12,
         ScreenMetrics.CONTENT_WIDTH,

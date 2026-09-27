@@ -20,10 +20,10 @@ Switched-off emitters stay connected. You do not need a separate energy or redst
 ## A player or mob passes through
 
 - Check **Blocking**, the selected travel direction and any custom filters for that direction or connection.
-- **Block selected** stops matches. **Allow selected only** lets matches through and stops everything else.
+- Checked categories and **Always block** entries are stopped; **Always allow** entries pass even if their category is checked.
 - **Skip owner: Yes** lets the owner through, including through a bridge.
-- Access cards can allow passage. A player specifically named in a blocking blacklist is still stopped.
-- Check enabled mob, item and player lists; they replace the general filters for their own category.
+- Access cards can allow passage. A player or card group listed under **Always block** is still stopped.
+- A rule kept in the earlier editor may have enabled mob, item or player lists; they replace the categories for their own kind of entity.
 - Wait for the formation animation to finish before using the field as a barrier.
 
 Sensor settings control detection, not blocking. Damage and inventory checkpoints have separate settings too.

@@ -1,6 +1,6 @@
 # Mob and item lists
 
-Open **Blocking**, **Sensor**, or **Damage**, choose the travel direction to edit, then open **Mob list** or **Item list**. A custom directional rule has its own lists. Shared rules continue to apply in directions without an override.
+These list screens are used by the inventory checkpoint (**Contraband item list** and **Player / card filters**) and by rules kept in the earlier editor, which open **Mob list** or **Item list** from their tab. Rules edited as categories and exception lists use **Always allow** and **Always block** instead; see [Blocking filters](Filters.md). A custom directional rule has its own lists. Shared rules continue to apply in directions without an override.
 
 Each list holds up to 64 IDs or tags. Entries match with OR: any listed type or tag is enough.
 

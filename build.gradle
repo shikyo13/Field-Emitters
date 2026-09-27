@@ -59,14 +59,12 @@ dependencies {
         prefer '0.1.2'
     }
 }
- compileOnly 'mezz.jei:jei-1.20.1-common-api:15.20.0.129'
 }
 
 repositories { maven { url = 'https://maven.theillusivec4.top/' } }
 dependencies { compileOnly 'top.theillusivec4.curios:curios-forge:5.14.1+1.20.1:api' }
 
 repositories { maven { url = 'https://maven.terraformersmc.com/releases/' } }
-dependencies { compileOnly 'dev.emi:emi-forge:1.1.24+1.20.1' }
 
 // Nested mods must use production SRG mappings, not the development classpath.
 configurations.jarJar.attributes {

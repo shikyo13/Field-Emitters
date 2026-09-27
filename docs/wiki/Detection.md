@@ -1,6 +1,6 @@
 # Detection and redstone
 
-The Sensor tab reports entities over redstone. Like blocking, its directions can be written in world terms or relative to the area the posts enclose; see [Blocking filters](Filters.md). Its filter is independent of the Blocking filter and uses the same categories, details, directions and owner option. *Detect selected* reports matching entities; *Detect unselected* reports everything outside the selection.
+The Sensor tab reports entities over redstone. Like blocking, its directions can be written in world terms or relative to the area the posts enclose; see [Blocking filters](Filters.md). Its filter is independent of the Blocking filter and uses the same categories, details, directions and owner option. The **Always detect** and **Never detect** lists add exceptions; **Never detect** wins when both name an entity.
 
 ## Signal modes
 
