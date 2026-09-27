@@ -60,7 +60,7 @@ public final class ControlScreen extends FittedScreen
     return new int[] {left - NAV_WIDTH, top, CONTENT_WIDTH + NAV_WIDTH, panelHeight()};
   }
 
-  private FilterListPanel targetPanel;
+  private com.zeromods.core.client.filter.ExceptionListPanel targetPanel;
   private EntityFilter targetFilter;
   private final int[] targetPages = {0, 0};
   private ControlSettings draft;
@@ -421,13 +421,13 @@ public final class ControlScreen extends FittedScreen
           + FilterListPanel.text("category." + CATEGORY_NAMES[i]) + "\n\n" + FilterListPanel.text("category_help"))));
     }
     row += 2 * 23;
-    targetPanel = new FilterListPanel(f, tab.purpose(), left+12, row, ScreenMetrics.CONTENT_WIDTH,
+    targetPanel = FilterListPanel.create(f, tab.purpose(), left+12, row, ScreenMetrics.CONTENT_WIDTH,
         targetPages, exclude -> {
           applyPending();
           minecraft.setScreen(new TargetEntryScreen(this,f,exclude,emitter.getBlockPos(),this::applyChanges,targetPanel.heading(exclude)));
         }, this::redraw);
     targetPanel.widgets(button -> { button.active = filterEditable && !emitter.presetLocked; addRenderableWidget(button); });
-    row += FilterListPanel.HEIGHT + 6;
+    row += com.zeromods.core.client.filter.ExceptionListPanel.HEIGHT + 6;
     var age=small(Control.AGE, UiText.text("screen.fieldemitters.control.age",UiText.text("screen.fieldemitters.control."+
         new String[]{"any_age","babies_only","adults_only"}[f.age])),left+12,row,124,()->{f.age=(f.age+1)%3;redraw();});
     age.setTooltip(Tooltip.create(Component.literal(FilterListPanel.text("age_help"))));
@@ -1677,8 +1677,8 @@ public final class ControlScreen extends FittedScreen
           font,
           UiText.text(
               "screen.fieldemitters.control.energy_stored_fe_used_fe_t",
-              emitter.networkEnergy,
-              emitter.networkDemand),
+              UiText.number(emitter.networkEnergy),
+              UiText.number(emitter.networkDemand)),
           left + 12,
           top + 56,
           0xCAD6E5,
@@ -1761,7 +1761,7 @@ public final class ControlScreen extends FittedScreen
     if(targetPanel==null)return new net.minecraft.client.renderer.Rect2i(0,0,0,0);
     // The panel starts immediately after the category row.
     int y = targetListTop();
-    return screenRect(targetPanel.columnX(exclude),y+20,targetPanel.columnWidth(),FilterListPanel.HEIGHT-20);
+    return screenRect(targetPanel.columnX(exclude),y+20,targetPanel.columnWidth(),com.zeromods.core.client.filter.ExceptionListPanel.HEIGHT-20);
   }
   private int targetListTop() { return targetPanel.top(); }
 
@@ -1771,7 +1771,7 @@ public final class ControlScreen extends FittedScreen
     var targets = new java.util.ArrayList<com.zeromods.core.client.browser.StackDropTarget>();
     for (boolean exclude : new boolean[] {false, true}) {
       // Drag highlights use the same red and green as the lists they drop into.
-      int highlight = targetPanel.red(exclude) ? 0x44D57070 : 0x4470D590;
+      int highlight = targetPanel.denies(exclude) ? 0x44D57070 : 0x4470D590;
       targets.add(new com.zeromods.core.client.browser.StackDropTarget(targetArea(exclude), highlight, s -> acceptTarget(s, exclude)));
     }
     return targets;

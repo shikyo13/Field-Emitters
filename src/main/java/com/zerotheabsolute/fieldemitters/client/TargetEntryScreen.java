@@ -107,8 +107,8 @@ final class TargetEntryScreen extends FittedScreen {
   public void render(GuiGraphics g,int mx,int my,float p){
     beginFit(g);int x=fitMouse(mx),y=fitMouse(my);
     g.fill(left,top,left+PANEL_WIDTH,top+PANEL_HEIGHT,0xFF0D1D2B);g.fill(left,top,left+PANEL_WIDTH,top+2,0xFF53BBCB);
-    g.drawString(font,title,left+12,top+12,0xFFE0F3FF,false);
-    String sampleLabel=sampledType==null?text("sample_empty"):text("sample_stored",FilterListPanel.name(sampledType),sampledIndividual.id().substring(0,8));
+    g.drawString(font,title.getString().toUpperCase(java.util.Locale.ROOT),left+12,top+12,0xFFE0F3FF,false);
+    String sampleLabel=sampledType==null?text("sample_empty"):text("sample_stored",FilterListPanel.displayName(sampledType),sampledIndividual.id().substring(0,8));
     g.drawWordWrap(font,Component.literal(sampleLabel),left+12,top+33,380,0xFFADBED0);
     g.drawString(font,text("entry."+kind.toLowerCase(Locale.ROOT)),left+12,top+SAMPLE_OFFSET+65,0xFFADBED0,false);
     if(kind.equals(FilterTarget.PLAYER))g.drawString(font,text("online"),left+12,top+SAMPLE_OFFSET+109,0xFFADBED0,false);

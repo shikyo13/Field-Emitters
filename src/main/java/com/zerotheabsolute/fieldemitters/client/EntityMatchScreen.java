@@ -112,7 +112,7 @@ final class EntityMatchScreen extends FittedScreen {
     beginFit(g);
     g.fill(left, top, left + ScreenMetrics.PANEL_WIDTH, top + ScreenMetrics.PANEL_HEIGHT, 0xFF0D1D2B);
     g.fill(left, top, left + ScreenMetrics.PANEL_WIDTH, top + 2, 0xFF53BBCB);
-    drawLabel(g, getTitle().getString(), left + ScreenMetrics.CONTENT_INSET,
+    drawLabel(g, getTitle().getString().toUpperCase(java.util.Locale.ROOT), left + ScreenMetrics.CONTENT_INSET,
         top + ScreenMetrics.CONTENT_INSET, ScreenMetrics.CONTENT_WIDTH, 0xFFE0F3FF);
     drawLabel(g, UiText.text("screen.fieldemitters.control.specific_mob_player_uuid"),
         left + ScreenMetrics.CONTENT_INSET, top + FIRST_FIELD_Y - ScreenMetrics.CONTENT_INSET,

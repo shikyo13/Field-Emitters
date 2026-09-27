@@ -142,7 +142,9 @@ public final class AccessPackets {
                             player,
                             p.pos,
                             Component.translatable(
-                                "message.fieldemitters.accesspackets.revoked_badges_for",
+                                count == 1
+                                    ? "message.fieldemitters.accesspackets.revoked_badge_for"
+                                    : "message.fieldemitters.accesspackets.revoked_badges_for",
                                 count,
                                 group));
                         return;
