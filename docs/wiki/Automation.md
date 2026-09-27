@@ -61,7 +61,8 @@ Two built-in examples are available:
 
 | Setting | Values |
 | --- | --- |
-| `Groups` in a filter | Bitmask: hostile 1, passive 2, players 4, dropped items 8, other entities 16. Add values to combine them; 31 selects all categories. |
+| `Groups` in a filter | Bitmask: hostile 1, passive 2, players 4, dropped items 8, other nonliving entities 16, projectiles 32. Add values to combine them; 63 selects all categories. |
+| `CategoryVersion` in a filter | Write `1` whenever `Groups` uses the values above. A filter without it is read as written for 1.3.0 and earlier, when 16 also covered projectiles, so existing presets keep their meaning. |
 | `Directions` in a filter | Bitmask: down 1, up 2, north 4, south 8, west 16, east 32; 63 selects all directions. |
 | `SensorMode` | 0 off; 1 pulse on crossing; 2 output while touching. |
 | `MobMode`, `ItemMode` | 0 use the single-type fields; 1 selected list; 2 everything outside the list. |

@@ -18,11 +18,14 @@ Relative is offered only where the posts enclose an area, which means at least t
 | Passive | Living entities that are neither players nor monsters, such as cows, sheep and villagers. |
 | Players | Player characters. |
 | Drops | Loose item entities on the ground. |
-| Nonliving | Everything else, such as arrows, boats, minecarts and experience orbs. |
+| Nonliving | Everything else, such as boats, minecarts, primed TNT and experience orbs. |
+| Projectiles | Arrows, tridents, fireballs and thrown items such as snowballs, eggs and ender pearls. |
+
+Rules saved before Projectiles existed counted projectiles as Nonliving. They load with Projectiles selected wherever Nonliving was, so they keep matching the same entities.
 
 ## Details
 
-- **Age:** any age, babies only or adults only. Dropped items and nonliving entities need *Any age*.
+- **Age:** any age, babies only or adults only. Dropped items, nonliving entities and projectiles need *Any age*.
 - **Entity type or #group:** one entity type such as `minecraft:creeper`, or an existing entity-type tag such as `#minecraft:skeletons`. Keep the matching category checked.
 - **Dropped item or #group:** one item such as `minecraft:gunpowder` or an item tag such as `#minecraft:logs`. Applies to items on the ground with the Drops category checked, not to inventories.
 - **Specific mob or player (UUID):** one individual. Sample it with the tuner and press *Sample individual*, or paste a UUID.

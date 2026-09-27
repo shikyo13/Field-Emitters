@@ -4,7 +4,8 @@
       "Groups": 0
     },
     "Sensor": {
-      "Groups": 31,
+      "Groups": 63,
+      "CategoryVersion": 1,
       "OwnerExempt": false
     },
     "SensorMode": 1,
