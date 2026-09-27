@@ -41,7 +41,7 @@ final class CheckpointScreen extends FittedScreen {
     rebuildWidgets();
   }
 
-  private void menu(String title, String summary, int y, Page next) {
+  private void menu(String title, String summary, int y, Page next, String helpKey) {
     var entry =
         addRenderableWidget(
             new FieldButton(
@@ -54,8 +54,7 @@ final class CheckpointScreen extends FittedScreen {
                 false));
     entry.detail(summary);
     entry.setTooltip(
-        net.minecraft.client.gui.components.Tooltip.create(
-            Component.literal(title + "\n" + summary)));
+        net.minecraft.client.gui.components.Tooltip.create(Component.literal(text(helpKey))));
   }
 
   private FieldButton button(String text, int y, Runnable action) {
@@ -77,8 +76,9 @@ final class CheckpointScreen extends FittedScreen {
                   rebuildWidgets();
                 },
                 false));
-    String help = helpKey == null ? text : text(helpKey);
-    button.setTooltip(net.minecraft.client.gui.components.Tooltip.create(Component.literal(help)));
+    if (helpKey != null)
+      button.setTooltip(
+          net.minecraft.client.gui.components.Tooltip.create(Component.literal(text(helpKey))));
     return button;
   }
 
@@ -94,13 +94,15 @@ final class CheckpointScreen extends FittedScreen {
                   ? UiText.text("screen.fieldemitters.control.on")
                   : UiText.text("screen.fieldemitters.control.off"))),
           30,
-          () -> s.enabled = !s.enabled);
+          () -> s.enabled = !s.enabled,
+          "checkpoint_toggle_help");
       button(
           UiText.text("screen.fieldemitters.checkpoint.contraband_item_list"),
           60,
           () ->
               minecraft.setScreen(
-                  new TypeListScreen(this, s.items, true, FilterPurpose.CHECKPOINT, apply)));
+                  new TypeListScreen(this, s.items, true, FilterPurpose.CHECKPOINT, apply)),
+          "checkpoint_items_help");
       menu(
           text("checkpoint_players"),
           UiText.text(
@@ -108,7 +110,8 @@ final class CheckpointScreen extends FittedScreen {
               UiText.text(
                   "screen.fieldemitters.control." + (s.players.exemptOwner ? "yes" : "no"))),
           96,
-          Page.PLAYERS);
+          Page.PLAYERS,
+          "checkpoint_players_help");
       menu(
           text("checkpoint_response"),
           UiText.text(
@@ -120,7 +123,8 @@ final class CheckpointScreen extends FittedScreen {
                           ? "screen.fieldemitters.checkpoint.drop_on_entry_side"
                           : "screen.fieldemitters.checkpoint.send_to_adjacent_storage")),
           138,
-          Page.RESPONSE);
+          Page.RESPONSE,
+          "checkpoint_response_menu_help");
     } else if (page == Page.PLAYERS) {
       button(
           UiText.text(
@@ -176,6 +180,8 @@ final class CheckpointScreen extends FittedScreen {
                     rebuildWidgets();
                   },
                   false));
+      inspect.setTooltip(net.minecraft.client.gui.components.Tooltip.create(
+          Component.literal(text("checkpoint_inspect_help"))));
       inspect.active = direction != null && s.directions.has(direction);
       addRenderableWidget(
                   new FieldButton(
@@ -196,6 +202,7 @@ final class CheckpointScreen extends FittedScreen {
                         rebuildWidgets();
                       },
                       false))
+              .withTooltip(text("checkpoint_skip_owner_help"))
               .active =
           direction == null || s.directions.has(direction);
       button(
@@ -212,6 +219,7 @@ final class CheckpointScreen extends FittedScreen {
                             FilterPurpose.CHECKPOINT,
                             apply));
                   })
+              .withTooltip(text("checkpoint_player_filters_help"))
               .active =
           direction == null || s.directions.has(direction);
     } else {
