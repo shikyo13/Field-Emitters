@@ -1,6 +1,6 @@
 # Blocking filters
 
-The Blocking tab decides which entities a field stops. Categories combine with OR: a checked category matches on its own. Details combine with AND: every filled-in detail must also match. Blank details add no restriction.
+The Blocking tab decides which entities a field stops. Check the categories it applies to, then use the two lists below them for exceptions: **Always block** and **Always allow**. Categories combine with OR: a checked category matches on its own. The Sensor and Damage tabs use the same editor with their own lists.
 
 ## Directions
 
@@ -23,20 +23,38 @@ Relative is offered only where the posts enclose an area, which means at least t
 
 Rules saved before Projectiles existed counted projectiles as Nonliving. They load with Projectiles selected wherever Nonliving was, so they keep matching the same entities.
 
+## Exception lists
+
+Each list names entities that are handled differently from their category. The green list spares them and the red list acts on them:
+
+| Tab | Green list | Red list |
+| --- | --- | --- |
+| Blocking | Always allow | Always block |
+| Sensor | Always detect | Never detect |
+| Damage | Never damage | Always damage |
+
+An entry can name a mob type or `#tag`, a dropped item or `#tag`, a player, an access card group, or one sampled mob or player. When both lists name the same entity, for example a player blocked by name who also carries an allowed card, **Always allow**, **Never detect** and **Never damage** win. Each list holds up to 64 entries; scroll over a list to page through it.
+
+To add entries:
+
+- Press **+** on a list. Choose Mob, Item, Player or Card group and type an ID, `#tag`, account name or group, or pick an online player.
+- Sneak-right-click a mob or player with the Field Tuner, or sneak-right-click the air to sample yourself, then press **+** and **Add sampled type** or **Add sampled individual**.
+- Drag a spawn egg or item from your inventory, JEI or EMI onto a list. A spawn egg adds its mob type.
+
+Press **×** beside an entry to remove it. Adding an entry to one list removes it from the other.
+
 ## Details
 
 - **Age:** any age, babies only or adults only. Dropped items, nonliving entities and projectiles need *Any age*.
-- **Entity type or #group:** one entity type such as `minecraft:creeper`, or an existing entity-type tag such as `#minecraft:skeletons`. Keep the matching category checked.
-- **Dropped item or #group:** one item such as `minecraft:gunpowder` or an item tag such as `#minecraft:logs`. Applies to items on the ground with the Drops category checked, not to inventories.
-- **Specific mob or player (UUID):** one individual. Sample it with the tuner and press *Sample individual*, or paste a UUID.
-- **Custom entity label:** a label given with Minecraft's `/tag` command, entered without `#`.
+- **Details:** limit the checked categories to one entity's UUID, or to entities with a label given by Minecraft's `/tag` command (entered without `#`).
 
-## Mode
+Age and Details narrow the checked categories only. List entries keep their own rules.
 
-- **Block selected:** matching entities are stopped and everything else passes.
-- **Allow selected only:** only matching entities pass and everything else is stopped. Example: check *Passive* and *Babies only* to let baby animals through and stop everything else.
+**Skip owner: Yes** always lets the player who placed the emitter pass, even if a list names them.
 
-**Skip owner: Yes** always lets the player who placed the emitter pass, even in *Allow selected only* mode.
+## Rules from earlier versions
+
+Rules saved by Field Emitters 1.3.0 and earlier used *Block selected* / *Allow selected only* modes and separate mob, item and player lists. They keep working unchanged. When you open one, the editor shows it as categories and lists, and it is saved in the new form only once you change it. A rule that uses a single entity type, a single item or other details the lists cannot express keeps the earlier editor.
 
 ## Direction checkboxes
 
@@ -46,6 +64,6 @@ The direction checkboxes choose the movement directions the field blocks. *To So
 
 A perimeter can use different rules on different sides. Select a link on the Connections tab and change its Blocking and Sensor filters; the defaults still apply to the other links. See [Controls and the tuner](Controls.md).
 
-## Mob and item lists
+## List screens
 
-Independent mob and item allow/block lists have their own screens, with inventory and JEI/EMI drag-and-drop boxes. See [Mob and item lists](Type-lists.md) for their interaction with age, direction and existing filters.
+The inventory checkpoint and rules kept in the earlier editor use separate item, mob and player list screens. See [Mob and item lists](Type-lists.md).

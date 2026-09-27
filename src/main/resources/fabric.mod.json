@@ -20,12 +20,6 @@
     ],
     "client": [
       "com.zerotheabsolute.fieldemitters.client.FieldClient"
-    ],
-    "emi": [
-      "com.zerotheabsolute.fieldemitters.client.emi.FieldEmiPlugin"
-    ],
-    "jei_mod_plugin": [
-      "com.zerotheabsolute.fieldemitters.client.jei.FieldJeiPlugin"
     ]
   },
   "depends": {

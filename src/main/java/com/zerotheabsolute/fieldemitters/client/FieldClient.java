@@ -5,6 +5,9 @@ import com.zerotheabsolute.fieldemitters.*;
 public final class FieldClient implements net.fabricmc.api.ClientModInitializer {
   private static void run(Runnable action) { action.run(); }
   @Override public void onInitializeClient() {
+    // Core's JEI and EMI plugins serve these screens' drop targets.
+    com.zeromods.core.client.browser.RecipeBrowsers.register(ControlScreen.class);
+    com.zeromods.core.client.browser.RecipeBrowsers.register(TypeListScreen.class);
     FieldEffects.register();
     net.fabricmc.fabric.api.client.rendering.v1.CoreShaderRegistrationCallback.EVENT.register(context ->
         context.register(new net.minecraft.resources.ResourceLocation("zeromodscore", "energy_surface"), com.mojang.blaze3d.vertex.DefaultVertexFormat.NEW_ENTITY,

@@ -271,8 +271,10 @@ public final class EmitterEntity extends BlockEntity {
             : BlockPos.of(t.getLong("Root"));
     color = t.contains("Color") ? t.getInt("Color") : 0x52E5FF;
     mask = t.contains("Mask") ? t.getInt("Mask") : 1;
-    if (t.contains("Controls")) controls = ControlSettings.load(t.getCompound("Controls"));
-    else {
+    if (t.contains("Controls")) {
+      controls = ControlSettings.load(t.getCompound("Controls")).foldLegacyWrites();
+      mask = controls.barrier.groups;
+    } else {
       controls = new ControlSettings();
       controls.barrier.groups = mask;
     }
@@ -282,7 +284,7 @@ public final class EmitterEntity extends BlockEntity {
       if (overrides.size() < 64)
         overrides.put(
             relativePosition(entry, "TargetOffset", "Target"),
-            ControlSettings.load(entry.getCompound("Settings")));
+            ControlSettings.load(entry.getCompound("Settings")).foldLegacyWrites());
     }
     crossings = t.getLong("Crossings");
     lastDetection =
