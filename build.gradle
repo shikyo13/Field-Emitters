@@ -33,7 +33,7 @@ repositories {
  maven { url = 'https://maven.ladysnake.org/releases' }
 }
 dependencies {
- include(modImplementation('com.zeromods:zeromods-core-fabric-1.21.1:0.1.2'))
+ include(modImplementation('com.zeromods:zeromods-core-fabric-1.21.1:0.1.3'))
  modCompileOnly 'dev.emi:trinkets:3.10.0'
 }
 
