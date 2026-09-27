@@ -98,7 +98,7 @@ public final class SettingsPatch {
       String path = prefix + key;
       var value = tag.get(key);
       if (value instanceof CompoundTag compound) { collect(properties, path + ".", compound, optional); continue; }
-      int bits = key.equals("Groups") ? 5 : key.equals("Directions") ? 6 : key.equals("Crossings") ? 2 : 0;
+      int bits = key.equals("Groups") ? 6 : key.equals("Directions") ? 6 : key.equals("Crossings") ? 2 : 0;
       if (bits == 0) properties.put(path, new Property(path, value.getId(), 0, optional));
       else for (int bit = 0; bit < bits; bit++) properties.put(path + "#" + bit, new Property(path, value.getId(), 1 << bit, optional));
     }

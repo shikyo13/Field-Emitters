@@ -10,7 +10,8 @@ final class FieldButton extends Button {
   private final boolean selected;
   private final Integer swatch;
   private String subtitle;
-  private Tooltip hoverTooltip;
+  private Tooltip hoverTooltip, clippedTooltip;
+  private String clippedText;
 
   FieldButton(int x, int y, int w, int h, Component title, OnPress action, boolean selected) {
     this(x, y, w, h, title, action, selected, null);
@@ -28,7 +29,11 @@ final class FieldButton extends Button {
     super(x, y, w, h, title, action, DEFAULT_NARRATION);
     this.selected = selected;
     this.swatch = swatch;
-    setTooltip(net.minecraft.client.gui.components.Tooltip.create(title));
+  }
+
+  FieldButton withTooltip(String text) {
+    setTooltip(Tooltip.create(Component.literal(text)));
+    return this;
   }
 
   FieldButton detail(String text) {
@@ -44,7 +49,7 @@ final class FieldButton extends Button {
 
   @Override
   protected void renderWidget(GuiGraphics g, int mx, int my, float partial) {
-    super.setTooltip(isHovered() ? hoverTooltip : null);
+    super.setTooltip(isHovered() ? hoverTooltip != null ? hoverTooltip : clippedTooltip() : null);
     int border =
         !active
             ? 0xFF243441
@@ -89,5 +94,20 @@ final class FieldButton extends Button {
           getY() + 16,
           active ? 0xFFA9BECF : 0xFF708395,
           false);
+  }
+
+  /** The full label and subtitle, shown only when either is cut off. */
+  private Tooltip clippedTooltip() {
+    var font = net.minecraft.client.Minecraft.getInstance().font;
+    String title = getMessage().getString();
+    boolean clipped = font.width(title) > width - (subtitle == null ? 8 : 16)
+        || subtitle != null && font.width(subtitle) > width - 16;
+    if (!clipped) return null;
+    String text = subtitle == null ? title : title + "\n" + subtitle;
+    if (!text.equals(clippedText)) {
+      clippedText = text;
+      clippedTooltip = Tooltip.create(Component.literal(text));
+    }
+    return clippedTooltip;
   }
 }

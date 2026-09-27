@@ -48,8 +48,8 @@ final class CardScreen extends FittedScreen {
         ScreenMetrics.BUTTON_HEIGHT, Component.literal(label), b -> action.run(), false));
   }
 
-  private void wide(String label, int y, Runnable action) {
-    button(label, 12, y, ScreenMetrics.CONTENT_WIDTH, action);
+  private FieldButton wide(String label, int y, Runnable action) {
+    return button(label, 12, y, ScreenMetrics.CONTENT_WIDTH, action);
   }
 
   private void groupInput(int y) {
@@ -70,38 +70,43 @@ final class CardScreen extends FittedScreen {
       wide(text("toggle", text(cards.enabled ? "enabled" : "disabled")), 55, () -> {
         cards.enabled = !cards.enabled;
         changed();
-      });
+      }).withTooltip(text("toggle_help"));
       if (cards.enabled) {
         var groups = new ArrayList<>(cards.groups);
         int pages = Math.max(1, (groups.size() + GROUP_ROWS - 1) / GROUP_ROWS);
         groupPage = Math.min(groupPage, pages - 1);
         for (int i = 0; i < GROUP_ROWS && groupPage * GROUP_ROWS + i < groups.size(); i++) {
           String name = groups.get(groupPage * GROUP_ROWS + i);
-          button(name, 12, 91 + i * 20, 286, () -> { group = name; open(Page.ISSUE); });
+          button(name, 12, 91 + i * 20, 286, () -> { group = name; open(Page.ISSUE); })
+              .withTooltip(text("group_row_help"));
           button(text("remove"), 304, 91 + i * 20, 88, () -> {
             cards.groups.remove(name);
             changed();
-          });
+          }).withTooltip(text("remove_help"));
         }
         button(text("previous"), 12, 175, 110, () -> { groupPage--; rebuildWidgets(); }).active = groupPage > 0;
         button(text("next"), 282, 175, 110, () -> { groupPage++; rebuildWidgets(); }).active = groupPage + 1 < pages;
         groupInput(199);
-        wide(text("add"), 221, this::addGroup);
+        wide(text("add"), 221, this::addGroup).withTooltip(text("add_help"));
       }
-      button(text("issue"), 12, 247, ScreenMetrics.HALF_CONTENT_WIDTH, () -> open(Page.ISSUE));
-      button(text("revoke"), 205, 247, ScreenMetrics.HALF_CONTENT_WIDTH, () -> open(Page.REVOKE));
+      button(text("issue"), 12, 247, ScreenMetrics.HALF_CONTENT_WIDTH, () -> open(Page.ISSUE))
+          .withTooltip(text("issue_help"));
+      button(text("revoke"), 205, 247, ScreenMetrics.HALF_CONTENT_WIDTH, () -> open(Page.REVOKE))
+          .withTooltip(text("revoke_open_help"));
     } else {
       groupInput(79);
       if (page == Page.ISSUE) {
-        wide(text("holder", holderName()), 110, this::cyclePlayer);
+        wide(text("holder", holderName()), 110, this::cyclePlayer).withTooltip(text("holder_help"));
         wide(text("allow_group", text(allowIssued ? "yes" : "no")), 150, () -> {
           allowIssued = !allowIssued;
           rebuildWidgets();
-        });
-        button(text("issue_held"), 12, 197, ScreenMetrics.CONTENT_WIDTH, () -> send(0)).active =
+        }).withTooltip(text("allow_group_help"));
+        button(text("issue_held"), 12, 197, ScreenMetrics.CONTENT_WIDTH, () -> send(0))
+            .withTooltip(text("issue_held_help")).active =
             !pending && ownsField();
       } else {
-        button(text("revoke_group"), 12, 155, ScreenMetrics.CONTENT_WIDTH, () -> send(1)).active = !pending;
+        button(text("revoke_group"), 12, 155, ScreenMetrics.CONTENT_WIDTH, () -> send(1))
+            .withTooltip(text("revoke_help")).active = !pending;
       }
     }
     wide(text("back"), 280, this::onClose);

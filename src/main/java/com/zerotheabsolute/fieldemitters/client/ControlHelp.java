@@ -134,6 +134,10 @@ final class ControlHelp {
       return UiText.text(
           "screen.fieldemitters.controlhelp.nonliving_selects_the_remaining_entities_such_as_arrows",
           filterHelp());
+    if (control == Control.PROJECTILES)
+      return UiText.text(
+          "screen.fieldemitters.controlhelp.projectiles_selects_arrows_tridents_and_thrown_items",
+          filterHelp());
     if (control == Control.BLOCK_SELECTED)
       return UiText.text(
           "screen.fieldemitters.controlhelp.matching_entities_are_blocked_everything_else_may_pass",
