@@ -58,7 +58,11 @@ final class EntityMatchScreen extends FittedScreen {
         Component.literal(UiText.text("screen.fieldemitters.control." + key)));
     box.setMaxLength(EntityFilter.MAX_TYPE_LENGTH);
     box.setValue(value);
-    box.setTooltip(Tooltip.create(Component.literal(ControlHelp.field(control))));
+    // Rules edited as lists have no player list mode and sample from the + screen instead.
+    box.setTooltip(Tooltip.create(Component.literal(
+        control == Control.SPECIFIC_MOB_PLAYER_UUID && filter.categoryLists
+            ? UiText.text("screen.fieldemitters.targets.details_identity_help")
+            : ControlHelp.field(control))));
     box.setResponder(text -> {
       save.accept(text.trim());
       changedAt = net.minecraft.Util.getMillis();

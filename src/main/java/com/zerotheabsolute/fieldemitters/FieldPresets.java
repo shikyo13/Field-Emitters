@@ -138,6 +138,9 @@ public class FieldPresets extends SimplePreparableReloadListener<Map<ResourceLoc
       if (object == null) throw new IllegalArgumentException(path + ": unknown filter " + value);
     } else object = value.getAsJsonObject();
     var result = decode(object, new EntityFilter().save(), Map.of(), path);
+    if (result.contains("Groups") && !result.contains("CategoryVersion"))
+      // Written when nonliving still included projectiles.
+      result.putInt("Groups", com.zeromods.core.filter.EntityCategories.fromLegacy(result.getInt("Groups")));
     var full = new EntityFilter().save(); full.merge(result);
     requirePreserved(result, EntityFilter.load(full).save(), path);
     return result;

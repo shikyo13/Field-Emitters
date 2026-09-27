@@ -20,7 +20,7 @@ Projection towers add hollow spheres and domes, and horizontal rails make walkab
 
 - Emitter posts link to other posts up to 20 blocks away in the four cardinal directions and project a field that climbs and descends with the terrain.
 - Rails mount on any block face, span up to 20 blocks to an opposing rail, and join side by side into one wall, floor or ceiling.
-- Blocking filters by category: hostile, passive, players, dropped items and other entities. Narrow a filter with age, entity type or tag, item, UUID or scoreboard tag, choose the movement directions it applies to, invert it, and exempt the owner.
+- Blocking filters by category: hostile, passive, players, dropped items, projectiles and other entities. Narrow a filter with age, entity type or tag, item, UUID or scoreboard tag, choose the movement directions it applies to, invert it, and exempt the owner.
 - Detection output on a redstone face: an immediate pulse on crossing, extended by further crossings, or a steady signal while a matching entity touches the field. Counts dropped items per stack or per item.
 - Separate rules for each link, redstone enable modes, color presets or any hex color, an animated field pattern, and optional block light.
 - A handheld Field Tuner that opens controls, manages every loaded field from anywhere in the dimension, samples mobs and players for filters, and cycles colors.

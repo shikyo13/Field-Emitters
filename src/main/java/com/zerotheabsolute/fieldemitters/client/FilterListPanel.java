@@ -1,5 +1,6 @@
 package com.zerotheabsolute.fieldemitters.client;
 
+import com.zeromods.core.filter.FilterTarget;
 import com.zerotheabsolute.fieldemitters.*;
 import java.util.*;
 import java.util.function.Consumer;
@@ -101,29 +102,29 @@ final class FilterListPanel {
     }
   }
   static String name(FilterTarget target) {
-    if(target.kind()==FilterTarget.Kind.INDIVIDUAL) {
+    if(target.kind().equals(FilterTarget.INDIVIDUAL)) {
       var type=ResourceLocation.tryParse(target.name());
       String label=type==null?target.name():BuiltInRegistries.ENTITY_TYPE.get(type).getDescription().getString();
       return text("individual_name",label,target.id().substring(0,Math.min(8,target.id().length())));
     }
-    if(target.kind()==FilterTarget.Kind.PLAYER) return target.name().isEmpty()?target.id():target.name();
-    if(target.kind()==FilterTarget.Kind.CARD_GROUP) return text("card_group",target.id());
+    if(target.kind().equals(FilterTarget.PLAYER)) return target.name().isEmpty()?target.id():target.name();
+    if(target.kind().equals(FieldTargets.CARD_GROUP)) return text("card_group",target.id());
     if(target.id().startsWith("#"))return target.id();
     var id=ResourceLocation.tryParse(target.id());if(id==null)return target.id();
-    return target.kind()==FilterTarget.Kind.ITEM?BuiltInRegistries.ITEM.get(id).getDescription().getString()
+    return target.kind().equals(FilterTarget.ITEM)?BuiltInRegistries.ITEM.get(id).getDescription().getString()
         :BuiltInRegistries.ENTITY_TYPE.get(id).getDescription().getString();
   }
   static ItemStack icon(FilterTarget target) {
-    if(target.kind()==FilterTarget.Kind.PLAYER)return new ItemStack(Items.PLAYER_HEAD);
-    if(target.kind()==FilterTarget.Kind.INDIVIDUAL)return new ItemStack(Items.NAME_TAG);
-    if(target.kind()==FilterTarget.Kind.CARD_GROUP || target.id().startsWith("#"))return new ItemStack(Items.NAME_TAG);
+    if(target.kind().equals(FilterTarget.PLAYER))return new ItemStack(Items.PLAYER_HEAD);
+    if(target.kind().equals(FilterTarget.INDIVIDUAL))return new ItemStack(Items.NAME_TAG);
+    if(target.kind().equals(FieldTargets.CARD_GROUP) || target.id().startsWith("#"))return new ItemStack(Items.NAME_TAG);
     var id=ResourceLocation.tryParse(target.id());if(id==null)return new ItemStack(Items.BARRIER);
-    if(target.kind()==FilterTarget.Kind.ITEM)return new ItemStack(BuiltInRegistries.ITEM.get(id));
+    if(target.kind().equals(FilterTarget.ITEM))return new ItemStack(BuiltInRegistries.ITEM.get(id));
     var egg=SpawnEggItem.byId(BuiltInRegistries.ENTITY_TYPE.get(id));return new ItemStack(egg==null?Items.PAPER:egg);
   }
   static FilterTarget fromStack(ItemStack stack) {
     if(stack.getItem() instanceof SpawnEggItem egg)
-      return new FilterTarget(FilterTarget.Kind.MOB,BuiltInRegistries.ENTITY_TYPE.getKey(egg.getType(stack)).toString(),"");
-    return new FilterTarget(FilterTarget.Kind.ITEM,BuiltInRegistries.ITEM.getKey(stack.getItem()).toString(),"");
+      return new FilterTarget(FilterTarget.MOB,BuiltInRegistries.ENTITY_TYPE.getKey(egg.getType(stack)).toString(),"");
+    return new FilterTarget(FilterTarget.ITEM,BuiltInRegistries.ITEM.getKey(stack.getItem()).toString(),"");
   }
 }

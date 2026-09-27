@@ -304,7 +304,7 @@ public final class FieldControls {
     if (f.included.size() > EntityFilter.MAX_TYPES || f.excluded.size() > EntityFilter.MAX_TYPES)
       return Component.translatable("message.fieldemitters.fieldcontrols.mob_and_item_lists_support_at_most_64");
     for (var target : java.util.stream.Stream.concat(f.included.stream(), f.excluded.stream()).toList()) {
-      Component error = target.validate();
+      Component error = FieldTargets.validate(target);
       if (error != null) return error;
     }
     if (f.mobMode < 0

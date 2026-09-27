@@ -285,7 +285,7 @@ public final class ControlScreen extends FittedScreen
       if (!relative) ruleScopeControls(shared, rules);
       directionControls(shared, filter, emitter.enclosed, relative);
       row += ScreenMetrics.COMPACT_ROW_HEIGHT;
-      navigation(pageText("edit_targets"), ruleSummary(), DetailPage.MAIN);
+      navigation(pageText("edit_targets"), ruleSummary(), DetailPage.MAIN, pageText("edit_targets_help"));
       return;
     }
     if (detailPage == DetailPage.OUTPUT) {
@@ -299,18 +299,21 @@ public final class ControlScreen extends FittedScreen
     if (filterDirection != null) ruleScopeControls(shared, rules);
     filterTargets(filter);
     row += ScreenMetrics.COLUMN_GAP;
-    navigation(pageText("directions"), directionSummary(filter, relative), DetailPage.DIRECTIONS);
+    navigation(pageText("directions"), directionSummary(filter, relative), DetailPage.DIRECTIONS,
+        pageText("directions_help"));
     if (targetPanel == null) ageControl(filter);
     if (tab == ControlTab.SENSOR)
       navigation(
           pageText("output"),
           UiText.text("screen.fieldemitters.control.output_side", sideName(draft.outputFace)),
-          DetailPage.OUTPUT);
+          DetailPage.OUTPUT,
+          pageText("output_help"));
     if (tab == ControlTab.DAMAGE)
       navigation(
           pageText("damage"),
           pageText("damage_summary", draft.damageAmount, UiText.seconds(draft.damageInterval)),
-          DetailPage.OUTPUT);
+          DetailPage.OUTPUT,
+          pageText("damage_help"));
   }
 
   private void signalControl() {
@@ -410,15 +413,14 @@ public final class ControlScreen extends FittedScreen
 
   private void categoryListControls(EntityFilter f) {
     targetFilter = f;
-    Control[] controls = {Control.HOSTILE, Control.PASSIVE, Control.PLAYERS, Control.DROPS, Control.NONLIVING};
-    String[] names = {"hostile", "passive", "players", "drops", "nonliving"};
-    for (int i=0;i<controls.length;i++) {
+    for (int i=0;i<CATEGORY_CONTROLS.length;i++) {
       int bit=1<<i;
-      var button=small(controls[i], ((f.groups&bit)!=0?"✓ ":"○ ")+UiText.text("screen.fieldemitters.control."+names[i]),
-          left+12+i*77,row,74,()->{f.groups^=bit;redraw();},(f.groups&bit)!=0);
-      button.setTooltip(Tooltip.create(Component.literal(FilterListPanel.text("category_help"))));
+      var button=small(CATEGORY_CONTROLS[i], ((f.groups&bit)!=0?"✓ ":"○ ")+UiText.text("screen.fieldemitters.control."+CATEGORY_NAMES[i]),
+          categoryX(i),categoryY(i),124,()->{f.groups^=bit;redraw();},(f.groups&bit)!=0);
+      button.setTooltip(Tooltip.create(Component.literal(button.getMessage().getString() + "\n\n"
+          + FilterListPanel.text("category." + CATEGORY_NAMES[i]) + "\n\n" + FilterListPanel.text("category_help"))));
     }
-    row += 23;
+    row += 2 * 23;
     targetPanel = new FilterListPanel(f, tab.purpose(), left+12, row, ScreenMetrics.CONTENT_WIDTH,
         targetPages, exclude -> {
           applyPending();
@@ -429,34 +431,42 @@ public final class ControlScreen extends FittedScreen
     var age=small(Control.AGE, UiText.text("screen.fieldemitters.control.age",UiText.text("screen.fieldemitters.control."+
         new String[]{"any_age","babies_only","adults_only"}[f.age])),left+12,row,124,()->{f.age=(f.age+1)%3;redraw();});
     age.setTooltip(Tooltip.create(Component.literal(FilterListPanel.text("age_help"))));
-    small(Control.SKIP_OWNER,UiText.text("screen.fieldemitters.control.skip_owner",UiText.text("screen.fieldemitters.control."+(f.exemptOwner?"yes":"no"))),
+    var skipOwner=small(Control.SKIP_OWNER,UiText.text("screen.fieldemitters.control.skip_owner",UiText.text("screen.fieldemitters.control."+(f.exemptOwner?"yes":"no"))),
         left+140,row,124,()->{f.exemptOwner=!f.exemptOwner;redraw();});
+    // The list editor has no Allow selected or inverted mode for these explanations to refer to.
+    if (tab == ControlTab.BLOCKING || tab == ControlTab.DAMAGE)
+      skipOwner.setTooltip(Tooltip.create(Component.literal(skipOwner.getMessage().getString() + "\n\n"
+          + FilterListPanel.text("skip_owner." + (tab == ControlTab.BLOCKING ? "blocking" : "damage")))));
     small(Control.ADVANCED_FILTERS,UiText.text("screen.fieldemitters.pages.entity_details"),left+268,row,124,()-> {
       applyPending();minecraft.setScreen(new EntityMatchScreen(this,f,this::applyChanges,null));
     }).setTooltip(Tooltip.create(Component.literal(FilterListPanel.text("details_help"))));
     row += 23;
   }
 
+  /** Category toggles in bit order, laid out three to a row. */
+  private static final Control[] CATEGORY_CONTROLS = {
+    Control.HOSTILE, Control.PASSIVE, Control.PLAYERS, Control.DROPS, Control.NONLIVING,
+    Control.PROJECTILES
+  };
+  private static final String[] CATEGORY_NAMES = {
+    "hostile", "passive", "players", "drops", "nonliving", "projectiles"
+  };
+
+  private int categoryX(int index) { return left + 12 + index % 3 * 128; }
+
+  private int categoryY(int index) { return row + index / 3 * 23; }
+
   private void legacyFilterTargets(EntityFilter f) {
-    Control[] categoryControls = {
-      Control.HOSTILE, Control.PASSIVE, Control.PLAYERS, Control.DROPS, Control.NONLIVING
-    };
-    String[] groups = {
-      UiText.text("screen.fieldemitters.control.hostile"),
-      UiText.text("screen.fieldemitters.control.passive"),
-      UiText.text("screen.fieldemitters.control.players"),
-      UiText.text("screen.fieldemitters.control.drops"),
-      UiText.text("screen.fieldemitters.control.nonliving")
-    };
-    for (int i = 0; i < categoryControls.length; i++) {
+    for (int i = 0; i < CATEGORY_CONTROLS.length; i++) {
       final int bit = 1 << i;
       var category =
           small(
-              categoryControls[i],
-              ((f.groups & bit) != 0 ? "✓ " : "○ ") + groups[i],
-              left + 12 + i * 77,
-              row,
-              74,
+              CATEGORY_CONTROLS[i],
+              ((f.groups & bit) != 0 ? "✓ " : "○ ")
+                  + UiText.text("screen.fieldemitters.control." + CATEGORY_NAMES[i]),
+              categoryX(i),
+              categoryY(i),
+              124,
               () -> {
                 f.groups ^= bit;
                 redraw();
@@ -465,7 +475,7 @@ public final class ControlScreen extends FittedScreen
       if (i < 2 && f.mobMode != 0 || i == 2 && f.playerMode != 0 || i == 3 && f.itemMode != 0)
         category.active = false;
     }
-    row += ScreenMetrics.ROW_HEIGHT;
+    row += 23 + ScreenMetrics.ROW_HEIGHT;
     small(
         tab == ControlTab.BLOCKING
             ? (f.inverted ? Control.ALLOW_SELECTED : Control.BLOCK_SELECTED)
@@ -658,7 +668,7 @@ public final class ControlScreen extends FittedScreen
     return UiText.text("screen.fieldemitters.pages." + key, args);
   }
 
-  private void navigation(String title, String summary, DetailPage destination) {
+  private void navigation(String title, String summary, DetailPage destination, String help) {
     var button =
         new FieldButton(
                 left + ScreenMetrics.CONTENT_INSET,
@@ -673,7 +683,7 @@ public final class ControlScreen extends FittedScreen
                 },
                 false)
             .detail(summary);
-    button.setTooltip(Tooltip.create(Component.literal(title + "\n" + summary)));
+    button.setTooltip(Tooltip.create(Component.literal(help)));
     addRenderableWidget(button);
     row += ScreenMetrics.MENU_STEP;
   }
@@ -759,14 +769,16 @@ public final class ControlScreen extends FittedScreen
             UiText.text(
                 "screen.fieldemitters.control."
                     + (draft.customAccent ? "custom_accent" : "matches_field"))),
-        DetailPage.COLORS);
+        DetailPage.COLORS,
+        pageText("colors_help"));
     navigation(
         pageText("display"),
         UiText.text(
             "screen.fieldemitters.control.show_forcefield",
             UiText.text(
                 "screen.fieldemitters.control." + (draft.visible ? "yes" : "no_still_works"))),
-        DetailPage.DISPLAY);
+        DetailPage.DISPLAY,
+        pageText("display_help"));
   }
 
   private void colorControls() {
@@ -1022,7 +1034,7 @@ public final class ControlScreen extends FittedScreen
           () -> {
             draft.railNormal = Direction.Axis.Y.ordinal();
             draft.barrier = new EntityFilter();
-            draft.barrier.groups = 31;
+            draft.barrier.groups = com.zeromods.core.filter.EntityCategories.ALL;
             draft.barrier.exemptOwner = false;
             draft.barrier.directions = 1 << Direction.DOWN.ordinal();
             for (var direction : Direction.values()) draft.barrierDirections.inherit(direction);
@@ -1441,7 +1453,8 @@ public final class ControlScreen extends FittedScreen
   private FieldButton small(
       Control control, String text, int x, int y, int w, int h, Runnable action, boolean selected) {
     var button = new FieldButton(x, y, w, h, Component.literal(text), b -> action.run(), selected);
-    String help = text + "\n\n" + ControlHelp.button(control, text, tab);
+    String extra = ControlHelp.button(control, text, tab);
+    String help = extra.equals(text) ? null : text + "\n\n" + extra;
     boolean fieldOnly =
         selectedLink >= 0
             && control != Control.EDITING
@@ -1466,16 +1479,15 @@ public final class ControlScreen extends FittedScreen
             && control != Control.FIZZLE_PARTICLES;
     button.active =
         !fieldOnly && !inherited && !(control == Control.RULE_SOURCE && filterDirection == null);
-    button.setTooltip(
-        Tooltip.create(
-            Component.literal(
-                inherited
-                    ? UiText.text(
-                        "screen.fieldemitters.control.this_direction_uses_the_shared_filter_choose_rule")
-                    : fieldOnly
-                        ? UiText.text(
-                            "screen.fieldemitters.control.this_setting_belongs_to_the_emitter_in_connections")
-                        : help)));
+    String tip =
+        inherited
+            ? UiText.text(
+                "screen.fieldemitters.control.this_direction_uses_the_shared_filter_choose_rule")
+            : fieldOnly
+                ? UiText.text(
+                    "screen.fieldemitters.control.this_setting_belongs_to_the_emitter_in_connections")
+                : help;
+    button.setTooltip(tip == null ? null : Tooltip.create(Component.literal(tip)));
     addRenderableWidget(button);
     if (tutorialPreview) tutorialControls.put(control, button);
     return button;
@@ -1554,7 +1566,7 @@ public final class ControlScreen extends FittedScreen
         } else notice = UiText.text("screen.fieldemitters.control.mob_list_is_full_64_entries");
         return;
       }
-      f.groups = 31;
+      f.groups = com.zeromods.core.filter.EntityCategories.ALL;
       f.exemptOwner = false;
       f.age = 0;
       f.itemType = "";
@@ -1778,7 +1790,7 @@ public final class ControlScreen extends FittedScreen
     var target=FilterListPanel.fromStack(stack);
     var entries=exclude?targetFilter.excluded:targetFilter.included;
     if(entries.size()>=EntityFilter.MAX_TYPES && !entries.contains(target)){notice=FilterListPanel.text("full");return;}
-    var error=target.validate();if(error!=null){notice=error.getString();return;}
+    var error=FieldTargets.validate(target);if(error!=null){notice=error.getString();return;}
     targetFilter.addTarget(target,exclude);redraw();
   }
 
