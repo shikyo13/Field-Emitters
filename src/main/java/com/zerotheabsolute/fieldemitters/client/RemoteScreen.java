@@ -256,7 +256,7 @@ public final class RemoteScreen extends FittedScreen {
     g.drawString(
         font,
         selected == null
-            ? UiText.text("screen.fieldemitters.remote.loaded_in", data.getString("Dimension"))
+            ? UiText.text("screen.fieldemitters.remote.loaded_in", UiText.dimension(data.getString("Dimension")))
             : UiText.text(
                 "screen.fieldemitters.remote.field_location",
                 BlockPos.of(selected.getLong(selected.contains("Origin") ? "Origin" : "Pos"))

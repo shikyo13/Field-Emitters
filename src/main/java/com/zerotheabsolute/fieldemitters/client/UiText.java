@@ -33,11 +33,25 @@ final class UiText {
     };
   }
 
-  static String seconds(int ticks) {
+  /** A whole number grouped for the selected language, such as 92,700. */
+  static String number(long value) {
+    return java.text.NumberFormat.getIntegerInstance(locale()).format(value);
+  }
+
+  /** A dimension's name, or its ID for dimensions without one. */
+  static String dimension(String id) {
+    String key = "screen.fieldemitters.dimension." + id.replace(':', '.');
+    return net.minecraft.client.resources.language.I18n.exists(key) ? text(key) : id;
+  }
+
+  private static java.util.Locale locale() {
     String language =
         net.minecraft.client.Minecraft.getInstance().getLanguageManager().getSelected();
-    var locale = java.util.Locale.forLanguageTag(language.replace('_', '-'));
-    var number = java.text.NumberFormat.getNumberInstance(locale);
+    return java.util.Locale.forLanguageTag(language.replace('_', '-'));
+  }
+
+  static String seconds(int ticks) {
+    var number = java.text.NumberFormat.getNumberInstance(locale());
     number.setMinimumFractionDigits(1);
     number.setMaximumFractionDigits(1);
     return text(

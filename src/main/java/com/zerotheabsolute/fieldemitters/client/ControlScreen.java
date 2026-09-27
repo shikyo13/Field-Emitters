@@ -12,7 +12,8 @@ import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 
 /** Changes are sent immediately; text is validated after a short typing pause. */
-public final class ControlScreen extends FittedScreen {
+public final class ControlScreen extends FittedScreen
+    implements com.zeromods.core.client.browser.StackDropScreen {
   private final EmitterEntity emitter;
   private boolean tutorialPreview;
   private final Map<Control, AbstractWidget> tutorialControls = new EnumMap<>(Control.class);
@@ -68,6 +69,9 @@ public final class ControlScreen extends FittedScreen {
   private boolean enabled, reset = false;
   private boolean showGuides = FieldConfig.SHOW_GUIDES.get();
   private String notice = UiText.text("screen.fieldemitters.control.changes_apply_automatically");
+  private com.zeromods.core.client.filter.ExceptionListPanel targetPanel;
+  private EntityFilter targetFilter;
+  private final int[] targetPages = {0, 0};
   private long textDue;
   private final ControlEditSession edits;
   private boolean inheritPending;
@@ -107,6 +111,8 @@ public final class ControlScreen extends FittedScreen {
   }
 
   protected void init() {
+    targetPanel = null;
+    targetFilter = null;
     tutorialControls.clear();
     fit(CONTENT_WIDTH + NAV_WIDTH, panelHeight());
     if (selectedLink >= emitter.links.size()) selectedLink = -1;
@@ -294,7 +300,7 @@ public final class ControlScreen extends FittedScreen {
     row += ScreenMetrics.COLUMN_GAP;
     navigation(pageText("directions"), directionSummary(filter, relative), DetailPage.DIRECTIONS,
         pageText("directions_help"));
-    ageControl(filter);
+    if (targetPanel == null) ageControl(filter);
     if (tab == ControlTab.SENSOR)
       navigation(
           pageText("output"),
@@ -410,6 +416,46 @@ public final class ControlScreen extends FittedScreen {
   private int categoryY(int index) { return row + index / 3 * 23; }
 
   private void filterTargets(EntityFilter f) {
+    if (f.useCategoryLists()) {
+      categoryListControls(f);
+      return;
+    }
+    legacyFilterTargets(f);
+  }
+
+  private void categoryListControls(EntityFilter f) {
+    targetFilter = f;
+    for (int i=0;i<CATEGORY_CONTROLS.length;i++) {
+      int bit=1<<i;
+      var button=small(CATEGORY_CONTROLS[i], ((f.groups&bit)!=0?"✓ ":"○ ")+UiText.text("screen.fieldemitters.control."+CATEGORY_NAMES[i]),
+          categoryX(i),categoryY(i),124,()->{f.groups^=bit;redraw();},(f.groups&bit)!=0);
+      button.setTooltip(Tooltip.create(Component.literal(button.getMessage().getString() + "\n\n"
+          + FilterListPanel.text("category." + CATEGORY_NAMES[i]) + "\n\n" + FilterListPanel.text("category_help"))));
+    }
+    row += 2 * 23;
+    targetPanel = FilterListPanel.create(f, tab.purpose(), left+12, row, ScreenMetrics.CONTENT_WIDTH,
+        targetPages, exclude -> {
+          applyPending();
+          minecraft.setScreen(new TargetEntryScreen(this,f,exclude,emitter.getBlockPos(),this::applyChanges,targetPanel.heading(exclude)));
+        }, this::redraw);
+    targetPanel.widgets(button -> { button.active = filterEditable && !emitter.presetLocked; addRenderableWidget(button); });
+    row += com.zeromods.core.client.filter.ExceptionListPanel.HEIGHT + 6;
+    var age=small(Control.AGE, UiText.text("screen.fieldemitters.control.age",UiText.text("screen.fieldemitters.control."+
+        new String[]{"any_age","babies_only","adults_only"}[f.age])),left+12,row,124,()->{f.age=(f.age+1)%3;redraw();});
+    age.setTooltip(Tooltip.create(Component.literal(FilterListPanel.text("age_help"))));
+    var skipOwner=small(Control.SKIP_OWNER,UiText.text("screen.fieldemitters.control.skip_owner",UiText.text("screen.fieldemitters.control."+(f.exemptOwner?"yes":"no"))),
+        left+140,row,124,()->{f.exemptOwner=!f.exemptOwner;redraw();});
+    // The list editor has no Allow selected or inverted mode for these explanations to refer to.
+    if (tab == ControlTab.BLOCKING || tab == ControlTab.DAMAGE)
+      skipOwner.setTooltip(Tooltip.create(Component.literal(skipOwner.getMessage().getString() + "\n\n"
+          + FilterListPanel.text("skip_owner." + (tab == ControlTab.BLOCKING ? "blocking" : "damage")))));
+    small(Control.ADVANCED_FILTERS,UiText.text("screen.fieldemitters.pages.entity_details"),left+268,row,124,()-> {
+      applyPending();minecraft.setScreen(new EntityMatchScreen(this,f,this::applyChanges,null));
+    }).setTooltip(Tooltip.create(Component.literal(FilterListPanel.text("details_help"))));
+    row += 23;
+  }
+
+  private void legacyFilterTargets(EntityFilter f) {
     for (int i = 0; i < CATEGORY_CONTROLS.length; i++) {
       final int bit = 1 << i;
       var category =
@@ -1630,8 +1676,8 @@ public final class ControlScreen extends FittedScreen {
           font,
           UiText.text(
               "screen.fieldemitters.control.energy_stored_fe_used_fe_t",
-              emitter.networkEnergy,
-              emitter.networkDemand),
+              UiText.number(emitter.networkEnergy),
+              UiText.number(emitter.networkDemand)),
           left + 12,
           top + 56,
           0xCAD6E5,
@@ -1700,10 +1746,58 @@ public final class ControlScreen extends FittedScreen {
         top + panelHeight() - 18,
         0x92A9BE,
         false);
+    if (targetPanel != null) targetPanel.render(g,mx,my);
     super.render(g, mx, my, partial);
+    if (targetPanel != null) targetPanel.tooltip(g,mx,my);
     if (!renderOverflowTooltip(g, labels, mx, my)) renderOverflowTooltip(g, headings, mx, my);
-    g.pose().popPose();
+    endFit(g);
   }
+
+  public net.minecraft.client.renderer.Rect2i panelArea() {
+    return screenRect(left-NAV_WIDTH,top,CONTENT_WIDTH+NAV_WIDTH,panelHeight());
+  }
+  public net.minecraft.client.renderer.Rect2i targetArea(boolean exclude) {
+    if(targetPanel==null)return new net.minecraft.client.renderer.Rect2i(0,0,0,0);
+    // The panel starts immediately after the category row.
+    int y = targetListTop();
+    return screenRect(targetPanel.columnX(exclude),y+20,targetPanel.columnWidth(),com.zeromods.core.client.filter.ExceptionListPanel.HEIGHT-20);
+  }
+  private int targetListTop() { return targetPanel.top(); }
+
+  @Override
+  public java.util.List<com.zeromods.core.client.browser.StackDropTarget> dropTargets(net.minecraft.world.item.ItemStack stack) {
+    if (!canAcceptTarget(stack)) return java.util.List.of();
+    var targets = new java.util.ArrayList<com.zeromods.core.client.browser.StackDropTarget>();
+    for (boolean exclude : new boolean[] {false, true}) {
+      // Drag highlights use the same red and green as the lists they drop into.
+      int highlight = targetPanel.denies(exclude) ? 0x44D57070 : 0x4470D590;
+      targets.add(new com.zeromods.core.client.browser.StackDropTarget(targetArea(exclude), highlight, s -> acceptTarget(s, exclude)));
+    }
+    return targets;
+  }
+
+  @Override
+  public net.minecraft.client.renderer.Rect2i browserExclusion() { return panelArea(); }
+
+  @Override
+  public boolean showsBrowser() { return targetPanel != null; }
+  public boolean canAcceptTarget(net.minecraft.world.item.ItemStack stack) {
+    return targetPanel!=null && filterEditable && !emitter.presetLocked && !stack.isEmpty();
+  }
+  public void acceptTarget(net.minecraft.world.item.ItemStack stack,boolean exclude) {
+    if(!canAcceptTarget(stack))return;
+    var target=FilterListPanel.fromStack(stack);
+    var entries=exclude?targetFilter.excluded:targetFilter.included;
+    if(entries.size()>=EntityFilter.MAX_TYPES && !entries.contains(target)){notice=FilterListPanel.text("full");return;}
+    var error=FieldTargets.validate(target);if(error!=null){notice=error.getString();return;}
+    targetFilter.addTarget(target,exclude);redraw();
+  }
+
+  @Override public boolean mouseScrolled(double x,double y,double dx,double dy) {
+    if(targetPanel!=null && targetPanel.scroll(fitMouse((int)x),fitMouse((int)y),dy))return true;
+    return super.mouseScrolled(x,y,dx,dy);
+  }
+
 
   /** Up to three group names, so a long list cannot run off the summary line. */
   private String cardGroupSummary() {

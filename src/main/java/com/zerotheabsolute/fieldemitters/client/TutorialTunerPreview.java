@@ -97,7 +97,7 @@ public final class TutorialTunerPreview {
       case "blocking" -> Control.HOSTILE;
       case "directions" -> Control.RULES_FOR;
       case "age" -> Control.AGE;
-      case "items" -> Control.ITEM_LIST;
+      case "items" -> Control.DROPS;
       case "sensor" -> Control.SIGNAL;
       case "damage" -> Control.DAMAGE;
       case "cards" -> Control.ISSUE_AND_REVOKE_BADGES;
