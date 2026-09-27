@@ -8,6 +8,9 @@ import net.minecraft.world.entity.*;
 public final class EntityFilter {
   public static final int MAX_TYPE_LENGTH = 128;
   public static final int MAX_ACCESS_GROUPS = 64;
+
+  /** Saved with every filter; absent in rules from before projectiles had their own category. */
+  public static final int CATEGORY_VERSION = 1;
   public int groups = 1, age = 0, directions = 63;
 
   /** Whether the selection below is read as world directions or as crossings of an enclosure. */
@@ -110,6 +113,7 @@ public final class EntityFilter {
   public CompoundTag save() {
     var t = new CompoundTag();
     t.putInt("Groups", groups);
+    t.putInt("CategoryVersion", CATEGORY_VERSION);
     t.putInt("PlayerMode", playerMode);
     saveTypes(t, "AccessGroups", accessGroups);
     var players = new net.minecraft.nbt.ListTag();
@@ -165,7 +169,9 @@ public final class EntityFilter {
 
   public static EntityFilter load(CompoundTag t) {
     var f = new EntityFilter();
-    f.groups = t.getInt("Groups") & 31;
+    f.groups = t.contains("CategoryVersion")
+        ? t.getInt("Groups") & com.zeromods.core.filter.EntityCategories.ALL
+        : com.zeromods.core.filter.EntityCategories.fromLegacy(t.getInt("Groups"));
     f.playerMode = Math.max(0, Math.min(2, t.getInt("PlayerMode")));
     loadTypes(t, "AccessGroups", f.accessGroups);
     var players = t.getList("PlayerList", 10);

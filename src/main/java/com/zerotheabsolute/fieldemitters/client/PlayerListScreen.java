@@ -64,13 +64,15 @@ final class PlayerListScreen extends FittedScreen {
           filter.playerMode = (filter.playerMode + 1) % 3;
           status = UiText.text("screen.fieldemitters.playerlist.player_list_mode_updated");
           changed();
-        });
+        })
+        .withTooltip(UiText.text("screen.fieldemitters.playerlist.mode_help"));
     button(
         UiText.text("screen.fieldemitters.playerlist.access_groups_badges"),
         12,
         80,
         ScreenMetrics.CONTENT_WIDTH,
-        () -> minecraft.setScreen(new AccessScreen(this, pos, filter, apply)));
+        () -> minecraft.setScreen(new AccessScreen(this, pos, filter, apply)))
+        .withTooltip(UiText.text("screen.fieldemitters.playerlist.access_groups_help"));
     input =
         addRenderableWidget(
             new FieldEditBox(

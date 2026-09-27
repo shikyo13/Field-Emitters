@@ -59,6 +59,7 @@ final class ManagementScreen extends FittedScreen {
                 34,
                 ScreenMetrics.CONTENT_WIDTH,
                 () -> request(publicManagement ? 0 : 1, ""))
+            .withTooltip(UiText.text("screen.fieldemitters.management.mode_help"))
             .active =
         owner;
     var input =
@@ -102,6 +103,7 @@ final class ManagementScreen extends FittedScreen {
                   notice = UiText.text("screen.fieldemitters.management.resolving_player");
                   rebuildWidgets();
                 })
+            .withTooltip(UiText.text("screen.fieldemitters.management.add_manager_help"))
             .active =
         owner && pending < 0 && managers.size() < ManagementAccess.MAX_MANAGERS;
     int pages =

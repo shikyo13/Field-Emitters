@@ -149,7 +149,7 @@ public final class ControlSettings {
   public ControlSettings() {
     barrier.exemptOwner = true;
     damage.exemptOwner = true;
-    sensor.groups = 31;
+    sensor.groups = com.zeromods.core.filter.EntityCategories.ALL;
   }
 
   public CompoundTag save() {
