@@ -4,6 +4,7 @@ import com.zeromods.core.filter.EntityCategories;
 import com.zeromods.core.filter.FilterTarget;
 import com.zeromods.core.filter.FilterTargetTags;
 import com.zeromods.core.filter.LegacyLists;
+import com.zeromods.core.filter.LegacyListUpdates;
 import com.zeromods.core.filter.TargetExceptions;
 import java.util.UUID;
 import net.minecraft.nbt.CompoundTag;
@@ -42,6 +43,7 @@ public final class EntityFilter {
   public String entityType = "", itemType = "", identity = "", entityTag = "";
 
   public boolean categoryLists;
+  private CompoundTag legacyWriteState = new CompoundTag();
   public final TargetExceptions exceptions = new TargetExceptions();
   public final java.util.LinkedHashSet<FilterTarget> included = exceptions.included(),
       excluded = exceptions.excluded();
@@ -66,8 +68,48 @@ public final class EntityFilter {
    * script or preset writes them into such a rule, fold them into its exceptions instead.
    */
   public void foldLegacyWrites() {
-    if (categoryLists && (inverted || mobMode != 0 || itemMode != 0 || playerMode != 0) && listsFit())
-      foldLegacyLists();
+    if (!categoryLists) return;
+    var input = new CompoundTag();
+    var saved = save();
+    for (String key : java.util.List.of("Invert", "MobMode", "MobList", "ItemMode", "ItemList",
+        "PlayerMode", "PlayerList", "AccessGroups")) input.put(key, saved.get(key).copy());
+    if (input.equals(legacyWriteState.getCompound("Input"))) return;
+    boolean active = inverted || mobMode != 0 || itemMode != 0 || playerMode != 0;
+    if (!active && legacyWriteState.isEmpty()) return;
+    var current = LegacyListUpdates.Selection.capture(groups, exceptions);
+    var base = legacyWriteState.isEmpty() ? current : LegacyListUpdates.restore(
+        loadSelection(legacyWriteState.getCompound("Before")),
+        loadSelection(legacyWriteState.getCompound("Applied")), current);
+    var updated = new TargetExceptions();
+    base.applyTo(updated);
+    int nextGroups = new LegacyLists(base.categories(), inverted, mobMode, mobList,
+        itemMode, itemList, playerMode, legacyLists().players()).foldInto(updated);
+    if (updated.included().size() > MAX_TYPES || updated.excluded().size() > MAX_TYPES) return;
+    groups = nextGroups;
+    exceptions.copyFrom(updated);
+    legacyWriteState = new CompoundTag();
+    if (active) {
+      legacyWriteState.put("Input", input);
+      legacyWriteState.put("Before", saveSelection(base));
+      legacyWriteState.put("Applied", saveSelection(LegacyListUpdates.Selection.capture(groups, exceptions)));
+    }
+  }
+
+  private static CompoundTag saveSelection(LegacyListUpdates.Selection selection) {
+    var tag = new CompoundTag();
+    tag.putInt("Groups", selection.categories());
+    tag.put("Included", FilterTargetTags.saveAll(selection.included()));
+    tag.put("Excluded", FilterTargetTags.saveAll(selection.excluded()));
+    return tag;
+  }
+
+  private static LegacyListUpdates.Selection loadSelection(CompoundTag tag) {
+    var entries = new TargetExceptions();
+    FilterTargetTags.loadAll(tag.getList("Included", 10), MAX_TYPES, MAX_TYPE_LENGTH,
+        FieldTargets::known, entries.included());
+    FilterTargetTags.loadAll(tag.getList("Excluded", 10), MAX_TYPES, MAX_TYPE_LENGTH,
+        FieldTargets::known, entries.excluded());
+    return LegacyListUpdates.Selection.capture(tag.getInt("Groups"), entries);
   }
 
   private LegacyLists legacyLists() {
@@ -207,6 +249,7 @@ public final class EntityFilter {
     t.putInt("Directions", directions);
     t.putInt("DirectionFrame", frame.id());
     t.putInt("Crossings", crossings);
+    if (!legacyWriteState.isEmpty()) t.put("LegacyWriteState", legacyWriteState.copy());
     t.putBoolean("Invert", inverted);
     t.putBoolean("OwnerExempt", exemptOwner);
     t.putString("Entity", entityType);
@@ -218,6 +261,7 @@ public final class EntityFilter {
 
   public void copyFrom(EntityFilter source) {
     categoryLists = source.categoryLists;
+    legacyWriteState = source.legacyWriteState.copy();
     exceptions.copyFrom(source.exceptions);
     groups = source.groups;
     playerMode = source.playerMode;
@@ -246,6 +290,7 @@ public final class EntityFilter {
   public static EntityFilter load(CompoundTag t) {
     var f = new EntityFilter();
     f.categoryLists = t.getBoolean("CategoryLists");
+    f.legacyWriteState = t.getCompound("LegacyWriteState").copy();
     FilterTargetTags.loadAll(t.getList("IncludedTargets", 10), MAX_TYPES, MAX_TYPE_LENGTH,
         FieldTargets::known, f.included);
     FilterTargetTags.loadAll(t.getList("ExcludedTargets", 10), MAX_TYPES, MAX_TYPE_LENGTH,
