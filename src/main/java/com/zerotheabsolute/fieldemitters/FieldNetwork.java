@@ -184,6 +184,7 @@ public final class FieldNetwork {
     }
     long now = l.getGameTime();
     for (var e : all) {
+      e.restoreCardCredentials();
       clampFutureTicks(e, now);
       e.impactWaves.removeIf(wave -> now - wave.time() >= FieldImpacts.LIFETIME);
       e.spherePresent=false;
