@@ -45,6 +45,16 @@ public final class EmitterEntity extends BlockEntity {
   public int color = 0x52E5FF, mask = 1;
   public boolean enabled = true, powered = false;
   public UUID owner;
+  private CompoundTag pendingCardCredentials = new CompoundTag();
+  private boolean writingClientTag;
+
+  void restoreCardCredentials() {
+    if (pendingCardCredentials.isEmpty()
+        || !(level instanceof net.minecraft.server.level.ServerLevel server)) return;
+    BadgeAccess.get(server).importCards(this, pendingCardCredentials);
+    pendingCardCredentials = new CompoundTag();
+  }
+
   UUID emitterId = UUID.randomUUID();
   public boolean managementPublic;
   public final Set<UUID> managerIds = new HashSet<>();
@@ -203,6 +213,12 @@ public final class EmitterEntity extends BlockEntity {
 
   protected void saveAdditional(CompoundTag t) {
     super.saveAdditional(t);
+    if (!writingClientTag) {
+      restoreCardCredentials();
+      var credentials = level instanceof net.minecraft.server.level.ServerLevel server
+          ? BadgeAccess.get(server).exportCards(this) : pendingCardCredentials.copy();
+      if (!credentials.isEmpty()) t.put(BadgeAccess.PORTABLE_KEY, credentials);
+    }
     t.put("Management", ManagementAccess.snapshot(this));
     t.put("EditScope", getLevel() != null && !getLevel().isClientSide ? ControlEdits.describe(this) : editScope.copy());
     t.putLong("PlacedAt", placedAt);
@@ -350,6 +366,7 @@ public final class EmitterEntity extends BlockEntity {
     adoptPending = t.getBoolean("AdoptPending");
     fieldName = t.getString("FieldName");
     owner = t.hasUUID("Owner") ? t.getUUID("Owner") : null;
+    pendingCardCredentials = t.getCompound(BadgeAccess.PORTABLE_KEY).copy();
     links = new ArrayList<>();
     for (Tag tag : t.getList("Links", Tag.TAG_COMPOUND)) {
       CompoundTag n = (CompoundTag) tag;
@@ -396,9 +413,14 @@ public final class EmitterEntity extends BlockEntity {
   }
 
   public CompoundTag getUpdateTag() {
-    var tag = saveWithoutMetadata();
-    FieldGaps.save(this, tag);
-    return tag;
+    writingClientTag = true;
+    try {
+      var tag = saveWithoutMetadata();
+      FieldGaps.save(this, tag);
+      return tag;
+    } finally {
+      writingClientTag = false;
+    }
   }
 
   @Override

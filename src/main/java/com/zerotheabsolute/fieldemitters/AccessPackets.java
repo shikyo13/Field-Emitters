@@ -176,7 +176,7 @@ public final class AccessPackets {
                                   ? Component.translatable(
                                       "message.fieldemitters.accesspackets.transferable")
                                   : Component.translatable(
-                                      "message.fieldemitters.accesspackets.for", bound))));
+                                      "message.fieldemitters.accesspackets.for", bound.toString()))));
                     }));
   }
 }
