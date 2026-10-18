@@ -86,7 +86,7 @@ public final class FieldTutorial {
       for (int step = 0; step < STEP_COUNT; step++) {
         if (step == controlsBeforeStep(name)) {
           Component caption = text("walkthrough." + name);
-          double seconds = readingSeconds(caption, com.zerotheabsolute.fieldemitters.client.TutorialTunerPreview.minimumSeconds());
+          double seconds = readingSeconds(caption, com.zerotheabsolute.fieldemitters.client.TutorialTunerPreview.minimumSeconds(name));
           sequence.add(new Segment(step, true, caption, start, seconds));
           start += seconds;
         }

@@ -56,6 +56,62 @@ public final class ControlScreen extends FittedScreen
     return tutorialControls.get(control);
   }
 
+  private String tutorialExample;
+  private int tutorialPhase = -1;
+  private final Map<DetailPage, AbstractWidget> tutorialNavigation = new EnumMap<>(DetailPage.class);
+
+  void tutorialExample(String lesson, int phase) {
+    if (!tutorialPreview) throw new IllegalStateException("Not a tutorial preview");
+    if (lesson.equals(tutorialExample) && phase == tutorialPhase) return;
+    tutorialExample = lesson;
+    tutorialPhase = phase;
+    draft = ControlSettings.load(emitter.controls.save());
+    draft.barrier.useCategoryLists();
+    draft.sensor.useCategoryLists();
+    draft.damage.useCategoryLists();
+    detailPage = DetailPage.MAIN;
+    filterDirection = null;
+    boolean configured = phase >= 2;
+    switch (lesson) {
+      case "blocking" -> draft.barrier.groups = configured ? 1 : 0;
+      case "age" -> { draft.barrier.groups = 2; draft.barrier.age = configured
+          ? com.zeromods.core.filter.EntitySelection.Age.ADULT.ordinal()
+          : com.zeromods.core.filter.EntitySelection.Age.ANY.ordinal(); }
+      case "items" -> {
+        draft.barrier.categoryLists = true;
+        draft.barrier.groups = 0;
+        if (configured) draft.barrier.addTarget(new com.zeromods.core.filter.FilterTarget(
+            com.zeromods.core.filter.FilterTarget.ITEM, "minecraft:gunpowder", ""), false);
+      }
+      case "sensor" -> { draft.sensor.groups = 1; draft.sensorMode = configured ? 1 : 0; }
+      case "damage" -> { draft.damage.groups = 1; draft.damageEnabled = configured; }
+      default -> { }
+    }
+    rebuildWidgets();
+  }
+
+  AbstractWidget tutorialMenu(boolean damage) {
+    return tutorialNavigation.get(damage ? DetailPage.OUTPUT : DetailPage.DIRECTIONS);
+  }
+
+  AbstractWidget tutorialItemAdd() {
+    int x = targetPanel.columnX(false), right = x + targetPanel.columnWidth();
+    return children().stream().filter(AbstractWidget.class::isInstance).map(AbstractWidget.class::cast)
+        .filter(widget -> widget.getMessage().getString().equals("+")
+            && widget.getX() >= x && widget.getX() < right).findFirst().orElseThrow();
+  }
+
+  float tutorialFilterCenterY() {
+    return (top + 44 + targetPanel.top()
+        + com.zeromods.core.client.filter.ExceptionListPanel.HEIGHT + ScreenMetrics.ROW_HEIGHT) / 2f;
+  }
+
+  int[] tutorialItemListBounds() {
+    if (targetPanel == null) throw new IllegalStateException("Tutorial item list is missing");
+    return new int[] {targetPanel.columnX(false), targetPanel.top(), targetPanel.columnWidth(),
+        com.zeromods.core.client.filter.ExceptionListPanel.HEIGHT};
+  }
+
   int[] tutorialBounds() {
     return new int[] {left - NAV_WIDTH, top, CONTENT_WIDTH + NAV_WIDTH, panelHeight()};
   }
@@ -107,13 +163,18 @@ public final class ControlScreen extends FittedScreen
   }
 
   private int panelHeight() {
-    return PANEL_HEIGHT;
+    if (detailPage != DetailPage.MAIN || !tab.hasFilter()) return PANEL_HEIGHT;
+    int height = PANEL_HEIGHT;
+    if (tab == ControlTab.SENSOR || tab == ControlTab.DAMAGE) height += ScreenMetrics.MENU_STEP;
+    if (filterDirection != null) height += ScreenMetrics.COMPACT_ROW_HEIGHT;
+    return height;
   }
 
   protected void init() {
     targetPanel = null;
     targetFilter = null;
     tutorialControls.clear();
+    tutorialNavigation.clear();
     fit(CONTENT_WIDTH + NAV_WIDTH, panelHeight());
     if (selectedLink >= emitter.links.size()) selectedLink = -1;
     left = (width - CONTENT_WIDTH - NAV_WIDTH) / 2 + NAV_WIDTH;
@@ -683,6 +744,7 @@ public final class ControlScreen extends FittedScreen
                 false)
             .detail(summary);
     button.setTooltip(Tooltip.create(Component.literal(help)));
+    if (tutorialPreview) tutorialNavigation.put(destination, button);
     addRenderableWidget(button);
     row += ScreenMetrics.MENU_STEP;
   }
@@ -1739,17 +1801,14 @@ public final class ControlScreen extends FittedScreen
     }
     for (var l : labels) g.drawString(font, fitLabel(l), l.x, l.y, 0x92A9BE, false);
 
-    g.drawString(
-        font,
-        font.plainSubstrByWidth(notice, 218),
-        left + 12,
-        top + panelHeight() - 18,
-        0x92A9BE,
-        false);
+    var footer = new Label(notice, left + 12, top + panelHeight() - 18, 218);
+    g.drawString(font, fitLabel(footer), footer.x, footer.y, 0x92A9BE, false);
     if (targetPanel != null) targetPanel.render(g,mx,my);
     super.render(g, mx, my, partial);
     if (targetPanel != null) targetPanel.tooltip(g,mx,my);
-    if (!renderOverflowTooltip(g, labels, mx, my)) renderOverflowTooltip(g, headings, mx, my);
+    if (!renderOverflowTooltip(g, labels, mx, my)
+        && !renderOverflowTooltip(g, headings, mx, my))
+      renderOverflowTooltip(g, List.of(footer), mx, my);
     endFit(g);
   }
 
