@@ -129,6 +129,12 @@ public final class FieldBlock extends BaseEntityBlock implements LiquidBlockCont
     if (!(entity instanceof net.minecraft.world.entity.player.Player player)
         || player.isSpectator()) return false;
     if (rule.exemptOwner && owner != null && player.getUUID().equals(owner)) return true;
+    if (rule.categoryLists) {
+      var subject = new com.zeromods.core.forge.MinecraftEntitySubject(player);
+      for (var target : rule.excluded)
+        if (FieldTargets.MATCHER.matches(target, subject, owner)) return true;
+      return false;
+    }
     if (rule.playerMode != PASSES_WHEN_LISTED) return false;
     return rule.playerList.containsKey(player.getUUID())
         || BadgeAccess.matches(player, owner, rule.accessGroups);
