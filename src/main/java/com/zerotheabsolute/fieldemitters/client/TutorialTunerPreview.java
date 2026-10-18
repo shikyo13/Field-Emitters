@@ -13,13 +13,15 @@ public final class TutorialTunerPreview {
   private static final double TAB_CLICK_SECONDS = 1.0;
   private static final double ZOOM_SECONDS = .6;
   private static final double CONTROL_HOLD_SECONDS = 2.5;
+  private static final double EXAMPLE_SECONDS = 1.8;
+  private static final double SUBMENU_SECONDS = 2.2;
   private static final float WIDTH = 480, HEIGHT = 180;
   private ControlScreen screen;
   private String chapter;
   private int windowWidth, windowHeight;
 
-  public static double minimumSeconds() {
-    return TAB_CLICK_SECONDS + ZOOM_SECONDS + CONTROL_HOLD_SECONDS;
+  public static double minimumSeconds(String lesson) {
+    return (submenu(lesson) ? SUBMENU_SECONDS : EXAMPLE_SECONDS) + ZOOM_SECONDS + CONTROL_HOLD_SECONDS;
   }
 
   public void render(GuiGraphics graphics, String lesson, double seconds) {
@@ -37,10 +39,17 @@ public final class TutorialTunerPreview {
       windowWidth = width;
       windowHeight = height;
     }
+    int phase = seconds < TAB_CLICK_SECONDS ? 0 : seconds < (submenu(lesson) ? SUBMENU_SECONDS : EXAMPLE_SECONDS) ? 1 : 2;
+    screen.tutorialExample(lesson, phase);
     var page = page(lesson);
     boolean opened = seconds >= TAB_CLICK_SECONDS;
     screen.tutorialTab(opened ? page : ControlTab.OVERVIEW);
-    AbstractWidget target = opened ? screen.tutorialControl(control(lesson)) : null;
+    AbstractWidget target = opened
+        ? lesson.equals("items") ? screen.tutorialItemAdd()
+            : submenu(lesson) && phase < 2 ? screen.tutorialMenu(lesson.equals("damage"))
+            : screen.tutorialControl(control(lesson))
+        : null;
+    if (opened && target == null) throw new IllegalStateException("Missing tutorial control: " + lesson);
     if (target == null) {
       String label = Component.translatable(page.translationKey()).getString();
       target = screen.children().stream().filter(AbstractWidget.class::isInstance)
@@ -53,10 +62,13 @@ public final class TutorialTunerPreview {
     float progress = (float) Math.max(0, Math.min(1, (seconds - TAB_CLICK_SECONDS) / ZOOM_SECONDS));
     progress = progress * progress * (3 - 2 * progress);
     float zoom = overviewScale + (.90f - overviewScale) * progress;
-    float tx = target.getX() + target.getWidth() / 2f;
-    float ty = target.getY() + target.getHeight() / 2f;
+    int[] focus = lesson.equals("items") && phase >= 2 ? screen.tutorialItemListBounds()
+        : new int[] {target.getX(), target.getY(), target.getWidth(), target.getHeight()};
+    float ty = focus[1] + focus[3] / 2f;
     float cx = bounds[0] + bounds[2] / 2f, cy = bounds[1] + bounds[3] / 2f;
-    cy += (ty - cy) * progress;
+    float cameraY = opened && (lesson.equals("blocking") || lesson.equals("sensor"))
+        ? screen.tutorialFilterCenterY() : ty;
+    cy += (cameraY - cy) * progress;
     graphics.pose().pushPose();
     try {
       graphics.pose().translate(WIDTH / 2, HEIGHT / 2, 500);
@@ -64,18 +76,22 @@ public final class TutorialTunerPreview {
       graphics.pose().translate(-cx * fit, -cy * fit, 0);
       screen.render(graphics, -10000, -10000, 0);
       graphics.pose().scale(fit, fit, 1);
-      int x = target.getX(), y = target.getY(), w = target.getWidth(), h = target.getHeight();
+      int x = focus[0], y = focus[1], w = focus[2], h = focus[3];
       graphics.fill(x - 2, y - 2, x + w + 2, y, 0xFF00D9ED);
       graphics.fill(x - 2, y + h, x + w + 2, y + h + 2, 0xFF00D9ED);
       graphics.fill(x - 2, y, x, y + h, 0xFF00D9ED);
       graphics.fill(x + w, y, x + w + 2, y + h, 0xFF00D9ED);
       float approach = (float) Math.min(1, seconds / .8);
-      int cursorX = (int) (target.getX() + target.getWidth() - 13 + 26 * (1 - approach));
+      int cursorX = (int) (focus[0] + focus[2] - 13 + 26 * (1 - approach));
       int cursorY = (int) (ty + 18 * (1 - approach));
       for (int line = 0; line < 8; line++)
         graphics.fill(cursorX, cursorY + line, cursorX + 1 + line / 2, cursorY + line + 1, 0xFFFFFFFF);
       graphics.flush();
     } finally { graphics.pose().popPose(); }
+  }
+
+  private static boolean submenu(String lesson) {
+    return lesson.equals("directions") || lesson.equals("damage");
   }
 
   private static ControlTab page(String chapter) {
@@ -99,7 +115,7 @@ public final class TutorialTunerPreview {
       case "age" -> Control.AGE;
       case "items" -> Control.DROPS;
       case "sensor" -> Control.SIGNAL;
-      case "damage" -> Control.DAMAGE;
+      case "damage" -> Control.HIT_INTERVAL;
       case "cards" -> Control.ISSUE_AND_REVOKE_BADGES;
       case "checkpoint" -> Control.INVENTORY_CHECKPOINT;
       case "appearance" -> Control.PATTERN;
