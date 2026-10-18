@@ -14,6 +14,16 @@ import net.minecraft.world.level.saveddata.SavedData;
 public final class BadgeAccess extends SavedData {
   public static final Map<UUID, Set<String>> clientGrants = new HashMap<>();
   private final Map<UUID, CompoundTag> issued = new HashMap<>();
+  private static final int PORTABLE_VERSION = 1;
+  static final String PORTABLE_KEY = "CardCredentials";
+  private UUID worldId = UUID.randomUUID();
+  private final Set<UUID> retired = new HashSet<>();
+  private final Map<UUID, Set<String>> revokedImports = new HashMap<>();
+
+  public BadgeAccess() {
+    // Persist the registry identity even if the first operation only exports a structure.
+    setDirty();
+  }
 
   public static BadgeAccess get(ServerLevel level) {
     return level
@@ -31,6 +41,18 @@ public final class BadgeAccess extends SavedData {
       if (entry.hasUUID("Id") && entry.hasUUID("Issuer"))
         data.issued.put(entry.getUUID("Id"), entry.copy());
     }
+    if (tag.hasUUID("WorldId")) data.worldId = tag.getUUID("WorldId");
+    for (var value : tag.getList("Retired", Tag.TAG_COMPOUND)) {
+      var entry = (CompoundTag) value;
+      if (entry.hasUUID("Id")) data.retired.add(entry.getUUID("Id"));
+    }
+    for (var value : tag.getList("RevokedImports", Tag.TAG_COMPOUND)) {
+      var entry = (CompoundTag) value;
+      if (entry.hasUUID("Issuer") && validGroup(entry.getString("Group")))
+        data.revokedImports.computeIfAbsent(entry.getUUID("Issuer"), id -> new HashSet<>())
+            .add(entry.getString("Group"));
+    }
+    data.retired.forEach(data.issued::remove);
     return data;
   }
 
@@ -38,6 +60,22 @@ public final class BadgeAccess extends SavedData {
     var list = new ListTag();
     issued.values().forEach(e -> list.add(e.copy()));
     tag.put("Issued", list);
+    tag.putUUID("WorldId", worldId);
+    var retiredTags = new ListTag();
+    retired.forEach(id -> {
+      var entry = new CompoundTag();
+      entry.putUUID("Id", id);
+      retiredTags.add(entry);
+    });
+    tag.put("Retired", retiredTags);
+    var revokedTags = new ListTag();
+    revokedImports.forEach((issuer, groups) -> groups.forEach(group -> {
+      var entry = new CompoundTag();
+      entry.putUUID("Issuer", issuer);
+      entry.putString("Group", group);
+      revokedTags.add(entry);
+    }));
+    tag.put("RevokedImports", revokedTags);
     return tag;
   }
 
@@ -53,7 +91,10 @@ public final class BadgeAccess extends SavedData {
     var previous = stack.get(DataComponents.CUSTOM_DATA);
     if (previous != null && previous.copyTag().hasUUID("BadgeId")) {
       var old = issued.get(previous.copyTag().getUUID("BadgeId"));
-      if (old != null && old.getUUID("Issuer").equals(issuer)) issued.remove(old.getUUID("Id"));
+      if (old != null && old.getUUID("Issuer").equals(issuer)) {
+        issued.remove(old.getUUID("Id"));
+        retired.add(old.getUUID("Id"));
+      }
     }
     var tag = new CompoundTag();
     var id = UUID.randomUUID();
@@ -74,11 +115,79 @@ public final class BadgeAccess extends SavedData {
 
   public int revoke(UUID issuer, String group) {
     int before = issued.size();
-    issued
-        .values()
-        .removeIf(t -> t.getUUID("Issuer").equals(issuer) && t.getString("Group").equals(group));
-    if (before != issued.size()) setDirty();
+    issued.values().removeIf(t -> {
+      boolean matches = t.getUUID("Issuer").equals(issuer) && t.getString("Group").equals(group);
+      if (matches) retired.add(t.getUUID("Id"));
+      return matches;
+    });
+    // Also reject older foreign snapshots that have not been loaded here yet.
+    revokedImports.computeIfAbsent(issuer, id -> new HashSet<>()).add(group);
+    setDirty();
     return before - issued.size();
+  }
+
+  /** Records travel with a saved structure, never with its client update packet. */
+  public CompoundTag exportCards(EmitterEntity emitter) {
+    var result = new CompoundTag();
+    if (emitter.owner == null) return result;
+    var groups = cardGroups(emitter);
+    if (groups.isEmpty()) return result;
+    var entries = new ListTag();
+    for (var credential : issued.values())
+      if (credential.getUUID("Issuer").equals(emitter.owner)
+          && groups.contains(credential.getString("Group"))) entries.add(credential.copy());
+    if (entries.isEmpty()) return result;
+    result.putInt("Version", PORTABLE_VERSION);
+    result.putUUID("WorldId", worldId);
+    result.put("Issued", entries);
+    return result;
+  }
+
+  /** An existing world's registry and revocations always win over a pasted snapshot. */
+  public void importCards(EmitterEntity emitter, CompoundTag snapshot) {
+    if (emitter.owner == null || snapshot.getInt("Version") != PORTABLE_VERSION
+        || !snapshot.hasUUID("WorldId") || worldId.equals(snapshot.getUUID("WorldId"))) return;
+    var groups = cardGroups(emitter);
+    var revoked = revokedImports.getOrDefault(emitter.owner, Set.of());
+    boolean changed = false;
+    for (var value : snapshot.getList("Issued", Tag.TAG_COMPOUND)) {
+      var entry = (CompoundTag) value;
+      if (!entry.hasUUID("Id") || !entry.hasUUID("Issuer")
+          || !entry.getUUID("Issuer").equals(emitter.owner)
+          || !validGroup(entry.getString("Group"))
+          || !groups.contains(entry.getString("Group"))
+          || revoked.contains(entry.getString("Group"))
+          || entry.contains("Player") && !entry.hasUUID("Player")) continue;
+      var id = entry.getUUID("Id");
+      if (!retired.contains(id) && !issued.containsKey(id)) {
+        var credential = new CompoundTag();
+        credential.putUUID("Id", id);
+        credential.putUUID("Issuer", emitter.owner);
+        credential.putString("Group", entry.getString("Group"));
+        if (entry.hasUUID("Player")) credential.putUUID("Player", entry.getUUID("Player"));
+        issued.put(id, credential);
+        changed = true;
+      }
+    }
+    if (changed) setDirty();
+  }
+
+  private static Set<String> cardGroups(EmitterEntity emitter) {
+    var result = new HashSet<String>();
+    var settings = new ArrayList<ControlSettings>();
+    settings.add(emitter.controls);
+    settings.addAll(emitter.overrides.values());
+    for (var control : settings) {
+      result.addAll(control.cards.groups);
+      for (var filter : control.filters()) {
+        result.addAll(filter.accessGroups);
+        for (var target : filter.included)
+          if (target.kind().equals(FieldTargets.CARD_GROUP)) result.add(target.id());
+        for (var target : filter.excluded)
+          if (target.kind().equals(FieldTargets.CARD_GROUP)) result.add(target.id());
+      }
+    }
+    return result;
   }
 
   public boolean accepts(ItemStack stack, UUID issuer, UUID player, Set<String> groups) {
