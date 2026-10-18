@@ -26,6 +26,14 @@ Player filters also offer **Access groups / cards**. Those groups match cards as
 
 The **Open Field Tuner** binding is available in Controls under Field Emitters and is unbound by default. With a tuner in your inventory or an actual Curios slot, the key opens the emitter you are looking at, or the remote field list when you are looking elsewhere. Server permission checks still apply. Curios is optional; normal inventory use works without it.
 
+## Copying fields between worlds
+
+Save the field and its cards in the structure. The field carries the issued card records for its configured groups, so those cards work when the structure is placed in another world. Ownership and player-bound cards keep their original player UUIDs.
+
+Revoking a group affects the current world. Pasting an older structure cannot restore that world's revoked cards or import more cards for that revoked group; issue new cards there instead. Revocation does not change copies in other worlds.
+
+Structures exported before version 1.4.0 do not contain the card records. Export them again from the original world with the updated mod, or issue replacement cards in the destination world. Copying or renaming a card alone does not authorize it.
+
 ## Inventory checkpoints
 
 Open **Access → Inventory checkpoint**. The checkpoint has its own player/card selection and directional overrides. Its contraband item list supports IDs and tags, with listed-items or all-except-listed-items modes.
