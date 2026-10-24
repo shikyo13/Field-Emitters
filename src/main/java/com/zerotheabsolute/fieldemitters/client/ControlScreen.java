@@ -113,7 +113,7 @@ public final class ControlScreen extends FittedScreen
   }
 
   int[] tutorialBounds() {
-    return new int[] {left - NAV_WIDTH, top, CONTENT_WIDTH + NAV_WIDTH, panelHeight()};
+    return new int[] {left - NAV_WIDTH, top, CONTENT_WIDTH + NAV_WIDTH, PANEL_HEIGHT};
   }
 
   private com.zeromods.core.client.filter.ExceptionListPanel targetPanel;
@@ -133,7 +133,10 @@ public final class ControlScreen extends FittedScreen
   private boolean inheritPending;
   private int syncTicks;
   private static final int SYNC_INTERVAL_TICKS = 20;
-  private static final int CONTENT_WIDTH = 404, NAV_WIDTH = 106, PANEL_HEIGHT = 306;
+  private static final int CONTENT_WIDTH = 404, NAV_WIDTH = 106;
+  // Reserve the largest filter layout so navigation never moves or rescales the frame.
+  private static final int PANEL_HEIGHT =
+      ScreenMetrics.PANEL_HEIGHT + ScreenMetrics.MENU_STEP + ScreenMetrics.COMPACT_ROW_HEIGHT;
 
   public ControlScreen(EmitterEntity e) {
     super(
@@ -162,23 +165,15 @@ public final class ControlScreen extends FittedScreen
     rebuildWidgets();
   }
 
-  private int panelHeight() {
-    if (detailPage != DetailPage.MAIN || !tab.hasFilter()) return PANEL_HEIGHT;
-    int height = PANEL_HEIGHT;
-    if (tab == ControlTab.SENSOR || tab == ControlTab.DAMAGE) height += ScreenMetrics.MENU_STEP;
-    if (filterDirection != null) height += ScreenMetrics.COMPACT_ROW_HEIGHT;
-    return height;
-  }
-
   protected void init() {
     tutorialControls.clear();
     tutorialNavigation.clear();
     targetPanel = null;
     targetFilter = null;
-    fit(CONTENT_WIDTH + NAV_WIDTH, panelHeight());
+    fit(CONTENT_WIDTH + NAV_WIDTH, PANEL_HEIGHT);
     if (selectedLink >= emitter.links.size()) selectedLink = -1;
     left = (width - CONTENT_WIDTH - NAV_WIDTH) / 2 + NAV_WIDTH;
-    top = (height - panelHeight()) / 2;
+    top = (height - PANEL_HEIGHT) / 2;
     row = top + 44;
     filterEditable = true;
     for (int i = 0; i < ControlTab.values().length; i++) {
@@ -202,7 +197,7 @@ public final class ControlScreen extends FittedScreen
     addRenderableWidget(
             new FieldButton(
                 left - NAV_WIDTH + 8,
-                top + panelHeight() - 23,
+                top + PANEL_HEIGHT - 23,
                 NAV_WIDTH - 16,
                 18,
                 com.zerotheabsolute.fieldemitters.client.tutorial.FieldTutorial.text("open"),
@@ -233,7 +228,7 @@ public final class ControlScreen extends FittedScreen
     addRenderableWidget(
             new FieldButton(
                 left + 242,
-                top + panelHeight() - 23,
+                top + PANEL_HEIGHT - 23,
                 72,
                 18,
                 Component.literal(UiText.text("screen.fieldemitters.control.fields")),
@@ -250,7 +245,7 @@ public final class ControlScreen extends FittedScreen
     addRenderableWidget(
             new FieldButton(
                 left + 320,
-                top + panelHeight() - 23,
+                top + PANEL_HEIGHT - 23,
                 72,
                 18,
                 Component.literal(UiText.text("screen.fieldemitters.control.close")),
@@ -1673,11 +1668,11 @@ public final class ControlScreen extends FittedScreen
     mx = fitMouse(mx);
     my = fitMouse(my);
     g.fill(0, 0, width, height, 0xB0101723);
-    g.fill(left - NAV_WIDTH, top, left + CONTENT_WIDTH, top + panelHeight(), 0xFF111D2C);
-    g.fill(left - NAV_WIDTH + 4, top + 40, left - 4, top + panelHeight() - 28, 0xFF0E1926);
+    g.fill(left - NAV_WIDTH, top, left + CONTENT_WIDTH, top + PANEL_HEIGHT, 0xFF111D2C);
+    g.fill(left - NAV_WIDTH + 4, top + 40, left - 4, top + PANEL_HEIGHT - 28, 0xFF0E1926);
     g.fill(left + 1, top + 2, left + 403, top + 20, 0xFF1B2D3E);
-    g.fill(left + 8, top + 40, left + 396, top + panelHeight() - 28, 0xFF0E1926);
-    g.fill(left + 8, top + panelHeight() - 26, left + 396, top + panelHeight() - 25, 0xFF354D63);
+    g.fill(left + 8, top + 40, left + 396, top + PANEL_HEIGHT - 28, 0xFF0E1926);
+    g.fill(left + 8, top + PANEL_HEIGHT - 26, left + 396, top + PANEL_HEIGHT - 25, 0xFF354D63);
     g.fill(left - NAV_WIDTH, top, left + 404, top + 2, 0xFF000000 | color);
     String scope =
         tab == ControlTab.ACCESS
@@ -1802,7 +1797,7 @@ public final class ControlScreen extends FittedScreen
     }
     for (var l : labels) g.drawString(font, fitLabel(l), l.x, l.y, 0x92A9BE, false);
 
-    var footer = new Label(notice, left + 12, top + panelHeight() - 18, 218);
+    var footer = new Label(notice, left + 12, top + PANEL_HEIGHT - 18, 218);
     g.drawString(font, fitLabel(footer), footer.x, footer.y, 0x92A9BE, false);
     if (targetPanel != null) targetPanel.render(g,mx,my);
     super.render(g, mx, my, partial);
@@ -1814,7 +1809,7 @@ public final class ControlScreen extends FittedScreen
   }
 
   public net.minecraft.client.renderer.Rect2i panelArea() {
-    return screenRect(left-NAV_WIDTH,top,CONTENT_WIDTH+NAV_WIDTH,panelHeight());
+    return screenRect(left-NAV_WIDTH,top,CONTENT_WIDTH+NAV_WIDTH,PANEL_HEIGHT);
   }
   public net.minecraft.client.renderer.Rect2i targetArea(boolean exclude) {
     if(targetPanel==null)return new net.minecraft.client.renderer.Rect2i(0,0,0,0);
