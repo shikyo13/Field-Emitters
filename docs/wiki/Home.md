@@ -1,5 +1,7 @@
 # Field Emitters
 
+**[Open the illustrated Field Emitters wiki](https://github.com/shikyo13/Field-Emitters/wiki)** for the player guides.
+
 Terrain-following forcefields for Minecraft 1.21.1 on NeoForge. Field Emitter posts link into a perimeter that follows the ground, Field Rails seal doorways and shafts, and every field chooses what passes through it and reports what crossed it.
 
 ![Two Field Emitters, an energy cube and the field between them](https://raw.githubusercontent.com/shikyo13/Field-Emitters/main/docs/images/emitters.png)

@@ -2,7 +2,7 @@
 
 Terrain-following forcefields for Minecraft. Place Field Emitter posts around an area and they link up into a five-block-high perimeter that follows the ground between them. Mount Field Rails on walls, floors and ceilings to seal doorways, pits and shafts. Every field decides what passes through it, reports what crossed it, and runs on energy supplied by other mods.
 
-[Download](https://www.curseforge.com/minecraft/mc-mods/field-emitters) · [Wiki](https://github.com/shikyo13/Field-Emitters/tree/main/docs/wiki) · [Issues](https://github.com/shikyo13/Field-Emitters/issues) · [Discord](https://discord.gg/NrdXnbWzGC)
+[Download](https://www.curseforge.com/minecraft/mc-mods/field-emitters) · [Wiki](https://github.com/shikyo13/Field-Emitters/wiki) · [Issues](https://github.com/shikyo13/Field-Emitters/issues) · [Discord](https://discord.gg/NrdXnbWzGC)
 
 [![Field Emitters: terrain-following forcefields](docs/images/showcase-thumbnail.png)](https://youtu.be/_XEWAr7P7vQ)
 
@@ -36,7 +36,7 @@ Projection towers add hollow spheres and domes, and horizontal rails make walkab
 
 Rails are crafted four at a time from iron, copper, amethyst and redstone. Place one on a wall, floor or ceiling and another one facing it up to 20 blocks away. Place more rails side by side to widen the field.
 
-The [wiki](https://github.com/shikyo13/Field-Emitters/tree/main/docs/wiki) covers filters, detection output, rails, energy and troubleshooting.
+Follow the illustrated guides to [build your first field](https://github.com/shikyo13/Field-Emitters/wiki/Build-your-first-field), [make a bridge](https://github.com/shikyo13/Field-Emitters/wiki/Rails-and-bridges) or [wire a redstone sensor](https://github.com/shikyo13/Field-Emitters/wiki/Sensors-and-redstone).
 
 ## Energy
 
